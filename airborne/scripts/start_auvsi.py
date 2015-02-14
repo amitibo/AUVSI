@@ -1,8 +1,10 @@
 from __future__ import division
+from AUVSI import *
 
 
 def main():
-    pass
+    
+    start_server()
 
 
 if __name__ == '__main__':
