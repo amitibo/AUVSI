@@ -1,7 +1,13 @@
-from AUVSI import *
+from AUVSI import GUIApp
+import subprocess as sbp
 
-def main():
-    pass
+
+def start_gui():
+    GUIApp().run()
+
 
 if __name__ == '__main__':
-    main()
+    #
+    # Start the GUI
+    #
+    start_gui()

@@ -1,0 +1,27 @@
+ImageProcessingGui:
+
+
+<ImageProcessingGui>:
+    orientation: "vertical"
+    connect_state: connect_label
+    BoxLayout:
+        height: "40dp"
+        size_hint_y: None
+        TextInput:
+            text: '192.168.1.13'
+        BGLabel:
+            id: connect_label
+            text: 'Disconnected'
+        ToggleButton:
+            text: 'Shoot'
+            on_state: root.shoot(self.state == 'down')
+            
+<BGLabel>:
+    canvas.before:
+        Color:
+            rgb: 1, 0, 0
+        Rectangle:
+            pos: self.pos
+            size: self.size
+      
+
