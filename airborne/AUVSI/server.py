@@ -1,16 +1,31 @@
 from twisted.internet import reactor, task
 from twisted.web.resource import Resource, NoResource
 from twisted.web.server import Site
-from camera import camera_mockup
+from twisted.web.static import File
+from camera import MockupCamera
+from database import DataBase
 
 __all__ = (
     'start_server'
 )
 
 
-camera = camera_mockup()
+#
+# Global objects
+#
+camera = MockupCamera()
+database = DataBase()
+
+#
+# Callbacks
+#
+def shootCallBack(img_path):
+    database.storeImg(img_path)
 
 
+#
+# server resources
+#
 class CameraResource(Resource):
     camera_loop = None
 
@@ -21,7 +36,7 @@ class CameraResource(Resource):
         #
         cmd = request.uri[1:].split('=')[1]
         if cmd == 'on':
-            CameraResource.camera_loop = task.LoopingCall(camera.shoot)
+            CameraResource.camera_loop = task.LoopingCall(camera.shoot, shootCallBack)
             CameraResource.camera_loop.start(1.0)
 
             return "<html><body>On!</body></html>"
@@ -37,14 +52,38 @@ class CameraResource(Resource):
             return NoResource()
 
 
-       
+#
+# server resources
+#
+class ImagesResource(Resource):
+
+    def render_GET(self, request):
+        
+        #
+        # Get the timestamp
+        #
+        splits = request.uri[1:].split('=')
+        if len(splits) > 1:
+            timestamp = splits[1]
+        else:
+            timestamp = None
+        
+        new_imgs = database.getNewImgs(timestamp)    
+    
+        return "{new_imgs}".format(new_imgs=new_imgs)
+        
+
+#
+# MainLoop of the server
+#
 class MainLoop(Resource):
     def getChild(self, name, request):
         if name == '':
             return self
         if name.startswith('camera'):
             return CameraResource()
-
+        elif name.startswith('new_imgs'):
+            return ImagesResource()
         else:
             return NoResource()
 
@@ -55,6 +94,7 @@ class MainLoop(Resource):
 
 def start_server(port=8000):
     root = MainLoop()
+    root.putChild("images", File(camera.base_path))
     factory = Site(root)
 
     reactor.listenTCP(port, factory)
