@@ -38,7 +38,7 @@ class DataBase(object):
     def storeImg(self, img_path):
         
         cmd = "INSERT INTO {table_name}(image_path, timestamp) values (?, ?)".format(table_name=self.images_table)
-        self._cmd(cmd, (img_path, datetime.now()))
+        self._cmd(cmd, (img_path, datetime.now().strftime('%Y-%m-%dT%H:%M:%S.%f')))
 
     def getNewImgs(self, timestamp):
         

@@ -4,6 +4,8 @@ from twisted.web.server import Site
 from twisted.web.static import File
 from camera import MockupCamera
 from database import DataBase
+import json
+
 
 __all__ = (
     'start_server'
@@ -70,7 +72,7 @@ class ImagesResource(Resource):
         
         new_imgs = database.getNewImgs(timestamp)    
     
-        return "{new_imgs}".format(new_imgs=new_imgs)
+        return json.dumps(new_imgs)
         
 
 #

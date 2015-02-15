@@ -1,6 +1,7 @@
 from __future__ import division
 import global_settings as gs
 import numpy as np
+from datetime import datetime
 import Image
 import time
 
@@ -17,9 +18,8 @@ class BaseCamera(object):
             os.makedirs(self.base_path)
 
     def _getName(self):
-        name = '{time}_{formated_time}.jpg'.format(
-            time=time.time(),
-            formated_time=time.strftime("%Y_%m_%d_%H_%M_%S", time.gmtime())
+        filename = '{formated_time}.jpg'.format(
+            formated_time=datetime.now().strftime("%Y_%m_%d_%H_%M_%S_%f")
         )
         
         return os.path.join(self.base_path, filename)
