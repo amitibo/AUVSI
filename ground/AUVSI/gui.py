@@ -10,6 +10,8 @@ from kivy.uix.textinput import TextInput
 from kivy.uix.boxlayout import BoxLayout
 from kivy.properties import ObjectProperty
 import pkg_resources
+import global_settings as gs
+from configobj import ConfigObj
 import os
 
 
@@ -36,10 +38,14 @@ class GUIApp(App):
     connection = None
     
     def build(self):
+        self.readConfiguration()
         self.connect_to_server()
-
+        
+    def readConfiguration(self):
+        self.settings = ConfigObj(gs.CONFIG_PATH)
+        
     def connect_to_server(self):
-        server.connect(self)
+        server.connect(self, server=self.settings['server'])
 
     def on_connection(self, connection):
         self.root.connect_state.canvas.before.children[0].rgb = (0, 0, 1)

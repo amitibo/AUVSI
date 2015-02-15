@@ -116,11 +116,19 @@ class ServerFactory(protocol.ReconnectingClientFactory):
         d.addCallback(self._lastTimeStamp)
         
 
-def connect(app):
-    reactor.connectTCP('132.68.58.194', 8000, ServerFactory(app))
+def connect(app, server):
+    reactor.connectTCP(
+        server['ip'],
+        int(server['port']),
+        ServerFactory(app)
+    )
     
+    global _server_address
+    _server_address = server
 
 def access(page, callback=printPage):
-    d = getPage('http://132.68.58.194:8000/'+page)
+    d = getPage(
+        'http://{ip}:{port}/{page}'.format(ip=_server_address['ip'], port=_server['port'], page=page)
+    )
     d.addCallbacks(callback, printError)
     return d

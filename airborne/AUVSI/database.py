@@ -1,23 +1,19 @@
 import sqlite3
 from  datetime import datetime
+import global_settings as gs
 import os
 
 
 class DataBase(object):
     
-    def __init__(
-            self,
-            base_path='~/db',
-            images_db='images.db',
-            images_table='image_table'
-    ):
+    def __init__(self):
 
         #
         # Check if databases exists, if not create them
         #
-        self.base_path = os.path.abspath(os.path.expanduser(base_path))
-        self.images_db = os.path.join(self.base_path, images_db)
-        self.images_table = images_table
+        self.base_path = gs.DB_FOLDER
+        self.images_db = gs.DB_PATH
+        self.images_table = gs.IMAGES_TABLE
 
         if not os.path.exists(self.base_path):
             os.makedirs(self.base_path)

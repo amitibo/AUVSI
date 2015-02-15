@@ -38,6 +38,7 @@ def choose_scripts():
     
     scripts = [
         'scripts/start_ground.py',
+        'scripts/setup_ground.py'
     ]
 
     return scripts

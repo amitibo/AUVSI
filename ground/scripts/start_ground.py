@@ -1,5 +1,4 @@
-from AUVSI import GUIApp
-import subprocess as sbp
+from AUVSI.gui import GUIApp
 
 
 def start_gui():
