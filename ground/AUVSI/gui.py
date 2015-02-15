@@ -22,7 +22,7 @@ class ImageProcessingGui(BoxLayout):
     connect_state = ObjectProperty()
     
     def shoot(self, state):
-        server.access('camera=on')
+        server.access('camera='+('on' if state else 'off'))
         
         
 # A simple kivy App, with a textbox to enter messages, and

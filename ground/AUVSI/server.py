@@ -10,7 +10,7 @@ def printError(failure):
     print failure
 
 
-class EchoClient(protocol.Protocol):
+class CameraClient(protocol.Protocol):
     def connectionMade(self):
         self.factory.app.on_connection(self.transport)
 
@@ -22,7 +22,7 @@ class EchoClient(protocol.Protocol):
 
 
 class ServerFactory(protocol.ReconnectingClientFactory):
-    protocol = EchoClient
+    protocol = CameraClient
     maxDelay = 1
     initialDelay = 0.1
     
