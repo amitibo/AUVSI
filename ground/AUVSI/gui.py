@@ -2,7 +2,6 @@
 from kivy.support import install_twisted_reactor
 install_twisted_reactor()
 
-from twisted.internet import reactor
 import server
 
 from kivy.app import App
@@ -15,6 +14,10 @@ import os
 
 
 class BGLabel(Label):
+    pass
+
+
+class ImagesList(BoxLayout):
     pass
 
 
@@ -31,7 +34,7 @@ class ImageProcessingGui(BoxLayout):
 class GUIApp(App):
     kv_directory = pkg_resources.resource_filename(__package__, 'resources')
     connection = None
-
+    
     def build(self):
         self.connect_to_server()
 
@@ -42,7 +45,7 @@ class GUIApp(App):
         self.root.connect_state.canvas.before.children[0].rgb = (0, 0, 1)
         self.root.connect_state.text = 'Connected'
         self.connection = connection
-
+        
     def on_disconnection(self, connection):
         self.root.connect_state.canvas.before.children[0].rgb = (1, 0, 0)
         self.root.connect_state.text = 'Disconnected'
@@ -57,6 +60,10 @@ class GUIApp(App):
     def print_message(self, msg):
         #self.label.text += msg + "\n"
         print msg
-        
+    
+    def get_images(self):
+        pass
+    
+    
 if __name__ == '__main__':
     GUIApp().run()
