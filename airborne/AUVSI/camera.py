@@ -47,20 +47,54 @@ class CanonCamera(BaseCamera):
     def __init__(self, zoom, *params, **kwds):
         super(MockupCamera, self).__init__(*params, **kwds)
 
-        params = ["-c", "-erec", "-e\"luar enter_alt(); call_event_proc('SS.Create'); call_event_proc('SS.MFOn'); set_prop(222,0); set_focus(65000); set_prop(272,0); set_prop(105,3); set_zoom_speed(1); set_zoom({});\"".format(zoom)]
-        try:
-            cmd = chdkptp + " " + params[0] + " " + params[1] + " " + params[2]
-            logger.info(cmd)
-            output = subprocess.check_output([cmd], shell=True)
-            print output
-            logger.info("init: {}".format(output))
-            if output.find("ERROR") >= 0 and output.find('already in rec') == -1:
-                logger.error("Camera error:\n{}".format(output))
-                return False
-            return True
+        params = [
+            '-c',
+            '-erec',
+            "-e\"luar enter_alt(); call_event_proc('SS.Create'); call_event_proc('SS.MFOn'); set_prop(222,0); set_focus(65000); set_prop(272,0); set_prop(105,3); set_zoom_speed(1); set_zoom({zoom});\"".format(zoom=zoom)
+        ]
     
-        except Exception as e:
-            logger.error("Unable to run camera init command!\n{}".format(e), exc_info=True)
-            return False
+        cmd = gs.CHDKPTP_PATH + " " + params[0] + " " + params[1] + " " + params[2]
+        output = sbp.check_output([cmd], shell=True)
+        print output
         
+        self._shooting_proc = None
+
+    def startShooting(self, shutter_speed=5000, ISO=50, aperture=4):
+
+        params = [
+            "-c",
+            "-e\"remoteshoot {local_folder} -tv=1/{shutter_speed} -sv={ISO} -av={aperture} -cont=9000\"".format(
+                local_folder=gs.IMAGES_FOLDER,
+                shutter_speed=shutter_speed,
+                ISO=ISO,
+                aperture=aperture
+                ),
+            "-e\"luar set_lcd_display(0);\""
+        ]
+        cmd = gs.CHDKPTP_PATH + " " + params[0] + " " + params[1]
+        logger.info("shoot command: "+cmd)
+        self._shooting_proc = sbp.Popen([cmd], shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        
+    def stopShooting(self):
+
+        if self._shooting_proc == None:
+            return
+        
+        #
+        # First kill the process
+        #
+        self._shooting_proc.kill()
+        
+        #
+        # Then kill script (needed?)
+        #
+        params = [
+            "-c",
+            "-e\"killscript;\""
+        ] 
+        cmd = gs.CHDKPTP_PATH + " " + params[0] + " " + params[1]
+
+        output = subprocess.check_output([cmd],shell=True)
+        print output
+
 

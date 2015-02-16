@@ -1,8 +1,10 @@
-from twisted.internet import reactor, task
+from twisted.internet import reactor, task, intotify
 from twisted.web.resource import Resource, NoResource
+from twisted.python import filepath
 from twisted.web.server import Site
 from twisted.web.static import File
-from camera import MockupCamera
+from camera import MockupCamera, CanonCamera
+import global_settings as gs
 from database import DataBase
 import json
 
@@ -15,21 +17,14 @@ __all__ = (
 #
 # Global objects
 #
-camera = MockupCamera()
+camera = CanonCamera(zoom=45)
 database = DataBase()
-
-#
-# Callbacks
-#
-def shootCallBack(img_path):
-    database.storeImg(img_path)
 
 
 #
 # server resources
 #
 class CameraResource(Resource):
-    camera_loop = None
 
     def render_GET(self, request):
         
@@ -38,15 +33,12 @@ class CameraResource(Resource):
         #
         cmd = request.uri[1:].split('=')[1]
         if cmd == 'on':
-            CameraResource.camera_loop = task.LoopingCall(camera.shoot, shootCallBack)
-            CameraResource.camera_loop.start(1.0)
+            camera.startShooting()
 
             return "<html><body>On!</body></html>"
 
         elif cmd == 'off':
-            if CameraResource.camera_loop is not None:
-                CameraResource.camera_loop.stop()
-                CameraResource.camera_loop = None
+            camera.stopShooting()
 
             return "<html><body>Off!</body></html>"
         
@@ -93,11 +85,33 @@ class MainLoop(Resource):
         return "<html><body>Welcome to the AUSVI drone!</body></html>"
 
 
+class FileSystemWatcher(object):
+    def __init__(self, path_to_watch):
+        self.path = path_to_watch
+
+    def Start(self):
+        notifier = inotify.INotify()
+        notifier.startReading()
+        notifier.watch(
+            filepath.FilePath(self.path),
+            callbacks=[self.OnChange]
+        )
+
+    def OnChange(self, watch, path, mask):
+        print path, 'changed' # or do something else!
+        #database.storeImg(img_path)
+
 
 def start_server(port=8000):
     root = MainLoop()
     root.putChild("images", File(camera.base_path))
     factory = Site(root)
+
+    #
+    # add a watcher on the images folder
+    #
+    fs = FileSystemWatcher(gs.IMAGES_FOLDER)
+    fs.Start()
 
     reactor.listenTCP(port, factory)
     reactor.run()
