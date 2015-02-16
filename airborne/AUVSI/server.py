@@ -1,9 +1,9 @@
-from twisted.internet import reactor, task, inotify
+from twisted.internet import reactor, inotify
 from twisted.web.resource import Resource, NoResource
 from twisted.python import filepath
 from twisted.web.server import Site
 from twisted.web.static import File
-from camera import MockupCamera, CanonCamera
+from camera import CanonCamera
 import global_settings as gs
 from database import DataBase
 import json
@@ -27,7 +27,8 @@ database = DataBase()
 class CameraResource(Resource):
 
     def render_GET(self, request):
-        
+        """"""
+
         #
         # Get the type of camera command
         #
@@ -41,7 +42,7 @@ class CameraResource(Resource):
             camera.stopShooting()
 
             return "<html><body>Off!</body></html>"
-        
+
         else:
             return NoResource()
 
@@ -61,16 +62,17 @@ class ImagesResource(Resource):
             timestamp = splits[1]
         else:
             timestamp = None
-        
-        new_imgs = database.getNewImgs(timestamp)    
-    
+
+        new_imgs = database.getNewImgs(timestamp)
+
         return json.dumps(new_imgs)
-        
+
 
 #
 # MainLoop of the server
 #
 class MainLoop(Resource):
+
     def getChild(self, name, request):
         if name == '':
             return self
