@@ -2,6 +2,7 @@ from __future__ import division
 import global_settings as gs
 import numpy as np
 from datetime import datetime
+import subprocess as sbp
 import Image
 import time
 
@@ -26,6 +27,8 @@ class BaseCamera(object):
         
     
 class MockupCamera(BaseCamera):
+    def __init__(self, *params, **kwds):
+        super(MockupCamera, self).__init__(*params, **kwds)
     
     def shoot(self, callback):
         print 'Shooting'
@@ -39,3 +42,25 @@ class MockupCamera(BaseCamera):
 
         callback(capture_path)
         
+
+class CanonCamera(BaseCamera):
+    def __init__(self, zoom, *params, **kwds):
+        super(MockupCamera, self).__init__(*params, **kwds)
+
+        params = ["-c", "-erec", "-e\"luar enter_alt(); call_event_proc('SS.Create'); call_event_proc('SS.MFOn'); set_prop(222,0); set_focus(65000); set_prop(272,0); set_prop(105,3); set_zoom_speed(1); set_zoom({});\"".format(zoom)]
+        try:
+            cmd = chdkptp + " " + params[0] + " " + params[1] + " " + params[2]
+            logger.info(cmd)
+            output = subprocess.check_output([cmd], shell=True)
+            print output
+            logger.info("init: {}".format(output))
+            if output.find("ERROR") >= 0 and output.find('already in rec') == -1:
+                logger.error("Camera error:\n{}".format(output))
+                return False
+            return True
+    
+        except Exception as e:
+            logger.error("Unable to run camera init command!\n{}".format(e), exc_info=True)
+            return False
+        
+

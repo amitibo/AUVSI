@@ -12,3 +12,9 @@ DB_PATH = os.path.join(DB_FOLDER, 'auvsi.db')
 # Database data
 #
 IMAGES_TABLE = 'images_table'
+
+#
+# Camera data
+#
+BASE_ZOOM = 0
+CHDKPTP_PATH = os.path.expanduser('~/develop/chdkptp/chdkptp-sample.sh')
