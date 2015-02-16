@@ -7,13 +7,10 @@ import shutil
 
 def main():
     #
-    # Create an initial config file.
+    # Create the base folder.
     #
     if not os.path.exists(gs.AUVSI_BASE_FOLDER):
         os.makedirs(gs.AUVSI_BASE_FOLDER)
-        
-    shutil.copy(pkg_resources.resource_filename('AUVSI', 'resources/settings.ini'), gs.CONFIG_PATH)
-
 
 if __name__ == '__main__':
     main()

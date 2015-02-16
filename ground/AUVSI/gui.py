@@ -8,11 +8,14 @@ from kivy.app import App
 from kivy.uix.label import Label
 from kivy.uix.textinput import TextInput
 from kivy.uix.boxlayout import BoxLayout
+from kivy.uix.settings import SettingsWithSidebar
 from kivy.properties import ObjectProperty
 import pkg_resources
 import global_settings as gs
 from configobj import ConfigObj
 import os
+
+from settingsjson import network_json, camera_json
 
 
 class BGLabel(Label):
@@ -34,18 +37,35 @@ class ImageProcessingGui(BoxLayout):
 # a large label to display all the messages received from
 # the server
 class GUIApp(App):
-    kv_directory = pkg_resources.resource_filename(__package__, 'resources')
+    kv_directory = pkg_resources.resource_filename('AUVSI', 'resources')
     connection = None
     
     def build(self):
-        self.readConfiguration()
+        self.settings_cls = SettingsWithSidebar
         self.connect_to_server()
         
-    def readConfiguration(self):
-        self.settings = ConfigObj(gs.CONFIG_PATH)
-        
+    def build_config(self, config):
+        config.setdefaults(
+            'Network', {'IP': '192.168.1.16', 'port': 8000}
+            )
+        config.setdefaults(
+            'Camera', {'ISO': 100, 'Shutter': 5000, 'Aperture': 4, 'Zoom': 45}
+        )
+    
+    def build_settings(self, settings):
+        settings.add_json_panel("Network", self.config, data=network_json)
+        settings.add_json_panel("Camera", self.config, data=camera_json)
+    
+    def on_config_change(self, config, section, key, value):
+        if section == 'Network':
+            self.connect_to_server()
+            
     def connect_to_server(self):
-        server.connect(self, server=self.settings['server'])
+        server.setserver(
+            ip=self.config.get('Network', 'ip'),
+            port=self.config.getint('Network', 'port')
+        )
+        server.connect(self)
 
     def on_connection(self, connection):
         self.root.connect_state.canvas.before.children[0].rgb = (0, 0, 1)

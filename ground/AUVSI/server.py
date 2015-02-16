@@ -88,14 +88,6 @@ class ServerFactory(protocol.ReconnectingClientFactory):
             self.images_task.stop()
             self.images_task = None
         
-    def clientConnectionLost(self, conn, reason):
-        self.app.print_message("connection lost")
-        self.retry(conn)
-
-    def clientConnectionFailed(self, conn, reason):
-        self.app.print_message("connection failed")
-        self.retry(conn)
-
     def _dbNewImg(self, data):
         
         img_path, new_imgs = data
@@ -162,15 +154,25 @@ class ServerFactory(protocol.ReconnectingClientFactory):
         d.addCallback(self._lastTimeStamp)
         
 
-def connect(app, server):
+def setserver(ip, port):
+    global _server_address
+    _server_address = {'ip': ip, 'port': port}
+
+_server = None
+
+def connect(app):
+    global _server
+    
+    if _server is not None:
+        _server.stopTrying()
+        
+    _server = ServerFactory(app)
     reactor.connectTCP(
-        server['ip'],
-        int(server['port']),
-        ServerFactory(app)
+        _server_address['ip'],
+        _server_address['port'],
+        _server
     )
     
-    global _server_address
-    _server_address = server
 
 
 def access(page, callback=printPage):
