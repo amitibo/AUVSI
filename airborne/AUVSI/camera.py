@@ -45,7 +45,7 @@ class MockupCamera(BaseCamera):
 
 class CanonCamera(BaseCamera):
     def __init__(self, zoom, *params, **kwds):
-        super(MockupCamera, self).__init__(*params, **kwds)
+        super(CanonCamera, self).__init__(*params, **kwds)
 
         params = [
             '-c',
@@ -59,7 +59,7 @@ class CanonCamera(BaseCamera):
         
         self._shooting_proc = None
 
-    def startShooting(self, shutter_speed=5000, ISO=50, aperture=4):
+    def startShooting(self, shutter_speed=50, ISO=50, aperture=4):
 
         params = [
             "-c",
@@ -72,8 +72,8 @@ class CanonCamera(BaseCamera):
             "-e\"luar set_lcd_display(0);\""
         ]
         cmd = gs.CHDKPTP_PATH + " " + params[0] + " " + params[1]
-        logger.info("shoot command: "+cmd)
-        self._shooting_proc = sbp.Popen([cmd], shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+
+        self._shooting_proc = sbp.Popen([cmd], shell=True, stdout=sbp.PIPE, stderr=sbp.PIPE)
         
     def stopShooting(self):
 
@@ -94,7 +94,7 @@ class CanonCamera(BaseCamera):
         ] 
         cmd = gs.CHDKPTP_PATH + " " + params[0] + " " + params[1]
 
-        output = subprocess.check_output([cmd],shell=True)
+        output = sbp.check_output([cmd],shell=True)
         print output
 
 

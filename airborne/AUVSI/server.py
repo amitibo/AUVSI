@@ -1,4 +1,4 @@
-from twisted.internet import reactor, task, intotify
+from twisted.internet import reactor, task, inotify
 from twisted.web.resource import Resource, NoResource
 from twisted.python import filepath
 from twisted.web.server import Site
@@ -98,8 +98,8 @@ class FileSystemWatcher(object):
         )
 
     def OnChange(self, watch, path, mask):
-        print path, 'changed' # or do something else!
-        #database.storeImg(img_path)
+        print path, 'changed'
+        database.storeImg(path.path)
 
 
 def start_server(port=8000):
