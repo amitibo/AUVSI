@@ -17,7 +17,7 @@ __all__ = (
 #
 # Global objects
 #
-camera = CanonCamera(zoom=45)
+camera = CanonCamera()
 database = DataBase()
 
 
@@ -28,7 +28,6 @@ class CameraResource(Resource):
 
     def render_GET(self, request):
         """"""
-
         #
         # Get the type of camera command
         #
@@ -43,6 +42,9 @@ class CameraResource(Resource):
 
             return "<html><body>Off!</body></html>"
 
+        elif cmd == 'set':
+            print dir(request)
+            
         else:
             return NoResource()
 
