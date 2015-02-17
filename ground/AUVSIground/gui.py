@@ -28,6 +28,10 @@ class ImagesList(BoxLayout):
 
 class ImageProcessingGui(BoxLayout):
     connect_state = ObjectProperty()
+    images_names = ObjectProperty()
+    
+    def build(self, *params):
+        pass
     
     def shoot(self, start_shooting):
         if start_shooting:
@@ -47,17 +51,16 @@ class GUIApp(App):
         
         self.settings_cls = SettingsWithSidebar
         self.connect_to_server()
-        #self.populateImagesList()
+        self.populateImagesList()
     
     def _populateImagesList(self, images_list):
         """"""
         
         images_list = [items[0] for items in images_list]
         
-        self.images_list.adapter.data.clear()
-        self.images_list.adapter.data.extend(images_list)
-        self.images_list._trigger_reset_populate()        
-
+        items = self.root.images_names.adapter.data
+        [items.append(item) for item in images_list]
+        
     def populateImagesList(self):
         """Populate the images list from the database."""
         

@@ -1,4 +1,4 @@
-from AUVSI.gui import GUIApp
+from AUVSIground.gui import GUIApp
 
 
 def start_gui():
