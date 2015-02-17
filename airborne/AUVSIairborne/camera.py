@@ -71,6 +71,9 @@ class CanonCamera(BaseCamera):
     def __init__(self, *params, **kwds):
         super(CanonCamera, self).__init__(*params, **kwds)
 
+        rec_cmd = 'rec'
+        self._blocking_cmd(rec_cmd)
+
         init_cmd = """\"luar enter_alt();
             call_event_proc('SS.Create');
             call_event_proc('SS.MFOn');
@@ -85,12 +88,15 @@ class CanonCamera(BaseCamera):
         self._shooting_proc = None
 
     def _blocking_cmd(self, cmd):
-        result = sbp.call([gs.CHDKPTP_PATH, '-c', '-e'+cmd], shell=True)
+        result = sbp.call(
+            " ".join([gs.CHDKPTP_PATH, '-c', '-e'+cmd]),
+            shell=True
+        )
         return result
-    
+
     def _nonblocking_cmd(self, cmd):
         p = sbp.Popen(
-            [gs.CHDKPTP_PATH, '-c', '-e'+cmd],
+            " ".join([gs.CHDKPTP_PATH, '-c', '-e'+cmd]),
             shell=True,
             stdout=sbp.PIPE,
             stderr=sbp.PIPE,
