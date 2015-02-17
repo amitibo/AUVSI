@@ -14,8 +14,8 @@ import platform
 import glob
 import os
 
-NAME = 'AUVSI'
-PACKAGE_NAME = 'AUVSI'
+NAME = 'AUVSIairborne'
+PACKAGE_NAME = 'AUVSIairborne'
 PACKAGES = [PACKAGE_NAME]
 VERSION = '0.1'
 DESCRIPTION = 'Code for airborne computer of the AUVSI drone.'

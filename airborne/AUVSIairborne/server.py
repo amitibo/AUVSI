@@ -1,11 +1,12 @@
-from twisted.internet import reactor, inotify
+from twisted.internet import reactor, threads
 from twisted.web.resource import Resource, NoResource
 from twisted.python import filepath
 from twisted.web.server import Site
 from twisted.web.static import File
-from camera import CanonCamera
+from camera import SimulationCamera, CanonCamera
 import global_settings as gs
 from database import DataBase
+import platform
 import json
 
 
@@ -17,7 +18,6 @@ __all__ = (
 #
 # Global objects
 #
-camera = CanonCamera()
 database = DataBase()
 
 
@@ -91,22 +91,67 @@ class MainLoop(Resource):
 
 class FileSystemWatcher(object):
     def __init__(self, path_to_watch):
-        self.path = path_to_watch
+        self.path_to_watch = path_to_watch
 
-    def Start(self):
-        notifier = inotify.INotify()
-        notifier.startReading()
-        notifier.watch(
-            filepath.FilePath(self.path),
-            callbacks=[self.OnChange]
-        )
-
-    def OnChange(self, watch, path, mask):
+    def _watchThread(self):
+        from watch_directory import watch_path
+        
+        for file_type, filename, action in watch_path(self.path_to_watch):
+            if action == "Created":
+                self.OnChange(filename)
+    
+    def _inotifyCB(self, watch, path, mask):
+        self.OnChange(path.path)
+        
+    def StartLinux(self):
+        if platform.system() == 'Linux':
+            #
+            # On linux it is possible to use the inotify api.
+            #
+            from twisted.internet import inotify
+            
+            notifier = inotify.INotify()
+            notifier.startReading()
+            notifier.watch(
+                filepath.FilePath(self.path_to_watch),
+                mask=inotify.IN_CREATE,
+                callbacks=[self.OnChange]
+            )
+    
+        else:
+            #
+            # On windows we use a method from:
+            # http://timgolden.me.uk/python/win32_how_do_i/watch_directory_for_changes.html
+            #
+            d = threads.deferToThread(self._watchThread, new_imgs)
+            
+    def OnChange(self, path):
         print path, 'changed'
-        database.storeImg(path.path)
+        database.storeImg(path)
 
 
-def start_server(port=8000):
+def start_server(camera_type ,port=8000):
+    """
+    Start the airborne server.
+    
+    Parameters
+    ----------
+    camera_type: string
+        Camera type. Options: [canon (default), simlulation].
+    port: int, optional(=8000)
+        Port used by server.
+    """
+    
+    #
+    # Create the camera object.
+    #
+    if camera_type.lower == 'canon':
+        camera = CanonCamera()
+    elif camera_type.lower == 'simulation':
+        camera = SimulationCamera()
+    else:
+        raise NotImplementedError('Camera type {camera}, not supported.'.format(camera=type_camera))
+    
     root = MainLoop()
     root.putChild("images", File(camera.base_path))
     factory = Site(root)

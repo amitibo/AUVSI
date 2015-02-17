@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 """
-AUVSI groung: Code for the groung station of the AUVSI drone.
+AUVSIground: Code for the ground station of the AUVSI drone.
 
 Authors:
 Amit Aides <amitibo@tx.technion.ac.il>
@@ -14,8 +14,8 @@ import platform
 import glob
 import os
 
-NAME = 'AUVSI'
-PACKAGE_NAME = 'AUVSI'
+NAME = 'AUVSIground'
+PACKAGE_NAME = 'AUVSIground'
 PACKAGES = [PACKAGE_NAME]
 VERSION = '0.1'
 DESCRIPTION = 'Code for groung station of the AUVSI drone.'

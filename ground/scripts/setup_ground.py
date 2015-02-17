@@ -1,4 +1,4 @@
-from AUVSI import global_settings as gs
+from AUVSIground import global_settings as gs
 from configobj import ConfigObj
 import pkg_resources
 import os

@@ -3,8 +3,10 @@ import global_settings as gs
 import numpy as np
 from datetime import datetime
 import subprocess as sbp
+import multiprocessing as mp
 import signal
 import Image
+import time
 import os
 
 
@@ -29,25 +31,40 @@ class BaseCamera(object):
         return os.path.join(self.base_path, filename)
 
 
-class MockupCamera(BaseCamera):
+class SimulationCamera(BaseCamera):
     def __init__(self, *params, **kwds):
-        super(MockupCamera, self).__init__(*params, **kwds)
+        super(SimulationCamera, self).__init__(*params, **kwds)
 
-    def shoot(self, callback):
-        print 'Shooting'
+        self._shooting_proc = None
 
-        A = np.random.randint(
-            low=0,
-            high=255,
-            size=(480, 640)).astype(np.uint8
-            )
-
-        capture_path = self._getName()
-
-        img = Image.fromarray(A)
-        img.save(capture_path)
-
-        callback(capture_path)
+    def _shootingLoop(self, run):
+        """Inifinite shooting loop. To run on separate process."""
+        
+        while run.value == 1:
+            time.sleep(1)
+            A = np.random.randint(
+                low=0,
+                high=255,
+                size=(480, 640, 3)).astype(np.uint8)
+                                    
+            capture_path = self._getName()
+        
+            img = Image.fromarray(A)
+            img.save(self._getName())
+            
+    def startShooting(self):
+        self._run_flag = mp.Value('i', 1)
+        self._shooting_proc = mp.Process(target=self._shootingLoop, args=(self._run_flag, ))
+        
+    def stopShooting(self):
+        if self._shooting_proc is None:
+            return
+        
+        #
+        # Stop the loop
+        #
+        self._run_flag = 0
+        self._shooting_proc.join()
 
 
 class CanonCamera(BaseCamera):

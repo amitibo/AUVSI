@@ -37,7 +37,7 @@ class ImageProcessingGui(BoxLayout):
 # a large label to display all the messages received from
 # the server
 class GUIApp(App):
-    kv_directory = pkg_resources.resource_filename('AUVSI', 'resources')
+    kv_directory = pkg_resources.resource_filename('AUVSIground', 'resources')
     connection = None
     
     def build(self):
