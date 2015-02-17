@@ -1,9 +1,13 @@
+#: import ListItemButton kivy.uix.listview.ListItemButton
+#: import ListAdapter kivy.adapters.listadapter.ListAdapter
+
 ImageProcessingGui:
 
 
 <ImageProcessingGui>:
     orientation: "vertical"
     connect_state: connect_label
+    images_names: images_names_list
     BoxLayout:
         height: "40dp"
         size_hint_y: None
@@ -15,8 +19,13 @@ ImageProcessingGui:
             text: 'Disconnected'
         ToggleButton:
             text: 'Shoot'
-            on_state: root.shoot(self.state == 'down')
-            
+            on_state: root.shoot(self.state == 'down')          
+    ListView:
+        id: images_names_list
+        adapter:
+            ListAdapter(data=[], cls=ListItemButton)
+
+
 <BGLabel>:
     canvas.before:
         Color:

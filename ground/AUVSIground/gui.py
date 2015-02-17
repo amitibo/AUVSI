@@ -43,10 +43,29 @@ class GUIApp(App):
     connection = None
     
     def build(self):
+        """Main build function of the Kivy application."""
+        
         self.settings_cls = SettingsWithSidebar
         self.connect_to_server()
+        #self.populateImagesList()
+    
+    def _populateImagesList(self, images_list):
+        """"""
         
+        images_list = [items[0] for items in images_list]
+        
+        self.images_list.adapter.data.clear()
+        self.images_list.adapter.data.extend(images_list)
+        self.images_list._trigger_reset_populate()        
+
+    def populateImagesList(self):
+        """Populate the images list from the database."""
+        
+        self._gui_server.getImagesList(self._populateImagesList)
+    
     def build_config(self, config):
+        """Create the default config (used the first time the application is run)"""
+        
         config.setdefaults(
             'Network', {'IP': '192.168.1.16', 'port': 8000}
             )
@@ -55,43 +74,44 @@ class GUIApp(App):
         )
     
     def build_settings(self, settings):
+        """Build the settings menu."""
+        
         settings.add_json_panel("Network", self.config, data=network_json)
         settings.add_json_panel("Camera", self.config, data=camera_json)
     
     def on_config_change(self, config, section, key, value):
+        """Handle change in the settings."""
+        
         if section == 'Network':
             self.connect_to_server()
             
     def connect_to_server(self):
+        """Initiate connection to airborne server."""
+        
         server.setserver(
             ip=self.config.get('Network', 'ip'),
             port=self.config.getint('Network', 'port')
         )
-        server.connect(self)
+        self._gui_server = server.connect(self)
 
     def on_connection(self, connection):
+        """Callback on successfull connection to the server."""
+        
         self.root.connect_state.canvas.before.children[0].rgb = (0, 0, 1)
         self.root.connect_state.text = 'Connected'
         self.connection = connection
         
     def on_disconnection(self, connection):
+        """Callback on disconnection from the server."""
+
         self.root.connect_state.canvas.before.children[0].rgb = (1, 0, 0)
         self.root.connect_state.text = 'Disconnected'
         self.connection = None
 
-    def send_message(self, *args):
-        msg = self.textbox.text
-        if msg and self.connection:
-            self.connection.write(str(self.textbox.text))
-            self.textbox.text = ""
-
     def print_message(self, msg):
-        #self.label.text += msg + "\n"
+        """Debug print (Maybe should be removed when better logging is implementd)."""
         print msg
-    
-    def get_images(self):
-        pass
-    
+
     
 if __name__ == '__main__':
     GUIApp().run()

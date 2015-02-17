@@ -152,6 +152,13 @@ class ServerFactory(protocol.ReconnectingClientFactory):
         cmd = 'SELECT timestamp FROM {table_name} WHERE ID = (SELECT MAX(ID) FROM {table_name})'.format(table_name=self.images_table)
         d = self._db_cmd(cmd)
         d.addCallback(self._lastTimeStamp)
+    
+    def getImagesList(self, callback):
+        """Get the list of images in the data base"""
+        
+        cmd = 'SELECT image_path, timestamp FROM {table_name}'.format(table_name=self.images_table)
+        d = self._db_cmd(cmd)
+        d.addCallback(callback)
         
 
 def setserver(ip, port):
@@ -176,6 +183,7 @@ def connect(app):
         _server
     )
     
+    return _server
 
 
 def access(page, callback=printPage):
