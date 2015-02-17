@@ -11,15 +11,14 @@ import os
 
 
 class BaseCamera(object):
-    zoom = 45
-    shutter = 5000
-    ISO = 50
-    aperture = 4
+    """Abstract class for a camera, not to be used directly."""
+    
+    def __init__(self, zoom=45, shutter=5000, ISO=100, aperture=4):
+        self.zoom = zoom
+        self.shutter = shutter
+        self.ISO = ISO
+        self.aperture = aperture
 
-    def __init__(self):
-        #
-        # 
-        #
         self.base_path = gs.IMAGES_FOLDER
         if not os.path.exists(self.base_path):
             os.makedirs(self.base_path)
@@ -55,6 +54,7 @@ class SimulationCamera(BaseCamera):
     def startShooting(self):
         self._run_flag = mp.Value('i', 1)
         self._shooting_proc = mp.Process(target=self._shootingLoop, args=(self._run_flag, ))
+        self._shooting_proc.start()
         
     def stopShooting(self):
         if self._shooting_proc is None:
@@ -63,7 +63,7 @@ class SimulationCamera(BaseCamera):
         #
         # Stop the loop
         #
-        self._run_flag = 0
+        self._run_flag.value = 0
         self._shooting_proc.join()
 
 
@@ -104,9 +104,9 @@ class CanonCamera(BaseCamera):
         zoom_cmd = """\"luar set_zoom({zoom});\"""".format(zoom=self.zoom)
         self._blocking_cmd(zoom_cmd)
         
-        shoot_cmd = """\"remoteshoot {local_folder} -tv=1/{shutter_speed} -sv={ISO} -av={aperture} -cont=9000\"""".format(
+        shoot_cmd = """\"remoteshoot {local_folder} -tv=1/{shutter} -sv={ISO} -av={aperture} -cont=9000\"""".format(
                 local_folder=gs.IMAGES_FOLDER,
-                shutter_speed=self.shutter_speed,
+                shutter=self.shutter,
                 ISO=self.ISO,
                 aperture=self.aperture
                 )

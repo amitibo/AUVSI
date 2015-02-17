@@ -29,14 +29,16 @@ class ImagesList(BoxLayout):
 class ImageProcessingGui(BoxLayout):
     connect_state = ObjectProperty()
     
-    def shoot(self, state):
-        server.access('camera='+('on' if state else 'off'))
+    def shoot(self, start_shooting):
+        if start_shooting:
+            server.access('camera_on')
+        else:
+            server.access('camera_off')
         
         
-# A simple kivy App, with a textbox to enter messages, and
-# a large label to display all the messages received from
-# the server
 class GUIApp(App):
+    """Main AUVSI ground system application."""
+    
     kv_directory = pkg_resources.resource_filename('AUVSIground', 'resources')
     connection = None
     

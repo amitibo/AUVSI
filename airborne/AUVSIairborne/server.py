@@ -31,20 +31,26 @@ class CameraResource(Resource):
         #
         # Get the type of camera command
         #
-        cmd = request.uri[1:].split('=')[1]
-        if cmd == 'on':
+        cmd = request.prepath[0]
+        args = request.args
+        
+        if cmd == 'camera_on':
             camera.startShooting()
 
             return "<html><body>On!</body></html>"
 
-        elif cmd == 'off':
+        elif cmd == 'camera_off':
             camera.stopShooting()
 
             return "<html><body>Off!</body></html>"
 
-        elif cmd == 'set':
-            print dir(request)
-            
+        elif cmd == 'camera_set':
+            for key, item in args.items():
+                if getattr(camera, key) == None:
+                    print 'Ignoring unkown camera settings:', key, item
+                    continue
+                
+                setattr(camera, key, int(item[0]))
         else:
             return NoResource()
 
@@ -103,7 +109,7 @@ class FileSystemWatcher(object):
     def _inotifyCB(self, watch, path, mask):
         self.OnChange(path.path)
         
-    def StartLinux(self):
+    def Start(self):
         if platform.system() == 'Linux':
             #
             # On linux it is possible to use the inotify api.
@@ -123,7 +129,7 @@ class FileSystemWatcher(object):
             # On windows we use a method from:
             # http://timgolden.me.uk/python/win32_how_do_i/watch_directory_for_changes.html
             #
-            d = threads.deferToThread(self._watchThread, new_imgs)
+            d = threads.deferToThread(self._watchThread)
             
     def OnChange(self, path):
         print path, 'changed'
@@ -145,12 +151,13 @@ def start_server(camera_type ,port=8000):
     #
     # Create the camera object.
     #
-    if camera_type.lower == 'canon':
+    global camera
+    if camera_type.lower() == 'canon':
         camera = CanonCamera()
-    elif camera_type.lower == 'simulation':
+    elif camera_type.lower() == 'simulation':
         camera = SimulationCamera()
     else:
-        raise NotImplementedError('Camera type {camera}, not supported.'.format(camera=type_camera))
+        raise NotImplementedError('Camera type {camera}, not supported.'.format(camera=camera_type))
     
     root = MainLoop()
     root.putChild("images", File(camera.base_path))

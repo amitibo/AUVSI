@@ -158,9 +158,12 @@ def setserver(ip, port):
     global _server_address
     _server_address = {'ip': ip, 'port': port}
 
+
 _server = None
 
 def connect(app):
+    """Start the twisted server."""
+    
     global _server
     
     if _server is not None:
@@ -176,6 +179,8 @@ def connect(app):
 
 
 def access(page, callback=printPage):
+    """Access a webpage."""
+    
     url = 'http://{ip}:{port}/{page}'.format(ip=_server_address['ip'], port=_server_address['port'], page=page)
     print 'Accessing url:', url
     d = getPage(url)
