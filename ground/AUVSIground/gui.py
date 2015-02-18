@@ -10,6 +10,8 @@ from kivy.uix.textinput import TextInput
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.settings import SettingsWithSidebar
 from kivy.properties import ObjectProperty
+from kivy.uix.image import Image
+
 import pkg_resources
 import global_settings as gs
 from configobj import ConfigObj
@@ -22,13 +24,60 @@ class BGLabel(Label):
     pass
 
 
-class ImagesList(BoxLayout):
-    pass
+class ImagesForm(BoxLayout):
+    image_viewer = ObjectProperty()
+    images_names = ObjectProperty()
+    
+    def __init__(self, **kwargs):
+        super(ImagesForm, self).__init__(**kwargs)
+
+        #self.listview.adapter.bind(
+            #on_selection_change=self.imageviewer.image_changed
+        #)
+
+        
+
+class ImageViewer(BoxLayout):
+    def __init__(self, **kwargs):
+        kwargs['orientation'] = 'vertical'
+        self.image_path = kwargs.get('image_path', '')
+        super(ImageViewer, self).__init__(**kwargs)
+        if self.image_path:
+            self.redraw()
+
+    def redraw(self, *args):
+        self.clear_widgets()
+
+        if self.image_path:
+            self.add_widget(
+                Image(
+                    self.image_path
+                )
+            )
+
+    def image_changed(self, list_adapter, *args):
+        if len(list_adapter.selection) == 0:
+            self.image_path = None
+        else:
+            selected_object = list_adapter.selection[0]
+
+            # [TODO] Would we want touch events for the composite, as well as
+            #        the components? Just the components? Just the composite?
+            #
+            # Is selected_object an instance of ThumbnailedListItem (composite)?
+            #
+            # Or is it a ListItemButton?
+            #
+            if hasattr(selected_object, 'fruit_name'):
+                self.image_path = selected_object.fruit_name
+            else:
+                self.image_path = selected_object.text
+
+        self.redraw()
 
 
 class ImageProcessingGui(BoxLayout):
-    connect_state = ObjectProperty()
-    images_names = ObjectProperty()
+    connect_label = ObjectProperty()
     
     def build(self, *params):
         pass
@@ -56,16 +105,16 @@ class GUIApp(App):
     def _populateImagesList(self, images_list):
         """"""
         
-        images_list = [items[0] for items in images_list]
+        images_list = [os.path.split(items[0])[1] for items in images_list]
         
-        items = self.root.images_names.adapter.data
+        items = self.root.images_form.images_names.adapter.data
         [items.append(item) for item in images_list]
         
     def populateImagesList(self):
         """Populate the images list from the database."""
         
         self._gui_server.getImagesList(self._populateImagesList)
-    
+        
     def build_config(self, config):
         """Create the default config (used the first time the application is run)"""
         
@@ -100,15 +149,15 @@ class GUIApp(App):
     def on_connection(self, connection):
         """Callback on successfull connection to the server."""
         
-        self.root.connect_state.canvas.before.children[0].rgb = (0, 0, 1)
-        self.root.connect_state.text = 'Connected'
+        self.root.connect_label.canvas.before.children[0].rgb = (0, 0, 1)
+        self.root.connect_label.text = 'Connected'
         self.connection = connection
         
     def on_disconnection(self, connection):
         """Callback on disconnection from the server."""
 
-        self.root.connect_state.canvas.before.children[0].rgb = (1, 0, 0)
-        self.root.connect_state.text = 'Disconnected'
+        self.root.connect_label.canvas.before.children[0].rgb = (1, 0, 0)
+        self.root.connect_label.text = 'Disconnected'
         self.connection = None
 
     def print_message(self, msg):

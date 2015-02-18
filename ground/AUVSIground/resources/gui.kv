@@ -6,8 +6,9 @@ ImageProcessingGui:
 
 <ImageProcessingGui>:
     orientation: "vertical"
-    connect_state: connect_label
-    images_names: images_names_list
+    connect_label: connect_label_id
+    images_form: images_form_id
+    
     BoxLayout:
         height: "40dp"
         size_hint_y: None
@@ -15,16 +16,14 @@ ImageProcessingGui:
             text: 'Settings'
             on_release: app.open_settings()
         BGLabel:
-            id: connect_label
+            id: connect_label_id
             text: 'Disconnected'
         ToggleButton:
             text: 'Shoot'
-            on_state: root.shoot(self.state == 'down')          
-    ListView:
-        id: images_names_list
-        adapter:
-            ListAdapter(data=[], cls=ListItemButton)
-
+            on_state: root.shoot(self.state == 'down')
+    ImagesForm:
+        id: images_form_id
+            
 
 <BGLabel>:
     canvas.before:
@@ -35,3 +34,16 @@ ImageProcessingGui:
             size: self.size
       
 
+<ImagesForm>:
+    images_names: images_names_id
+    image_viewer: image_viewer_id
+    
+    ListView:
+        id: images_names_id
+        size_hint_x: 0.3
+
+        adapter:
+            ListAdapter(data=[], cls=ListItemButton)
+            
+    ImageViewer:
+        id: image_viewer_id
