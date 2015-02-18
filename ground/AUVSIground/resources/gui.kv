@@ -12,15 +12,19 @@ ImageProcessingGui:
     BoxLayout:
         height: "40dp"
         size_hint_y: None
+        
         Button:
             text: 'Settings'
             on_release: app.open_settings()
+            
         BGLabel:
             id: connect_label_id
             text: 'Disconnected'
+            
         ToggleButton:
             text: 'Shoot'
             on_state: root.shoot(self.state == 'down')
+            
     ImagesForm:
         id: images_form_id
             
@@ -29,6 +33,7 @@ ImageProcessingGui:
     canvas.before:
         Color:
             rgb: 1, 0, 0
+            
         Rectangle:
             pos: self.pos
             size: self.size
@@ -38,7 +43,7 @@ ImageProcessingGui:
     images_names: images_names_id
     image_viewer: image_viewer_id
     
-    ListView:
+    ImagesListView:
         id: images_names_id
         size_hint_x: 0.3
 

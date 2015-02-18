@@ -10,6 +10,7 @@ from kivy.uix.textinput import TextInput
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.settings import SettingsWithSidebar
 from kivy.properties import ObjectProperty
+from kivy.uix.listview import ListView, ListItemButton
 from kivy.uix.image import Image
 
 import pkg_resources
@@ -24,24 +25,17 @@ class BGLabel(Label):
     pass
 
 
-class ImagesForm(BoxLayout):
-    image_viewer = ObjectProperty()
-    images_names = ObjectProperty()
-    
-    def __init__(self, **kwargs):
-        super(ImagesForm, self).__init__(**kwargs)
+class ImagesListView(ListView):
+    pass
 
-        #self.listview.adapter.bind(
-            #on_selection_change=self.imageviewer.image_changed
-        #)
-
-        
 
 class ImageViewer(BoxLayout):
     def __init__(self, **kwargs):
-        kwargs['orientation'] = 'vertical'
-        self.image_path = kwargs.get('image_path', '')
         super(ImageViewer, self).__init__(**kwargs)
+
+        kwargs['orientation'] = 'vertical'
+        self.image_path = kwargs.get('image_path', r'')
+
         if self.image_path:
             self.redraw()
 
@@ -51,7 +45,7 @@ class ImageViewer(BoxLayout):
         if self.image_path:
             self.add_widget(
                 Image(
-                    self.image_path
+                    source=self.image_path
                 )
             )
 
@@ -68,12 +62,20 @@ class ImageViewer(BoxLayout):
             #
             # Or is it a ListItemButton?
             #
-            if hasattr(selected_object, 'fruit_name'):
+            if hasattr(selected_object, 'img_path'):
                 self.image_path = selected_object.fruit_name
             else:
                 self.image_path = selected_object.text
 
         self.redraw()
+
+
+class ImagesForm(BoxLayout):
+    image_viewer = ObjectProperty()
+    images_names = ObjectProperty()
+    
+    def __init__(self, **kwargs):
+        super(ImagesForm, self).__init__(**kwargs)
 
 
 class ImageProcessingGui(BoxLayout):
@@ -105,10 +107,19 @@ class GUIApp(App):
     def _populateImagesList(self, images_list):
         """"""
         
-        images_list = [os.path.split(items[0])[1] for items in images_list]
+        images_list = [items[0] for items in images_list]
         
         items = self.root.images_form.images_names.adapter.data
         [items.append(item) for item in images_list]
+        
+        #
+        # I do the binding here because in the __init__ of ImagesForm 
+        # the adapter of the list is still not working.
+        #
+        self.root.images_form.images_names.adapter.bind(
+            on_selection_change=self.root.images_form.image_viewer.image_changed
+        )
+    
         
     def populateImagesList(self):
         """Populate the images list from the database."""
