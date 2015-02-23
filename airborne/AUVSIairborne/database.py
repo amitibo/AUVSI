@@ -1,4 +1,5 @@
 import sqlite3
+from twisted.python import log
 from  datetime import datetime
 import global_settings as gs
 import os
@@ -24,7 +25,7 @@ class DataBase(object):
     
     def _cmd(self, cmd, params=()):
         
-        print cmd
+        log.msg('Creating deferred sqlite3 cmd: {cmd}, {params}'.format(cmd=cmd, params=params))
         conn = sqlite3.connect(self.images_db)
         cursor = conn.cursor()
         cursor.execute(cmd, params)
