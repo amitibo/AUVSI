@@ -4,6 +4,9 @@ install_twisted_reactor()
 
 import server
 
+from twisted.python import log
+from twisted.python.logfile import DailyLogFile
+
 from kivy.app import App
 from kivy.uix.label import Label
 from kivy.uix.textinput import TextInput
@@ -100,17 +103,23 @@ class GUIApp(App):
     def build(self):
         """Main build function of the Kivy application."""
         
+        #
+        # Setup logging.
+        #
+        f = DailyLogFile('server.log', self.config.get('Admin', 'logging path'))
+        log.startLogging(f)
+        
         self.settings_cls = SettingsWithSidebar
+        
+        #
+        # Start up the local server.
+        #
         self.connect_to_server()
+        
+        #
+        # Synchronize the image database.
+        #
         self.populateImagesList()
-    
-    def _populateImagesList(self, images_list):
-        """"""
-        
-        images_list = [items[0] for items in images_list]
-        
-        items = self.root.images_form.images_names.adapter.data
-        [items.append(item) for item in images_list]
         
         #
         # I do the binding here because in the __init__ of ImagesForm 
@@ -119,7 +128,14 @@ class GUIApp(App):
         self.root.images_form.images_names.adapter.bind(
             on_selection_change=self.root.images_form.image_viewer.image_changed
         )
+
     
+    def _populateImagesList(self, images_list):
+        """Store new image paths in image list."""
+
+        items = self.root.images_form.images_names.adapter.data
+        [items.append(item) for item in images_list]
+        self.root.images_form.images_names._trigger_reset_populate() 
         
     def populateImagesList(self):
         """Populate the images list from the database."""
@@ -135,18 +151,24 @@ class GUIApp(App):
         config.setdefaults(
             'Camera', {'ISO': 100, 'Shutter': 5000, 'Aperture': 4, 'Zoom': 45}
         )
+        config.setdefaults(
+            'Admin', {'Logging Path': gs.AUVSI_BASE_FOLDER}
+        )
     
     def build_settings(self, settings):
         """Build the settings menu."""
         
         settings.add_json_panel("Network", self.config, data=network_json)
         settings.add_json_panel("Camera", self.config, data=camera_json)
+        settings.add_json_panel("Admin", self.config, data=admin_json)
     
     def on_config_change(self, config, section, key, value):
         """Handle change in the settings."""
         
         if section == 'Network':
             self.connect_to_server()
+        elif section == 'Camera':
+            pass
             
     def connect_to_server(self):
         """Initiate connection to airborne server."""
@@ -171,9 +193,10 @@ class GUIApp(App):
         self.root.connect_label.text = 'Disconnected'
         self.connection = None
 
-    def print_message(self, msg):
-        """Debug print (Maybe should be removed when better logging is implementd)."""
-        print msg
+    def log_message(self, msg):
+        """"""
+        
+        log.msg(msg)
 
     
 if __name__ == '__main__':

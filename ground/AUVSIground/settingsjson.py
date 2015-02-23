@@ -43,3 +43,21 @@ camera_json = json.dumps(
          'key': 'zoom'},         
     ]
 )
+
+admin_json = json.dumps(
+    [
+        {'type': 'title',
+         'title': 'Administration'},
+        {'type': 'string',
+         'title': 'Logging Path',
+         'desc': 'Logging base path',
+         'section': 'Admin',
+         'key': 'logging_path'},
+        #{'type': 'string',
+         #'title': 'Logging Level',
+         #'desc': 'Logging level',
+         #'section': 'Admin',
+         #'key': 'logging_level'},
+    ]
+)
+

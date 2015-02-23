@@ -1,6 +1,7 @@
 from twisted.internet import reactor, protocol, task, threads
-from twisted.web.client import getPage
+from twisted.web.client import getPage, downloadPage
 from twisted.enterprise import adbapi
+from twisted.python import log
 import global_settings as gs
 from datetime import datetime
 import urllib
@@ -8,15 +9,16 @@ import json
 import os
 
 
-def printPage(result):
-    print result
+def logReply(result):
+    log.msg(result)
 
 
-def printError(failure):
-    print failure
+def logError(failure):
+    log.msg(failure)
 
 
-class CameraClient(protocol.Protocol):
+class RemoteServer(protocol.Protocol):
+    """Protocol for communicating with the remote server on the onboard computer"""
     
     def connectionMade(self):
         self.factory.on_connection(self.transport)
@@ -25,15 +27,15 @@ class CameraClient(protocol.Protocol):
         self.factory.on_disconnection(self.transport)
 
     def dataReceived(self, data):
-        self.factory.app.print_message(data)
+        self.factory.app.log_message(data)
 
     
 class ServerFactory(protocol.ReconnectingClientFactory):
-    protocol = CameraClient
+    protocol = RemoteServer
     images_task = None
     
     #
-    # Parameters if reconnection.
+    # Reconnection parameters.
     #
     maxDelay = 1
     initialDelay = 0.1
@@ -61,34 +63,59 @@ class ServerFactory(protocol.ReconnectingClientFactory):
             os.makedirs(self.database_path)
         if not os.path.exists(gs.IMAGES_FOLDER):
             os.makedirs(gs.IMAGES_FOLDER)
-    
+
+        #
+        # Create the images_table. This is done without the twisted
+        # ConnectionPool as the reactor is not yet started.
+        #
+        import sqlite3
+        conn = sqlite3.connect(self.images_db)
+        cursor = conn.cursor()
+        cmd = 'create table if not exists {table_name} (id integer primary key, image_path text, [timestamp] timestamp)'.format(table_name=self.images_table)
+        log.msg('Initiating database: {cmd}'.format(cmd=cmd))
+        cursor.execute(cmd)
+        conn.commit()
+        conn.close()
+        log.msg('Database initiated')
+        
         self.dbpool = adbapi.ConnectionPool("sqlite3", self.images_db)        
 
-        self._db_cmd(
-            cmd='create table if not exists {table_name} (id integer primary key, image_path text, [timestamp] timestamp)'.format(table_name=self.images_table)
-        )
 
     def _db_cmd(self, cmd, params=()):
-        print cmd
+        log.msg('Creating deferred sqlite3 cmd: {cmd}, {params}'.format(cmd=cmd, params=params))
         return self.dbpool.runQuery(cmd, params)
     
     def on_connection(self, conn):
+        """Handle connection to remote server."""
+        
+        #
+        # Notify the GUI application.
+        #
         self.app.on_connection(conn)
 
         #
-        # Add task for getting new images.
+        # Add timer task for getting new images.
         #
         self.images_task = task.LoopingCall(self.updateImagesDB)
         self.images_task.start(1)
         
     def on_disconnection(self, conn):
+        """Handle disconnection to remote server."""
+    
+        #
+        # Notify the GUI application.
+        #
         self.app.on_disconnection(conn)
         
+        #
+        # Stop the task of getting new images.
+        #
         if self.images_task is not None:
             self.images_task.stop()
             self.images_task = None
         
     def _dbNewImg(self, data):
+        """Store the newly downloaded image in the database"""
         
         img_path, new_imgs = data
         
@@ -96,72 +123,108 @@ class ServerFactory(protocol.ReconnectingClientFactory):
         cmd = "INSERT INTO {table_name}(image_path, timestamp) values (?, ?)".format(table_name=self.images_table)
         d = self._db_cmd(cmd, (img_path, new_img['timestamp']))
         
+        #
+        # Add new image to list in gui
+        #
+        self.app._populateImagesList([img_path])
+        
+        #
+        # Retrun the list of remaining images.
+        #
         return new_imgs
     
     def _downloadNewImg(self, new_imgs):
+        """Download a new image from the remote server. This function is run on a separate thread."""
         
         new_img = new_imgs[0]
         img_url = 'http://{ip}:{port}/images/{img}'.format(ip=_server_address['ip'], port=_server_address['port'], img=new_img['name'])
         img_path = os.path.join(gs.IMAGES_FOLDER, new_img['name'])
         
-        print 'Downloading:', img_url, 'to', img_path
+        log.msg('Downloading image from url {img_url} to local path: {local_path}'.format(img_url=img_url, local_path=img_path))
         
         urllib.urlretrieve(img_url, img_path)
         
         return img_path, new_imgs
     
     def _loopNewImgs(self, new_imgs):
+        """Loop on all new images. Download and store in database each image."""
+        
         if len(new_imgs) == 0:
+            #
+            # Finished processing all new images.
+            #
             self.images_task.start(1)
             return
-        print len(new_imgs), 'images more to go.'
+        
+        #
+        # Download new images on a separate thread and store them in the database.
+        #
         d = threads.deferToThread(self._downloadNewImg, new_imgs)
         d.addCallback(self._dbNewImg)
         d.addCallback(self._loopNewImgs)        
     
     def _setupNewImagesLoop(self, entries_list):
+        """Handle the reply of the remote server with the list of new images  (newer timestamp)."""
         
         entries_list = json.loads(entries_list)
         
         if len(entries_list) == 0:
+            #
+            # No new images.
+            #
             return
         
         #
-        # Stop checking for new images till all images downloaded.
+        # No need to checks for new images till all images are downloaded.
         #
         self.images_task.stop()
         
         new_imgs = [{'name': os.path.split(entry[1])[1], 'timestamp': entry[2]} for entry in entries_list]
-        print 'Setting up:', len(new_imgs), 'new images'
         self._loopNewImgs(new_imgs)
         
-    def _lastTimeStamp(self, timestamp):
+    def _sendLastTimeStamp(self, timestamp):
+        """Ask the remote server for images with timestamp later then timestamp of the last entry in the image database."""
         
         if timestamp == []:
+            #
+            # The image database is empty
+            #
             timestamp = ''
         else:
             timestamp=timestamp[0][0].replace(' ', 'T')
-            
+        
+        #
+        # Send query to remote server.
+        #
         d = access('new_imgs='+timestamp, self._setupNewImagesLoop)
     
     def updateImagesDB(self):
-
+        """Entry point for the image synchronization task."""
+        
         #
-        # Get last entry
+        # Get the time stamp of the last entry in the image database.
         #
         cmd = 'SELECT timestamp FROM {table_name} WHERE ID = (SELECT MAX(ID) FROM {table_name})'.format(table_name=self.images_table)
         d = self._db_cmd(cmd)
-        d.addCallback(self._lastTimeStamp)
+        d.addCallback(self._sendLastTimeStamp)
+    
+    def _filterImagesPath(self, db_reply):
+        """"""
+        images_list = [items[0] for items in db_reply]
+        return images_list
     
     def getImagesList(self, callback):
         """Get the list of images in the data base"""
         
         cmd = 'SELECT image_path, timestamp FROM {table_name}'.format(table_name=self.images_table)
         d = self._db_cmd(cmd)
+        d.addCallback(self._filterImagesPath)
         d.addCallback(callback)
         
 
 def setserver(ip, port):
+    """Set the server address"""
+    
     global _server_address
     _server_address = {'ip': ip, 'port': port}
 
@@ -186,11 +249,11 @@ def connect(app):
     return _server
 
 
-def access(page, callback=printPage):
+def access(page, callback=logReply):
     """Access a webpage."""
     
     url = 'http://{ip}:{port}/{page}'.format(ip=_server_address['ip'], port=_server_address['port'], page=page)
-    print 'Accessing url:', url
     d = getPage(url)
-    d.addCallbacks(callback, printError)
+    d.addCallbacks(callback, logError)
+    
     return d
