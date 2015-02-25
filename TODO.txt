@@ -1,0 +1,16 @@
+FEATURES:
+=========
+airborne:
+    - Better structure for the server (maybe turn separate functions to one classs)
+    - Add renaming of canon images (change from IMG### to <timestamp>)
+    - Resize image and send resized image.
+image processing:
+    - Turn script into modules.
+ground:
+    - Add skeleton for image processing
+
+BUGS:
+=====
+ground:
+    - Flickering of selected image when new images are added.
+    - Canon camera not working when run from the rc.local script - probably due to permission issues of the root.

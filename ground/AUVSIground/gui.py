@@ -21,7 +21,7 @@ import global_settings as gs
 from configobj import ConfigObj
 import os
 
-from settingsjson import network_json, camera_json
+from settingsjson import network_json, camera_json, admin_json
 
 
 class BGLabel(Label):

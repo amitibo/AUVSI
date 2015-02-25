@@ -24,11 +24,9 @@ __all__ = (
 database = DataBase()
 
 
-#
-# server resources
-#
 class CameraResource(Resource):
-
+    """Handle camera related communication."""
+    
     def render_GET(self, request):
         """"""
         #
@@ -58,10 +56,8 @@ class CameraResource(Resource):
             return NoResource()
 
 
-#
-# server resources
-#
 class ImagesResource(Resource):
+    """Handle image related communication."""
 
     def render_GET(self, request):
         
@@ -79,11 +75,9 @@ class ImagesResource(Resource):
         return json.dumps(new_imgs)
 
 
-#
-# MainLoop of the server
-#
-class MainLoop(Resource):
-
+class HTTPserverMain(Resource):
+    """HTTPserverMain handles the communication with the ground station."""
+    
     def getChild(self, name, request):
         if name == '':
             return self
@@ -189,7 +183,7 @@ def start_server(camera_type ,port=8000):
     #
     # Config the server
     #
-    root = MainLoop()
+    root = HTTPserverMain()
     root.putChild("images", File(camera.base_path))
     factory = Site(root)
 
