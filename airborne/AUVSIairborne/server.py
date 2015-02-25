@@ -3,6 +3,9 @@ from twisted.web.resource import Resource, NoResource
 from twisted.python import filepath
 from twisted.web.server import Site
 from twisted.web.static import File
+from twisted.python import log
+from twisted.python.logfile import DailyLogFile
+
 from camera import SimulationCamera, CanonCamera
 import global_settings as gs
 from database import DataBase
@@ -21,11 +24,9 @@ __all__ = (
 database = DataBase()
 
 
-#
-# server resources
-#
 class CameraResource(Resource):
-
+    """Handle camera related communication."""
+    
     def render_GET(self, request):
         """"""
         #
@@ -47,7 +48,7 @@ class CameraResource(Resource):
         elif cmd == 'camera_set':
             for key, item in args.items():
                 if getattr(camera, key) == None:
-                    print 'Ignoring unkown camera settings:', key, item
+                    log.msg('Ignoring unkown camera settings: {key}, {item}'.format(key=key, item=item))
                     continue
                 
                 setattr(camera, key, int(item[0]))
@@ -55,10 +56,8 @@ class CameraResource(Resource):
             return NoResource()
 
 
-#
-# server resources
-#
 class ImagesResource(Resource):
+    """Handle image related communication."""
 
     def render_GET(self, request):
         
@@ -76,11 +75,9 @@ class ImagesResource(Resource):
         return json.dumps(new_imgs)
 
 
-#
-# MainLoop of the server
-#
-class MainLoop(Resource):
-
+class HTTPserverMain(Resource):
+    """HTTPserverMain handles the communication with the ground station."""
+    
     def getChild(self, name, request):
         if name == '':
             return self
@@ -96,6 +93,17 @@ class MainLoop(Resource):
 
 
 class FileSystemWatcher(object):
+    """
+    Watch for newly created files in a folder.
+
+    This is used for notifying when an imaged was captured by the camera.
+    
+    Parameters
+    ----------
+    path_to_watch : string
+        Name of path to watch.
+    """
+    
     def __init__(self, path_to_watch):
         self.path_to_watch = path_to_watch
 
@@ -110,6 +118,8 @@ class FileSystemWatcher(object):
         self.OnChange(path.path)
         
     def Start(self):
+        """Start watching the path."""
+        
         if platform.system() == 'Linux':
             #
             # On linux it is possible to use the inotify api.
@@ -132,7 +142,6 @@ class FileSystemWatcher(object):
             d = threads.deferToThread(self._watchThread)
             
     def OnChange(self, path):
-        print path, 'changed'
         database.storeImg(path)
 
 
@@ -149,6 +158,12 @@ def start_server(camera_type ,port=8000):
     """
     
     #
+    # Setup logging.
+    #
+    f = DailyLogFile('server.log', gs.AUVSI_BASE_FOLDER)
+    log.startLogging(f)
+
+    #
     # Create the camera object.
     #
     global camera
@@ -159,15 +174,21 @@ def start_server(camera_type ,port=8000):
     else:
         raise NotImplementedError('Camera type {camera}, not supported.'.format(camera=camera_type))
     
-    root = MainLoop()
-    root.putChild("images", File(camera.base_path))
-    factory = Site(root)
-
     #
     # add a watcher on the images folder
     #
     fs = FileSystemWatcher(gs.IMAGES_FOLDER)
     fs.Start()
 
+    #
+    # Config the server
+    #
+    root = HTTPserverMain()
+    root.putChild("images", File(camera.base_path))
+    factory = Site(root)
+
+    #
+    # Startup the reactor.
+    #
     reactor.listenTCP(port, factory)
     reactor.run()

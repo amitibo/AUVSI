@@ -52,7 +52,7 @@ admin_json = json.dumps(
          'title': 'Logging Path',
          'desc': 'Logging base path',
          'section': 'Admin',
-         'key': 'logging_path'},
+         'key': 'logging path'},
         #{'type': 'string',
          #'title': 'Logging Level',
          #'desc': 'Logging level',
