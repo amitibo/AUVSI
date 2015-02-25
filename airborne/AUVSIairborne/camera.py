@@ -13,7 +13,7 @@ import os
 class BaseCamera(object):
     """Abstract class for a camera, not to be used directly."""
     
-    def __init__(self, zoom=45, shutter=5000, ISO=100, aperture=4):
+    def __init__(self, zoom=45, shutter=50, ISO=100, aperture=4):
         self.zoom = zoom
         self.shutter = shutter
         self.ISO = ISO

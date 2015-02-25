@@ -11,7 +11,24 @@
 #
 # By default this script does nothing.
 
-screen -dmS DH python /var/auvsi/dataHandler.py
-#screen -dmS INS python /var/auvsi/INS_files/INS.py
+exec 2> /tmp/rc.local.log
+exec 1>&2
+set -x
+
+#
+# Get an IP from the router.
+#
+sudo dhclient eth0
+
+#
+# Add a pointer to the CHDK base folder.
+#
+export CHDKPTP_DIR=/home/odroid/code/chdkptp
+
+#
+# Start the auvsi program
+#
+#/usr/bin/screen -dmS sn_auvsi bash -c 'start_auvsi.py; exec bash' &
+su -c "/usr/bin/screen -dmS sn_auvsi bash -c '/home/odroid/.local/bin/start_auvsi.py; exec bash'" &
 
 exit 0

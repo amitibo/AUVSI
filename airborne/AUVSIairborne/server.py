@@ -121,7 +121,7 @@ class FileSystemWatcher(object):
             notifier.watch(
                 filepath.FilePath(self.path_to_watch),
                 mask=inotify.IN_CREATE,
-                callbacks=[self.OnChange]
+                callbacks=[self._inotifyCB]
             )
     
         else:

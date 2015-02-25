@@ -17,4 +17,4 @@ IMAGES_TABLE = 'images_table'
 # Camera data
 #
 BASE_ZOOM = 0
-CHDKPTP_PATH = os.path.expanduser('~/code/chdkptp/chdkptp-sample.sh')
+CHDKPTP_PATH = os.path.join(os.environ['CHDKPTP_DIR'], 'chdkptp-sample.sh')
