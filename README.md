@@ -15,6 +15,7 @@ The airborne platform used in 2015 competition is the ODROID XU3 running xubunut
 
 Prerequisits
 ------------
+screen
 mercurial
 python
 opencv

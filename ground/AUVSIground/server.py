@@ -119,14 +119,18 @@ class ServerFactory(protocol.ReconnectingClientFactory):
         
         img_path, new_imgs = data
         
-        new_img = new_imgs.pop(0)
-        cmd = "INSERT INTO {table_name}(image_path, timestamp) values (?, ?)".format(table_name=self.images_table)
-        d = self._db_cmd(cmd, (img_path, new_img['timestamp']))
-        
         #
         # Add new image to list in gui
         #
         self.app._populateImagesList([img_path])
+
+        #
+        # Store the new image in the data base and continue downloading the new images.
+        #
+        new_img = new_imgs.pop(0)
+        cmd = "INSERT INTO {table_name}(image_path, timestamp) values (?, ?)".format(table_name=self.images_table)
+        d = self._db_cmd(cmd, (img_path, new_img['timestamp']))
+        d.addCallback(self._loopNewImgs)        
         
         #
         # Retrun the list of remaining images.
@@ -161,7 +165,6 @@ class ServerFactory(protocol.ReconnectingClientFactory):
         #
         d = threads.deferToThread(self._downloadNewImg, new_imgs)
         d.addCallback(self._dbNewImg)
-        d.addCallback(self._loopNewImgs)        
     
     def _setupNewImagesLoop(self, entries_list):
         """Handle the reply of the remote server with the list of new images  (newer timestamp)."""
@@ -175,7 +178,7 @@ class ServerFactory(protocol.ReconnectingClientFactory):
             return
         
         #
-        # No need to checks for new images till all images are downloaded.
+        # No need to check for new images till all images are downloaded.
         #
         self.images_task.stop()
         

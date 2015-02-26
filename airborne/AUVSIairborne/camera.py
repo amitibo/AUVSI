@@ -105,34 +105,50 @@ class CanonCamera(BaseCamera):
         
         return p
     
+    def _shootingLoop(self, run, shoot_cmd):
+        """Inifinite shooting loop. To run on separate process."""
+
+        while run.value == 1:
+            p = sbp.Popen(
+                " ".join([gs.CHDKPTP_PATH, '-c', '-e'+shoot_cmd]),
+                shell=True,
+                stdout=sbp.PIPE,
+                stderr=sbp.PIPE,
+                preexec_fn=os.setsid
+            )
+
     def startShooting(self):
 
         zoom_cmd = """\"luar set_zoom({zoom});\"""".format(zoom=self.zoom)
         self._blocking_cmd(zoom_cmd)
         
-        shoot_cmd = """\"remoteshoot {local_folder} -tv=1/{shutter} -sv={ISO} -av={aperture} -cont=9000\"""".format(
+        shoot_cmd = """\"remoteshoot {local_folder} -tv=1/{shutter} -sv={ISO} -av={aperture}\"""".format(
                 local_folder=gs.IMAGES_FOLDER,
                 shutter=self.shutter,
                 ISO=self.ISO,
                 aperture=self.aperture
                 )
         
-        self._shooting_proc = self._nonblocking_cmd(shoot_cmd)
+        self._run_flag = mp.Value('i', 1)
+        self._shooting_proc = mp.Process(target=self._shootingLoop, args=(self._run_flag, shoot_cmd))
+        self._shooting_proc.start()
         
     def stopShooting(self):
 
         if self._shooting_proc is None:
             return
 
-        #
-        # First kill the process
-        #
-        os.killpg(self._shooting_proc.pid, signal.SIGTERM)
+        self._run_flag.value = 0
+        self._shooting_proc.join()
+        ##
+        ## First kill the process
+        ##
+        #os.killpg(self._shooting_proc.pid, signal.SIGTERM)
 
-        #
-        # Then kill script (needed?)
-        #
-        kill_cmd = """\"killscript;\""""
+        ##
+        ## Then kill script (needed?)
+        ##
+        #kill_cmd = """\"killscript;\""""
         
-        self._blocking_cmd(kill_cmd)
+        #self._blocking_cmd(kill_cmd)
 
