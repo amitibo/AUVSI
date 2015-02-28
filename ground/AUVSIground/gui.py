@@ -129,7 +129,13 @@ class GUIApp(App):
         if section == 'Network':
             self.connect_to_server()
         elif section == 'Camera':
-            pass
+            args = {
+                'ISO': self.config.get('Camera', 'iso'),
+                'shutter': self.config.get('Camera', 'shutter'),
+                'aperture': self.config.get('Camera', 'aperture'),
+                'zoom': self.config.get('Camera', 'zoom'),
+            }
+            server.access('camera_set', args=args)
             
     def connect_to_server(self):
         """Initiate connection to airborne server."""

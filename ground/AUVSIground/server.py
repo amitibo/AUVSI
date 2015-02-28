@@ -94,10 +94,9 @@ class ServerFactory(protocol.ReconnectingClientFactory):
         self.app.on_connection(conn)
 
         #
-        # Add timer task for getting new images.
+        # Add deffered task for getting new images.
         #
-        self.images_task = task.LoopingCall(self.updateImagesDB)
-        self.images_task.start(1)
+        self.images_task = task.deferLater(reactor, 1, self.updateImagesDB)
         
     def on_disconnection(self, conn):
         """Handle disconnection to remote server."""
@@ -111,7 +110,7 @@ class ServerFactory(protocol.ReconnectingClientFactory):
         # Stop the task of getting new images.
         #
         if self.images_task is not None:
-            self.images_task.stop()
+            self.images_task.cancel()
             self.images_task = None
         
     def _dbNewImg(self, data):
@@ -157,7 +156,7 @@ class ServerFactory(protocol.ReconnectingClientFactory):
             #
             # Finished processing all new images.
             #
-            self.images_task.start(1)
+            self.images_task = task.deferLater(reactor, 1, self.updateImagesDB)
             return
         
         #
@@ -175,12 +174,8 @@ class ServerFactory(protocol.ReconnectingClientFactory):
             #
             # No new images.
             #
+            self.images_task = task.deferLater(reactor, 1, self.updateImagesDB)
             return
-        
-        #
-        # No need to check for new images till all images are downloaded.
-        #
-        self.images_task.stop()
         
         new_imgs = [{'name': os.path.split(entry[1])[1], 'timestamp': entry[2]} for entry in entries_list]
         self._loopNewImgs(new_imgs)
@@ -199,7 +194,7 @@ class ServerFactory(protocol.ReconnectingClientFactory):
         #
         # Send query to remote server.
         #
-        d = access('new_imgs='+timestamp, self._setupNewImagesLoop)
+        d = access('new_imgs='+timestamp, callback=self._setupNewImagesLoop)
     
     def updateImagesDB(self):
         """Entry point for the image synchronization task."""
@@ -252,10 +247,14 @@ def connect(app):
     return _server
 
 
-def access(page, callback=logReply):
+def access(page, args=None, callback=logReply):
     """Access a webpage."""
     
     url = 'http://{ip}:{port}/{page}'.format(ip=_server_address['ip'], port=_server_address['port'], page=page)
+    if args is not None:
+        url += '?{args_string}'.format(
+            args_string='&'.join(['{k}={v}'.format(k=k, v=v) for k, v in args.items()])
+        )
     d = getPage(url)
     d.addCallbacks(callback, logError)
     

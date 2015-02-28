@@ -7,6 +7,7 @@ airborne:
     - Add automatic copying of the rc.local file to setup.py.
 ground:
     - Add skeleton for image processing
+    - Add remote reboot of the airborne computer.
 image processing:
     - Turn script into modules.
 
@@ -16,3 +17,7 @@ ground:
     - Flickering of selected image when new images are added.
     - Canon camera not working when run from the rc.local script - probably due to permission issues of the root.
     - GUI doesn't shutdown properly, maybe gets stuck on some open process
+airborne:
+    - Settings of camera (zoom, shutter etc) are not persistent
+    - Turning off 'Shooting' can cause the camera to disconnect.
+    - If the camera is disconnected, it might not be in 'rec' mode. 'Shooting' doesn't set the camera in 'rec' mode.
