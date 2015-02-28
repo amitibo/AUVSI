@@ -1,0 +1,24 @@
+ImagesGalleryWin:
+
+<ImagesGalleryWin>
+    scatter_image: image
+    stacked_layout: sl
+    
+    ScrollView:
+        id: sv
+        minimum_height: self.height
+        
+        StackLayout:
+            id: sl
+            spacing: 5
+            size_hint_y: None
+            
+    RelativeLayout:
+        Scatter:
+            id: scatter
+            size_hint: None, None
+            size: 
+            do_rotation: False
+            Image:
+                id: image
+                size: scatter.size
