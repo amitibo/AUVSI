@@ -109,20 +109,21 @@ class CanonCamera(BaseCamera):
         """Inifinite shooting loop. To run on separate process."""
 
         while run.value == 1:
-            p = sbp.Popen(
-                " ".join([gs.CHDKPTP_PATH, '-c', '-e'+shoot_cmd]),
-                shell=True,
-                stdout=sbp.PIPE,
-                stderr=sbp.PIPE,
-                preexec_fn=os.setsid
-            )
+            os.system(" ".join([gs.CHDKPTP_PATH, '-c', '-e'+shoot_cmd]))
+ #           p = sbp.Popen(
+ #               " ".join([gs.CHDKPTP_PATH, '-c', '-e'+shoot_cmd]),
+ #               shell=True,
+ #               stdout=sbp.PIPE,
+ #               stderr=sbp.PIPE,
+ #               preexec_fn=os.setsid
+ #           )
 
     def startShooting(self):
 
         zoom_cmd = """\"luar set_zoom({zoom});\"""".format(zoom=self.zoom)
         self._blocking_cmd(zoom_cmd)
         
-        shoot_cmd = """\"remoteshoot {local_folder} -tv=1/{shutter} -sv={ISO} -av={aperture}\"""".format(
+        shoot_cmd = """\"remoteshoot {local_folder} -tv=1/{shutter} -sv={ISO} -av={aperture} -quick\"""".format(
                 local_folder=gs.IMAGES_FOLDER,
                 shutter=self.shutter,
                 ISO=self.ISO,
