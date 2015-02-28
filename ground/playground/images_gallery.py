@@ -10,8 +10,13 @@ from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.scatter import Scatter
 from kivy.uix.tabbedpanel import TabbedPanel
 from kivy.properties import ObjectProperty
+from kivy.uix.stencilview import StencilView
 
 import glob
+
+
+class BoxStencil(BoxLayout, StencilView):
+    pass
 
 
 class ImagesGalleryWin(BoxLayout):

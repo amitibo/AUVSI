@@ -6,19 +6,26 @@ ImagesGalleryWin:
     
     ScrollView:
         id: sv
-        minimum_height: self.height
+        size_hint_x: 1
         
         StackLayout:
             id: sl
             spacing: 5
+            height: self.minimum_height
             size_hint_y: None
+        
+    BoxStencil:
+        size_hint_x: 2
+
+        RelativeLayout:
+            id: rl
             
-    RelativeLayout:
-        Scatter:
-            id: scatter
-            size_hint: None, None
-            size: 
-            do_rotation: False
-            Image:
-                id: image
-                size: scatter.size
+            Scatter:
+                id: scatter
+                size_hint: None, None
+                size: rl.size
+                do_rotation: False
+    
+                Image:
+                    id: image
+                    size: scatter.size
