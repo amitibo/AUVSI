@@ -160,6 +160,10 @@ def start_server(camera_type ,port=8000):
     #
     # Setup logging.
     #
+    if not os.path.exists(gs.AUVSI_BASE_FOLDER):
+        os.makedirs(gs.AUVSI_BASE_FOLDER)
+        
+
     f = DailyLogFile('server.log', gs.AUVSI_BASE_FOLDER)
     log.startLogging(f)
 
