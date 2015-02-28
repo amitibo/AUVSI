@@ -9,12 +9,11 @@ from twisted.python.logfile import DailyLogFile
 
 from kivy.app import App
 from kivy.uix.label import Label
-from kivy.uix.textinput import TextInput
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.settings import SettingsWithSidebar
 from kivy.properties import ObjectProperty
-from kivy.uix.listview import ListView, ListItemButton
-from kivy.uix.image import Image
+from kivy.uix.stencilview import StencilView
+from kivy.uix.button import Button
 
 import pkg_resources
 import global_settings as gs
@@ -28,61 +27,18 @@ class BGLabel(Label):
     pass
 
 
-class ImagesListView(ListView):
+class BoxStencil(BoxLayout, StencilView):
     pass
 
 
-class ImageViewer(BoxLayout):
-    def __init__(self, **kwargs):
-        super(ImageViewer, self).__init__(**kwargs)
-
-        kwargs['orientation'] = 'vertical'
-        self.image_path = kwargs.get('image_path', r'')
-
-        if self.image_path:
-            self.redraw()
-
-    def redraw(self, *args):
-        self.clear_widgets()
-
-        if self.image_path:
-            self.add_widget(
-                Image(
-                    source=self.image_path
-                )
-            )
-
-    def image_changed(self, list_adapter, *args):
-        if len(list_adapter.selection) == 0:
-            self.image_path = None
-        else:
-            selected_object = list_adapter.selection[0]
-
-            # [TODO] Would we want touch events for the composite, as well as
-            #        the components? Just the components? Just the composite?
-            #
-            # Is selected_object an instance of ThumbnailedListItem (composite)?
-            #
-            # Or is it a ListItemButton?
-            #
-            if hasattr(selected_object, 'img_path'):
-                self.image_path = selected_object.fruit_name
-            else:
-                self.image_path = selected_object.text
-
-        self.redraw()
-
-
-class ImagesForm(BoxLayout):
-    image_viewer = ObjectProperty()
-    images_names = ObjectProperty()
-    
-    def __init__(self, **kwargs):
-        super(ImagesForm, self).__init__(**kwargs)
+class ImagesGalleryWin(BoxLayout):
+    scatter_image = ObjectProperty()
+    stacked_layout = ObjectProperty()
 
 
 class ImageProcessingGui(BoxLayout):
     connect_label = ObjectProperty()
+    images_gallery = ObjectProperty()
     
     def build(self, *params):
         pass
@@ -106,6 +62,9 @@ class GUIApp(App):
         #
         # Setup logging.
         #
+        if not os.path.exists(gs.AUVSI_BASE_FOLDER):
+            os.makedirs(gs.AUVSI_BASE_FOLDER)
+        
         f = DailyLogFile('server.log', self.config.get('Admin', 'logging path'))
         log.startLogging(f)
         
@@ -121,21 +80,23 @@ class GUIApp(App):
         #
         self.populateImagesList()
         
-        #
-        # I do the binding here because in the __init__ of ImagesForm 
-        # the adapter of the list is still not working.
-        #
-        self.root.images_form.images_names.adapter.bind(
-            on_selection_change=self.root.images_form.image_viewer.image_changed
-        )
-
-    
     def _populateImagesList(self, images_list):
         """Store new image paths in image list."""
 
-        items = self.root.images_form.images_names.adapter.data
-        [items.append(item) for item in images_list]
-        self.root.images_form.images_names._trigger_reset_populate() 
+        def callback(instance):
+            self.root.images_gallery.scatter_image.source = instance.background_normal
+    
+        for image_path in images_list:
+            btn = Button(
+                size_hint=(None, None),
+                size=(100, 100),
+                background_normal=image_path,
+                border=(0,0,0,0)
+            )
+    
+            btn.bind(on_press=callback)
+            self.root.images_gallery.stacked_layout.add_widget(btn)        
+
         
     def populateImagesList(self):
         """Populate the images list from the database."""

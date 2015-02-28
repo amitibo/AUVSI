@@ -7,7 +7,7 @@ ImageProcessingGui:
 <ImageProcessingGui>:
     orientation: "vertical"
     connect_label: connect_label_id
-    images_form: images_form_id
+    images_gallery: images_gallery_id
     
     BoxLayout:
         height: "40dp"
@@ -25,8 +25,8 @@ ImageProcessingGui:
             text: 'Shoot'
             on_state: root.shoot(self.state == 'down')
             
-    ImagesForm:
-        id: images_form_id
+    ImagesGalleryWin:
+        id: images_gallery_id
             
 
 <BGLabel>:
@@ -39,16 +39,32 @@ ImageProcessingGui:
             size: self.size
       
 
-<ImagesForm>:
-    images_names: images_names_id
-    image_viewer: image_viewer_id
+<ImagesGalleryWin>
+    scatter_image: image
+    stacked_layout: sl
     
-    ImagesListView:
-        id: images_names_id
-        size_hint_x: 0.3
+    ScrollView:
+        id: sv
+        size_hint_x: 1
+        
+        StackLayout:
+            id: sl
+            spacing: 5
+            height: self.minimum_height
+            size_hint_y: None
+        
+    BoxStencil:
+        size_hint_x: 2
 
-        adapter:
-            ListAdapter(data=[], cls=ListItemButton)
+        RelativeLayout:
+            id: rl
             
-    ImageViewer:
-        id: image_viewer_id
+            Scatter:
+                id: scatter
+                size_hint: None, None
+                size: rl.size
+                do_rotation: False
+    
+                Image:
+                    id: image
+                    size: scatter.size
