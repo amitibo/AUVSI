@@ -8,14 +8,13 @@ airborne:
 ground:
     - Add skeleton for image processing
     - Add remote reboot of the airborne computer.
+    - Add reset to data base.
 image processing:
     - Turn script into modules.
 
 BUGS:
 =====
 ground:
-    - Flickering of selected image when new images are added.
-    - Canon camera not working when run from the rc.local script - probably due to permission issues of the root.
     - GUI doesn't shutdown properly, maybe gets stuck on some open process
 airborne:
     - Settings of camera (zoom, shutter etc) are not persistent
