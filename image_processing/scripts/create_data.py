@@ -11,10 +11,12 @@ def main():
     for img_path in imgs_paths:
         data_path = os.path.splitext(img_path)[0]+'.txt'
         data = {
-            'height': 100,
+            'altitude': 100,
             'longitude': 32,
             'latitude': 54,
-            'heading': 0
+            'heading': 0,
+            'pitch': 0,
+            'roll': 0
         }
     
         with open(data_path, mode='w') as f:
