@@ -124,4 +124,4 @@ class CanonCamera(BaseCamera):
         if self._shooting_proc is None:
             return
 
-        self._shooting_proc.send_signal(signal.SIGINT)
+        os.killpg(self._shooting_proc.pid, signal.SIGINT)
