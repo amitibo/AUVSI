@@ -4,6 +4,11 @@ import json
 import os
 
 
+__all__ = [
+    "Image",
+]
+
+
 class Image(object):
     def __init__(self, img_path):
         
@@ -12,4 +17,6 @@ class Image(object):
         with open(data_path, 'r') as f:
             self._data = json.load(f)
 
-    
+    @property
+    def img(self):
+        return self._img
