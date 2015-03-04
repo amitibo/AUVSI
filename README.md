@@ -34,12 +34,13 @@ Ground platform and Image Processing project
 
 ### Prerequisits
 
-* mercurial
-* Anaconda (+accelerate)
-* opencv
-* pygame
-* kivy
-* aggdraw (used for the image processing project)
+* mercurial: Install using TortoiseHg
+* Anaconda (+accelerate). Works with python >= 2.7.8 (due to a bug: http://bugs.python.org/issue21652)
+* twisted: Install using 'conda install twisted'
+* opencv: Install from 'Unofficial python binaries'. Tested with version >= 2.4.10
+* pygame: Install from 'Unofficial python binaries'.
+* kivy: Install from 'Unofficial python binaries'.
+* aggdraw (used for the image processing project): Install from 'Unofficial python binaries'.
 
 ### Installation
 
@@ -56,4 +57,8 @@ Setup
 3. Setup the network: the ground station communicates with airborne computer through a router
    (this is done in order to avoid the need to setup a static IP). Find the IP of the airborne
    platform, can be done directly
+4. Download some drone images (size 4000x3000) to some folder and create the 'AUVSI_CV_DATA'
+   environment variable and set it to this folder path. This is used by the image_processing
+   project and the simulation camera.
+  
   

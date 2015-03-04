@@ -4,9 +4,12 @@ import numpy as np
 from datetime import datetime
 import subprocess as sbp
 import multiprocessing as mp
+import AUVSIcv
 import signal
 import Image
+import glob
 import time
+import cv2
 import os
 
 
@@ -39,17 +42,16 @@ class SimulationCamera(BaseCamera):
     def _shootingLoop(self, run):
         """Inifinite shooting loop. To run on separate process."""
         
+        base_path = os.environ['AUVSI_CV_DATA']
+        imgs_paths = glob.glob(os.path.join(base_path, '*.jpg'))
+        img_index = 0
         while run.value == 1:
             time.sleep(1)
-            A = np.random.randint(
-                low=0,
-                high=255,
-                size=(480, 640, 3)).astype(np.uint8)
-                                    
-            capture_path = self._getName()
-        
-            img = Image.fromarray(A)
-            img.save(self._getName())
+            
+            img = AUVSIcv.Image(imgs_paths[img_index])
+            img_index += 1
+            
+            cv2.imwrite(self._getName(), img.img)
             
     def startShooting(self):
         self._run_flag = mp.Value('i', 1)

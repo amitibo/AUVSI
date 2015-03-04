@@ -6,6 +6,7 @@ import global_settings as gs
 from datetime import datetime
 import urllib
 import json
+import cv2
 import os
 
 
@@ -71,7 +72,7 @@ class ServerFactory(protocol.ReconnectingClientFactory):
         import sqlite3
         conn = sqlite3.connect(self.images_db)
         cursor = conn.cursor()
-        cmd = 'create table if not exists {table_name} (id integer primary key, image_path text, [timestamp] timestamp)'.format(table_name=self.images_table)
+        cmd = 'create table if not exists {table_name} (id integer primary key, image_path text, image_tn_path text, [timestamp] timestamp)'.format(table_name=self.images_table)
         log.msg('Initiating database: {cmd}'.format(cmd=cmd))
         cursor.execute(cmd)
         conn.commit()
@@ -116,19 +117,19 @@ class ServerFactory(protocol.ReconnectingClientFactory):
     def _dbNewImg(self, data):
         """Store the newly downloaded image in the database"""
         
-        img_path, new_imgs = data
+        new_img_paths, new_imgs = data
         
         #
         # Add new image to list in gui
         #
-        self.app._populateImagesList([img_path])
+        self.app._populateImagesList([new_img_paths])
 
         #
         # Store the new image in the data base and continue downloading the new images.
         #
         new_img = new_imgs.pop(0)
-        cmd = "INSERT INTO {table_name}(image_path, timestamp) values (?, ?)".format(table_name=self.images_table)
-        d = self._db_cmd(cmd, (img_path, new_img['timestamp']))
+        cmd = "INSERT INTO {table_name}(image_path, image_tn_path, timestamp) values (?, ?, ?)".format(table_name=self.images_table)
+        d = self._db_cmd(cmd, (new_img_paths[0], new_img_paths[1], new_img['timestamp']))
         d.addCallback(self._loopNewImgs)        
         
         #
@@ -139,15 +140,31 @@ class ServerFactory(protocol.ReconnectingClientFactory):
     def _downloadNewImg(self, new_imgs):
         """Download a new image from the remote server. This function is run on a separate thread."""
         
-        new_img = new_imgs[0]
-        img_url = 'http://{ip}:{port}/images/{img}'.format(ip=_server_address['ip'], port=_server_address['port'], img=new_img['name'])
-        img_path = os.path.join(gs.IMAGES_FOLDER, new_img['name'])
-        
+        #
+        # Set paths
+        #
+        new_img = new_imgs[0]['name']
+        img_url = 'http://{ip}:{port}/images/{img}'.format(ip=_server_address['ip'], port=_server_address['port'], img=new_img)
+        img_path = os.path.join(gs.IMAGES_FOLDER, new_img)
+        new_img_tn = '{}_tn{}'.format(*os.path.splitext(new_img))
+        img_tn_path = os.path.join(gs.IMAGES_FOLDER, new_img_tn)
+
+        #
+        # Download image
+        #
         log.msg('Downloading image from url {img_url} to local path: {local_path}'.format(img_url=img_url, local_path=img_path))
-        
         urllib.urlretrieve(img_url, img_path)
         
-        return img_path, new_imgs
+        #
+        # Resize a thumbnail.
+        #
+        img = cv2.imread(img_path)
+        r = 100.0 / img.shape[1]
+        dim = (100, int(img.shape[0] * r))
+        img_tn = cv2.resize(img, dim, interpolation = cv2.INTER_AREA)
+        cv2.imwrite(img_tn_path, img_tn)
+        
+        return (img_path, img_tn_path), new_imgs
     
     def _loopNewImgs(self, new_imgs):
         """Loop on all new images. Download and store in database each image."""
@@ -208,13 +225,13 @@ class ServerFactory(protocol.ReconnectingClientFactory):
     
     def _filterImagesPath(self, db_reply):
         """"""
-        images_list = [items[0] for items in db_reply]
+        images_list = [items[:2] for items in db_reply]
         return images_list
     
     def getImagesList(self, callback):
         """Get the list of images in the data base"""
         
-        cmd = 'SELECT image_path, timestamp FROM {table_name}'.format(table_name=self.images_table)
+        cmd = 'SELECT image_path, image_tn_path, timestamp FROM {table_name}'.format(table_name=self.images_table)
         d = self._db_cmd(cmd)
         d.addCallback(self._filterImagesPath)
         d.addCallback(callback)

@@ -189,7 +189,7 @@ def start_server(camera_type ,port=8000):
     # Config the server
     #
     root = HTTPserverMain()
-    root.putChild("images", File(camera.base_path))
+    root.putChild("images", File(camera.base_path.encode('ascii', 'ignore')))
     factory = Site(root)
 
     #

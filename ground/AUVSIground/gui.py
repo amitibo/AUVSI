@@ -83,21 +83,23 @@ class GUIApp(App):
     def _populateImagesList(self, images_list):
         """Store new image paths in image list."""
 
-        def callback(instance):
-            self.root.images_gallery.scatter_image.source = instance.background_normal
+        def callback_factory(img_path):
+            def callback(instance):
+                self.root.images_gallery.scatter_image.source = img_path
     
-        for image_path in images_list:
+            return callback
+        
+        for img_path, img_tn_path in images_list:
             btn = Button(
                 size_hint=(None, None),
-                size=(100, 100),
-                background_normal=image_path,
+                size=(100, 75),
+                background_normal=img_tn_path,
                 border=(0,0,0,0)
             )
     
-            btn.bind(on_press=callback)
+            btn.bind(on_press=callback_factory(img_path))
             self.root.images_gallery.stacked_layout.add_widget(btn)        
 
-        
     def populateImagesList(self):
         """Populate the images list from the database."""
         
