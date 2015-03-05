@@ -5,6 +5,7 @@ import aggdraw
 import Image
 from .utils import lla2ecef
 import cv2
+import math
 
 
 __all__ = [
@@ -19,7 +20,7 @@ class BaseTarget(object):
     size: float
         Size of target in meters.
     orientation: float
-        Orientation of the target(degrees) in respect to the north.
+        Orientation of the target (degrees) in respect to the north.
     altitude: float
         Altitude of the target in meters
     longitude: float
@@ -56,7 +57,7 @@ class BaseTarget(object):
         ):
         
         self._size = size
-        self._orientation = orientation
+        self._orientation = math.radians(orientation)
         self._altitude = altitude
         self._longitude = longitude
         self._latitude = latitude
@@ -128,34 +129,19 @@ class BaseTarget(object):
     
         img = np.array(img)
         self._templateImg, self._templateAlpha = img[..., :3], img[..., 3].astype(np.float32)/255
-
-
-    def paste(self, image):
-        """Draw the target on an image.
         
-        This function uses the parameters of the target and the image to 
-        calculate the location and then draw the target on the given image.
-        
-        Parameters
-        ----------
-        image : Image object.
-            Image on which to draw, should bean object of type AUVSIcv.Image.
-        """
-        
-        #
-        # Calculate the transform matrix from the target coordinates to the camera coordinates.
-        # 
-        M1 = np.array(((1, 0, 0), (0, 1, 0), (0, 0, 0), (0, 0, 1)))
-        M2 = np.eye(3, 4)
-        M = np.dot(image.K, np.dot(M2, np.dot(np.linalg.inv(image.Rt), np.dot(self._H, M1))))
+    @property
+    def H(self):        
+        return self._H
     
-        target = cv2.warpPerspective(self._templateImg, M, dsize=image.img.shape[:2][::-1])
-        alpha = cv2.warpPerspective(self._templateAlpha, M, dsize=image.img.shape[:2][::-1])[..., np.newaxis]
+    @property
+    def img(self):
+        return self._templateImg
     
-        img = image.img.astype(np.float32)*(1-alpha) + target[..., :3].astype(np.float32)*alpha
+    @property
+    def alpha(self):
+        return self._templateAlpha
     
-        return img.astype(np.uint8)
-        
 
 class CircleTarget(BaseTarget):
     """A target in the form of a circle."""

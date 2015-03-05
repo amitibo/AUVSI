@@ -3,6 +3,7 @@ import exifread
 from .utils import lla2ecef
 import transformation_matrices as transforms
 import numpy as np
+import math
 import cv2
 import json
 import os
@@ -59,14 +60,40 @@ class Image(object):
         )
         
         R = transforms.euler_matrix(
-            ai=self._data['yaw'],
-            aj=self._data['pitch'],
-            ak=self._data['roll'],
+            ai=math.radians(self._data['yaw']),
+            aj=math.radians(self._data['pitch']),
+            ak=math.radians(self._data['roll']),
             axes='sxyz'
         )
         
         self._Rt = np.dot(t, R)
         
+    def paste(self, target):
+        """Draw a target on the image.
+
+        This function uses the parameters of the target and the image to 
+        calculate the location and then draw the target on the image.
+
+        Parameters
+        ----------
+        target : Target object.
+            Target to draw on the image, should be an object from a subclass of AUVSIcv BaseTarget.
+        """
+
+        #
+        # Calculate the transform matrix from the target coordinates to the camera coordinates.
+        # 
+        M1 = np.array(((1, 0, 0), (0, 1, 0), (0, 0, 0), (0, 0, 1)))
+        M2 = np.eye(3, 4)
+        M = np.dot(self.K, np.dot(M2, np.dot(np.linalg.inv(self.Rt), np.dot(target.H, M1))))
+
+        target_img = cv2.warpPerspective(target.img, M, dsize=self.img.shape[:2][::-1])
+        target_alpha = cv2.warpPerspective(target.alpha, M, dsize=self.img.shape[:2][::-1])[..., np.newaxis]
+
+        img = self._img.astype(np.float32)*(1-target_alpha) + target_img[..., :3].astype(np.float32)*target_alpha
+
+        self._img = img.astype(np.uint8)
+
     @property
     def img(self):
         return self._img
