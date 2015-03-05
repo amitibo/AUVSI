@@ -41,6 +41,7 @@ Ground platform and Image Processing project
 * pygame: Install from 'Unofficial python binaries'.
 * kivy: Install from 'Unofficial python binaries'.
 * aggdraw (used for the image processing project): Install from 'Unofficial python binaries'.
+* exifread: Intall with 'pip install exifread'
 
 ### Installation
 

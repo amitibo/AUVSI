@@ -14,7 +14,7 @@ def main():
             'altitude': 100,
             'longitude': 32.8167,
             'latitude': 34.9833,
-            'heading': 0,
+            'yaw': 0,
             'pitch': 0,
             'roll': 0
         }

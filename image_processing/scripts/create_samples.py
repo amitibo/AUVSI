@@ -17,7 +17,7 @@ def main():
         orientation=0,
         altitude=0,
         longitude=32.8167,
-        latitud=34.9833, 
+        latitude=34.9833, 
         color=(255, 0, 0), 
         letter='A', 
         font_color=(0, 255, 0)
