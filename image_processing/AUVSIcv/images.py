@@ -22,11 +22,42 @@ def tagValue(tag):
     return tag.values[0]
 
 
+def calcDstLimits(img, overlay_img, M):
+    """Calculate the limits of the overlay in the destination image."""
+
+    osize = overlay_img.shape[:2]
+    isize = img.shape[:2]
+    
+    limits = np.float32((((0, 0), (0, osize[0]), osize[::-1], (osize[1], 0)),))
+
+    limits_trans = cv2.perspectiveTransform(limits, M)
+    dst_xlimit = cv2.minMaxLoc(limits_trans[0, :, 0])[:2]
+    dst_ylimit = cv2.minMaxLoc(limits_trans[0, :, 1])[:2]
+
+    dst_xlimit = [max(int(dst_xlimit[0]), 0), min(int(dst_xlimit[1]+1), img.shape[1])]
+    dst_ylimit = [max(int(dst_ylimit[0]), 0), min(int(dst_ylimit[1]+1), img.shape[0])]
+    
+    offsets = (dst_xlimit[0], dst_ylimit[0])
+    shape = (dst_xlimit[1]-dst_xlimit[0]+1, dst_ylimit[1]-dst_ylimit[0]+1)
+    
+    return offsets, shape
+
+
 def overlay(img, overlay_img, overlay_alpha, M):
     
-    img = img.astype(np.float32)*(1-overlay_alpha) + overlay_img[..., :3].astype(np.float32)*overlay_alpha
-    return img.astype(np.uint8)
+    offsets, dst_shape = calcDstLimits(img, overlay_img, M)
     
+    T = np.eye(3)
+    T[0, 2] = -offsets[0]
+    T[1, 2] = -offsets[1]
+    
+    overlay_img = cv2.warpPerspective(overlay_img, np.dot(T, M), dsize=dst_shape)
+    overlay_alpha = cv2.warpPerspective(overlay_alpha, np.dot(T, M), dsize=dst_shape)[..., np.newaxis]
+
+    img[offsets[1]:offsets[1]+dst_shape[1], offsets[0]:offsets[0]+dst_shape[0], :3] = \
+        (img[offsets[1]:offsets[1]+dst_shape[1], offsets[0]:offsets[0]+dst_shape[0], :3].astype(np.float32)*(1-overlay_alpha) + \
+        overlay_img[..., :3].astype(np.float32)*overlay_alpha).astype(np.uint8)
+        
 
 class Image(object):
     def __init__(self, img_path):
@@ -95,12 +126,7 @@ class Image(object):
         M2 = np.eye(3, 4)
         M = np.dot(self.K, np.dot(M2, np.dot(np.linalg.inv(self.Rt), np.dot(target_H, M1))))
 
-        target_img = cv2.warpPerspective(target.img, M, dsize=self.img.shape[:2][::-1])
-        target_alpha = cv2.warpPerspective(target.alpha, M, dsize=self.img.shape[:2][::-1])[..., np.newaxis]
-
-        img = self._img.astype(np.float32)*(1-target_alpha) + target_img[..., :3].astype(np.float32)*target_alpha
-
-        self._img = overlay(img=img, overlay_img=target_img, overlay_alpha=target_alpha, M=M)
+        overlay(img=self._img, overlay_img=target.img, overlay_alpha=target.alpha, M=M)
 
     @property
     def img(self):

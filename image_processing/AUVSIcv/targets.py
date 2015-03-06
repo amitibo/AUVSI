@@ -137,11 +137,12 @@ class BaseTarget(object):
             from the COLA2 project (https://bitbucket.org/udg_cirs/cola2).            
         """
         ned = NED(lat=latitude, lon=longitude, height=altitude)
-        T = transforms.translation_matrix(ned.geodetic2ned((self._latitude, self._longitude, self._altitude)))
-        R = transforms.euler_matrix(self._orientation, 0, 0, 'szxy')
+        T1 = transforms.translation_matrix((-self._template_size/2, -self._template_size/2, 0))
         S = transforms.scale_matrix(self._size/self._template_size)
+        R = transforms.euler_matrix(self._orientation, 0, 0, 'szxy')
+        T2 = transforms.translation_matrix(ned.geodetic2ned((self._latitude, self._longitude, self._altitude)))
     
-        return np.dot(T, np.dot(R, S))
+        return np.dot(T2, np.dot(R, np.dot(S, T1)))
     
     @property
     def img(self):
