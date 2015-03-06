@@ -59,14 +59,13 @@ class Image(object):
         #
         # Calculate camera extrinsic matrix
         # Note:
-        # The local cartesian mapping (NED) is centered at the camera.
-        #
+        # 1) The local cartesian mapping (NED) is centered at the camera.
+        # 2) For some reason, I need to add 90 degrees to make the coords correct.
         t = np.eye(4)
-        
         R = transforms.euler_matrix(
             ai=math.radians(self._data['yaw']),
             aj=math.radians(self._data['pitch']),
-            ak=math.radians(self._data['roll']),
+            ak=math.radians(self._data['roll']+90),
             axes='sxyz'
         )
         
