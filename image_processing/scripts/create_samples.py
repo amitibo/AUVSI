@@ -11,7 +11,7 @@ def main():
     base_path = os.environ['AUVSI_CV_DATA']
     imgs_paths = glob.glob(os.path.join(base_path, '*.jpg'))
 
-    img = AUVSIcv.Image(imgs_paths[0])
+    img = AUVSIcv.Image(imgs_paths[3])
     
     t0 = time.time()
     for i in range(5):

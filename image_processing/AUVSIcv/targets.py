@@ -3,7 +3,7 @@ import numpy as np
 import transformation_matrices as transforms
 import aggdraw
 import Image
-from .utils import lla2ecef
+from .NED import NED
 import cv2
 import math
 
@@ -69,16 +69,6 @@ class BaseTarget(object):
         self._template_size = template_size
         
         self._drawTemplate()
-        self._calcTransform()
-        
-    def _calcTransform(self):
-        """Calculate the transform matrix of the target."""
-        
-        T = transforms.translation_matrix(lla2ecef(self._latitude, self._longitude, self._altitude))
-        R = transforms.euler_matrix(self._orientation, 0, 0, 'szxy')
-        S = transforms.scale_matrix(self._size/self._template_size)
-        
-        self._H = np.dot(T, np.dot(R, S))
 
     def _drawForm(self, ctx, brush):
         """Draw the form of the target"""
@@ -130,9 +120,24 @@ class BaseTarget(object):
         img = np.array(img)
         self._templateImg, self._templateAlpha = img[..., :3], img[..., 3].astype(np.float32)/255
         
-    @property
-    def H(self):        
-        return self._H
+    def H(self, latitude, longitude, altitude):
+        """Calculate the transform of the target.
+        
+        Calculate the cartesian coordinate transform relative to a given lat, lon, alt coords.
+        
+        Parameters
+        ----------
+        latitude, longitude, altitude: three tuple of floats
+            Center of the cartesian coordinate system (e.g. camera center). The transform
+            uses the local cartesian coordinate system (North East Down). Makes use of code
+            from the COLA2 project (https://bitbucket.org/udg_cirs/cola2).            
+        """
+        ned = NED(lat=latitude, lon=longitude, height=altitude)
+        T = transforms.translation_matrix(ned.geodetic2ned((self._latitude, self._longitude, self._altitude)))
+        R = transforms.euler_matrix(self._orientation, 0, 0, 'szxy')
+        S = transforms.scale_matrix(self._size/self._template_size)
+    
+        return np.dot(T, np.dot(R, S))
     
     @property
     def img(self):

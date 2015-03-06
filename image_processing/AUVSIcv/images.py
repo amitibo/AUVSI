@@ -1,6 +1,5 @@
 from __future__ import division
 import exifread
-from .utils import lla2ecef
 import transformation_matrices as transforms
 import numpy as np
 import math
@@ -23,6 +22,12 @@ def tagValue(tag):
     return tag.values[0]
 
 
+def overlay(img, overlay_img, overlay_alpha, M):
+    
+    img = img.astype(np.float32)*(1-overlay_alpha) + overlay_img[..., :3].astype(np.float32)*overlay_alpha
+    return img.astype(np.uint8)
+    
+
 class Image(object):
     def __init__(self, img_path):
         
@@ -38,7 +43,7 @@ class Image(object):
             tags = exifread.process_file(f)
 
         #
-        # Calculate camera matrix.
+        # Calculate camera intrinsic matrix.
         #
         in_to_mm = 25.4
         FocalPlaneYResolution = tagRatio(tags['EXIF FocalPlaneYResolution'])
@@ -51,13 +56,12 @@ class Image(object):
         f_y = FocalLength * FocalPlaneYResolution / in_to_mm
         self._K = np.array(((f_x, 0, ImageWidth/2), (0, f_y, ImageLength/2), (0, 0, 1)))        
 
-        t = transforms.translation_matrix(
-            lla2ecef(
-                latitude=self._data['latitude'],
-                longitude=self._data['longitude'],
-                altitude=self._data['altitude']
-            )
-        )
+        #
+        # Calculate camera extrinsic matrix
+        # Note:
+        # The local cartesian mapping (NED) is centered at the camera.
+        #
+        t = np.eye(4)
         
         R = transforms.euler_matrix(
             ai=math.radians(self._data['yaw']),
@@ -83,16 +87,21 @@ class Image(object):
         #
         # Calculate the transform matrix from the target coordinates to the camera coordinates.
         # 
+        target_H = target.H(
+            latitude=self._data['latitude'],
+            longitude=self._data['longitude'],
+            altitude=self._data['altitude']
+        )            
         M1 = np.array(((1, 0, 0), (0, 1, 0), (0, 0, 0), (0, 0, 1)))
         M2 = np.eye(3, 4)
-        M = np.dot(self.K, np.dot(M2, np.dot(np.linalg.inv(self.Rt), np.dot(target.H, M1))))
+        M = np.dot(self.K, np.dot(M2, np.dot(np.linalg.inv(self.Rt), np.dot(target_H, M1))))
 
         target_img = cv2.warpPerspective(target.img, M, dsize=self.img.shape[:2][::-1])
         target_alpha = cv2.warpPerspective(target.alpha, M, dsize=self.img.shape[:2][::-1])[..., np.newaxis]
 
         img = self._img.astype(np.float32)*(1-target_alpha) + target_img[..., :3].astype(np.float32)*target_alpha
 
-        self._img = img.astype(np.uint8)
+        self._img = overlay(img=img, overlay_img=target_img, overlay_alpha=target_alpha, M=M)
 
     @property
     def img(self):
