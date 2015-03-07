@@ -22,13 +22,25 @@ def main():
             latitude=34.9833+0.00001*i, 
             color=(70, 150, 100), 
             letter='A', 
-            font_color=(240, 230, 140)
+            font_color=(140, 230, 240)
         )
         
         img.paste(target)
     
+    target = AUVSIcv.QRTarget(
+        size=1,
+        orientation=20,
+        altitude=0,
+        longitude=32.8167,
+        latitude=34.9833,
+        text='www.google.com'
+    )
+
+    img.paste(target)
+    
     cv2.namedWindow('image', flags=cv2.WINDOW_NORMAL)
     cv2.imshow('image', img.img)
+    cv2.imwrite('image_with_targets.png', img.img)
     
     cv2.waitKey(0)
     cv2.destroyAllWindows()

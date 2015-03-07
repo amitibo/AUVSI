@@ -6,10 +6,14 @@ import Image
 from .NED import NED
 import cv2
 import math
+import tempfile
+import shutil
+import os
 
 
 __all__ = [
     "CircleTarget",
+    "QRTarget"
 ]
 
 
@@ -114,8 +118,8 @@ class BaseTarget(object):
         #
         # Add letter.
         #
-        self._drawLetter(ctx)
-    
+        if self._letter is not None:
+            self._drawLetter(ctx)
         #
         # Flush to apply drawing.
         #
@@ -160,4 +164,54 @@ class CircleTarget(BaseTarget):
         
         ctx.ellipse((0, 0, self._template_size, self._template_size), brush)
 
+
+class QRTarget(BaseTarget):
+    """A target in the form of a circle."""
+
+    def __init__(
+        self,
+        size,
+        orientation,
+        altitude,
+        longitude,
+        latitude,
+        text,
+        template_size=400
+        ):
+
+        self._text = text
+
+        super(QRTarget, self).__init__(
+            size,
+            orientation,
+            altitude,
+            longitude,
+            latitude,
+            color=None,
+            letter=None,
+            font_color=None,
+            )
+        
+
+    def _drawTemplate(self):
+        """Draw the target on the base template"""
+
+        import pyqrcode
+        
+        qr = pyqrcode.create(self._text)
+        qr_size = qr.get_png_size(scale=1)
+        scale = int(self._template_size/qr_size+0.5)
+        self._template_size = qr.get_png_size(scale=scale)
+        
+        base_path = tempfile.mkdtemp()
+        img_path = os.path.join(base_path, 'temp.png')
+        
+        qr.png(img_path, scale=scale)
+        
+        img = cv2.imread(img_path)
+        
+        shutil.rmtree(base_path)
+        
+        self._templateImg = img
+        self._templateAlpha = np.ones(img.shape[:2], dtype=np.float32)
 
