@@ -34,8 +34,8 @@ def calcDstLimits(img, overlay_img, M):
     dst_xlimit = cv2.minMaxLoc(limits_trans[0, :, 0])[:2]
     dst_ylimit = cv2.minMaxLoc(limits_trans[0, :, 1])[:2]
 
-    dst_xlimit = [max(int(dst_xlimit[0]), 0), min(int(dst_xlimit[1]+1), img.shape[1])]
-    dst_ylimit = [max(int(dst_ylimit[0]), 0), min(int(dst_ylimit[1]+1), img.shape[0])]
+    dst_xlimit = [min(max(int(dst_xlimit[0]), 0), img.shape[1]), min(max(int(dst_xlimit[1]+1), 0), img.shape[1])]
+    dst_ylimit = [min(max(int(dst_ylimit[0]), 0), img.shape[0]), min(max(int(dst_ylimit[1]+1), 0), img.shape[0])]
     
     offsets = (dst_xlimit[0], dst_ylimit[0])
     shape = (dst_xlimit[1]-dst_xlimit[0]+1, dst_ylimit[1]-dst_ylimit[0]+1)

@@ -13,6 +13,10 @@ import os
 
 __all__ = [
     "CircleTarget",
+    "RectangleTarget",
+    "TriangleTarget",
+    "CrossTarget",    
+    "PolygonTarget",
     "QRTarget"
 ]
 
@@ -163,6 +167,68 @@ class CircleTarget(BaseTarget):
     def _drawForm(self, ctx, brush):
         
         ctx.ellipse((0, 0, self._template_size, self._template_size), brush)
+
+
+class RectangleTarget(BaseTarget):
+    """A target in the form of a rectangle."""
+
+    def _drawForm(self, ctx, brush):
+
+        ctx.rectangle((0, 0, self._template_size, self._template_size), brush)
+
+
+class TriangleTarget(BaseTarget):
+    """A target in the form of a triangle."""
+
+    def _drawForm(self, ctx, brush):
+
+        ctx.polygon((0, self._template_size, self._template_size, self._template_size, self._template_size/2, 0), brush)
+
+
+class CrossTarget(BaseTarget):
+    """A target in the form of a cross."""
+
+    def _drawForm(self, ctx, brush):
+
+        ctx.polygon(
+            (
+                0, self._template_size/3,
+                0, self._template_size*2/3,
+                self._template_size/3, self._template_size*2/3,
+                self._template_size/3, self._template_size,
+                self._template_size*2/3, self._template_size,
+                self._template_size*2/3, self._template_size*2/3,
+                self._template_size, self._template_size*2/3,
+                self._template_size, self._template_size/3,
+                self._template_size*2/3, self._template_size/3,
+                self._template_size*2/3, 0,
+                self._template_size/3, 0,
+                self._template_size/3, self._template_size/3
+                ),
+            brush
+        )
+
+
+class PolygonTarget(BaseTarget):
+    """A target in the form of a n-sided polygon."""
+
+    def __init__(self, n, *args, **kwds):
+        
+        self._nsides = n
+        
+        super(PolygonTarget, self).__init__(*args, **kwds)
+        
+    def _drawForm(self, ctx, brush):
+
+        r = self._template_size/2
+        alpha = np.pi*2/self._nsides
+        
+        polygon = []
+        for i in range(self._nsides):
+            polygon.append(r + r*np.cos(alpha*i))
+            polygon.append(r + r*np.sin(alpha*i))
+            
+        ctx.polygon(polygon, brush)
 
 
 class QRTarget(BaseTarget):

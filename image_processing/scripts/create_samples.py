@@ -14,12 +14,13 @@ def main():
     img = AUVSIcv.Image(imgs_paths[3])
     
     for i in range(10):
-        target = AUVSIcv.CircleTarget(
-            size=1,
+        target = AUVSIcv.PolygonTarget(
+            n=5+int(i/3),
+            size=2,
             orientation=30*i,
             altitude=0,
-            longitude=32.8167+0.00001*i,
-            latitude=34.9833+0.00001*i, 
+            longitude=32.8167+0.00003*i,
+            latitude=34.9833+0.00003*i, 
             color=(70, 150, 100), 
             letter='A', 
             font_color=(140, 230, 240)
@@ -28,7 +29,7 @@ def main():
         img.paste(target)
     
     target = AUVSIcv.QRTarget(
-        size=1,
+        size=2,
         orientation=20,
         altitude=0,
         longitude=32.8167,
