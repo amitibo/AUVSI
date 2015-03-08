@@ -38,13 +38,17 @@ def calcDstLimits(img, overlay_img, M):
     dst_ylimit = [min(max(int(dst_ylimit[0]), 0), img.shape[0]), min(max(int(dst_ylimit[1]+1), 0), img.shape[0])]
     
     offsets = (dst_xlimit[0], dst_ylimit[0])
-    shape = (dst_xlimit[1]-dst_xlimit[0]+1, dst_ylimit[1]-dst_ylimit[0]+1)
+    shape = (dst_xlimit[1]-dst_xlimit[0], dst_ylimit[1]-dst_ylimit[0])
     
     return offsets, shape
 
 
 def overlay(img, overlay_img, overlay_alpha, M):
     
+    #
+    # Calculate the destination pixels of the patch. This allows for much more efficient
+    # copies (instead of copying a full 4000x3000 image).
+    #
     offsets, dst_shape = calcDstLimits(img, overlay_img, M)
     
     T = np.eye(3)
@@ -53,6 +57,53 @@ def overlay(img, overlay_img, overlay_alpha, M):
     
     overlay_img = cv2.warpPerspective(overlay_img, np.dot(T, M), dsize=dst_shape)
     overlay_alpha = cv2.warpPerspective(overlay_alpha, np.dot(T, M), dsize=dst_shape)[..., np.newaxis]
+
+    img[offsets[1]:offsets[1]+dst_shape[1], offsets[0]:offsets[0]+dst_shape[0], :3] = \
+        (img[offsets[1]:offsets[1]+dst_shape[1], offsets[0]:offsets[0]+dst_shape[0], :3].astype(np.float32)*(1-overlay_alpha) + \
+        overlay_img[..., :3].astype(np.float32)*overlay_alpha).astype(np.uint8)
+        
+
+def calcDstPatchLimits(img, overlay_img, M):
+    """Calculate the limits of the overlay in the destination image."""
+
+    osize = overlay_img.shape[:2]
+    isize = img.shape[:2]
+    
+    limits = np.float32((((0, 0), (0, osize[0]), osize[::-1], (osize[1], 0)),))
+
+    limits_trans = cv2.perspectiveTransform(limits, M)
+    dst_xlimit = cv2.minMaxLoc(limits_trans[0, :, 0])[:2]
+    dst_ylimit = cv2.minMaxLoc(limits_trans[0, :, 1])[:2]
+
+    #
+    # Center the patch
+    #
+    x_shift = (dst_xlimit[1]+dst_xlimit[0] - isize[1])/2
+    y_shift = (dst_ylimit[1]+dst_ylimit[0] - isize[0])/2
+    
+    dst_xlimit = [min(max(int(dst_xlimit[0]-x_shift), 0), isize[1]), min(max(int(dst_xlimit[1]-x_shift+1), 0), isize[1])]
+    dst_ylimit = [min(max(int(dst_ylimit[0]-y_shift), 0), isize[0]), min(max(int(dst_ylimit[1]-y_shift+1), 0), isize[0])]
+    
+    offsets = (dst_xlimit[0], dst_ylimit[0])
+    shape = (dst_xlimit[1]-dst_xlimit[0], dst_ylimit[1]-dst_ylimit[0])
+    
+    return offsets, shape, (x_shift, y_shift)
+
+
+def overlayPatch(img, overlay_img, overlay_alpha, M):
+    
+    offsets, dst_shape, shifts = calcDstPatchLimits(img, overlay_img, M)
+    
+    T2 = np.eye(3)
+    T2[0, 2] = -shifts[0]
+    T2[1, 2] = -shifts[1]
+
+    T1 = np.eye(3)
+    T1[0, 2] = -offsets[0]
+    T1[1, 2] = -offsets[1]
+    
+    overlay_img = cv2.warpPerspective(overlay_img, np.dot(T1, np.dot(T2, M)), dsize=dst_shape)
+    overlay_alpha = cv2.warpPerspective(overlay_alpha, np.dot(T1, np.dot(T2, M)), dsize=dst_shape)[..., np.newaxis]
 
     img[offsets[1]:offsets[1]+dst_shape[1], offsets[0]:offsets[0]+dst_shape[0], :3] = \
         (img[offsets[1]:offsets[1]+dst_shape[1], offsets[0]:offsets[0]+dst_shape[0], :3].astype(np.float32)*(1-overlay_alpha) + \
@@ -128,6 +179,38 @@ class Image(object):
 
         overlay(img=self._img, overlay_img=target.img, overlay_alpha=target.alpha, M=M)
 
+    def createPatches(self, patch_size, patch_shift, copy=True):
+        """Create patches(crops) of an image"""
+        
+        patch_height, patch_width = patch_size
+        nx = int((self._img.shape[1] - patch_width)/patch_shift)
+        ny = int((self._img.shape[0] - patch_height)/patch_shift)
+        
+        patches = []
+        for i in range(nx):
+            for j in range(ny):
+                sx = i*patch_shift
+                sy = j*patch_shift
+                patch = self._img[sy:sy+patch_height, sx:sx+patch_width, :]
+                patches.append(patch.copy())
+        
+        return patches
+
+    def pastePatches(self, patches, target):
+        """Paste a target on a patch"""
+
+        target_H = target.H(
+            latitude=self._data['latitude'],
+            longitude=self._data['longitude'],
+            altitude=self._data['altitude']
+        )            
+        M1 = np.array(((1, 0, 0), (0, 1, 0), (0, 0, 0), (0, 0, 1)))
+        M2 = np.eye(3, 4)
+        M = np.dot(self.K, np.dot(M2, np.dot(np.linalg.inv(self.Rt), np.dot(target_H, M1))))
+
+        for patch in patches:
+            overlayPatch(img=patch, overlay_img=target.img, overlay_alpha=target.alpha, M=M)
+    
     @property
     def img(self):
         return self._img

@@ -41,7 +41,7 @@ def main():
     
     cv2.namedWindow('image', flags=cv2.WINDOW_NORMAL)
     cv2.imshow('image', img.img)
-    cv2.imwrite('image_with_targets.png', img.img)
+    cv2.imwrite('image_with_targets.jpg', img.img)
     
     cv2.waitKey(0)
     cv2.destroyAllWindows()
