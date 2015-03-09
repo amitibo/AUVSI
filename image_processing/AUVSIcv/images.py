@@ -51,6 +51,12 @@ def overlay(img, overlay_img, overlay_alpha, M):
     #
     offsets, dst_shape = calcDstLimits(img, overlay_img, M)
     
+    if dst_shape[0] == 0 or dst_shape[1]==0:
+        #
+        # Targets outside of the frame are not pasted.
+        #
+        return 
+    
     T = np.eye(3)
     T[0, 2] = -offsets[0]
     T[1, 2] = -offsets[1]
