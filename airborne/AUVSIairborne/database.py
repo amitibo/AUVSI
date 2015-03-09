@@ -5,50 +5,48 @@ import global_settings as gs
 import os
 
 
-class DataBase(object):
+def _cmd(cmd, params=()):
     
-    def __init__(self):
+    log.msg('Executing sqlite3 cmd: {cmd}, {params}'.format(cmd=cmd, params=params))
+    conn = sqlite3.connect(gs.DB_PATH)
+    cursor = conn.cursor()
+    cursor.execute(cmd, params)
+    result = list(cursor)
+    conn.commit()
+    cursor.close()
+    conn.close()
 
-        #
-        # Check if databases exists, if not create them
-        #
-        self.base_path = gs.DB_FOLDER
-        self.images_db = gs.DB_PATH
-        self.images_table = gs.IMAGES_TABLE
+    return result
 
-        if not os.path.exists(self.base_path):
-            os.makedirs(self.base_path)
 
-        self._cmd(
-            cmd='create table if not exists {table_name} (id integer primary key, image_path text, [timestamp] timestamp)'.format(table_name=self.images_table)
-        )
+def initDB():
     
-    def _cmd(self, cmd, params=()):
-        
-        log.msg('Creating deferred sqlite3 cmd: {cmd}, {params}'.format(cmd=cmd, params=params))
-        conn = sqlite3.connect(self.images_db)
-        cursor = conn.cursor()
-        cursor.execute(cmd, params)
-        result = list(cursor)
-        conn.commit()
-        cursor.close()
-        conn.close()
+    #
+    # Check if databases exists, if not create them
+    #
+    if not os.path.exists(gs.DB_FOLDER):
+        os.makedirs(gs.DB_FOLDER)
 
-        return result
+    _cmd(
+        cmd='create table if not exists {table_name} (id integer primary key, image_path text, [timestamp] timestamp)'.format(table_name=self.images_table)
+    )    
+    
 
-    def storeImg(self, img_path):
-        
-        cmd = "INSERT INTO {table_name}(image_path, timestamp) values (?, ?)".format(table_name=self.images_table)
-        self._cmd(cmd, (img_path, datetime.now().strftime('%Y-%m-%dT%H:%M:%S.%f')))
+def storeImg(img_path):
+    
+    cmd = "INSERT INTO {table_name}(image_path, timestamp) values (?, ?)".format(table_name=gs.IMAGES_TABLE)
+    _cmd(cmd, (img_path, datetime.now().strftime('%Y-%m-%dT%H:%M:%S.%f')))
 
-    def getNewImgs(self, timestamp):
-        
-        if timestamp is None:
-            timestamp = datetime(year=1970, month=1, day=1)
 
-        cmd = "SELECT * FROM {table_name} WHERE {table_name}.timestamp > '{timestamp}'".format(
-            table_name=self.images_table,
-            timestamp=timestamp
-        )
+def getNewImgs(timestamp):
+    
+    if timestamp is None:
+        timestamp = datetime(year=1970, month=1, day=1)
 
-        return self._cmd(cmd)
+    cmd = "SELECT * FROM {table_name} WHERE {table_name}.timestamp > '{timestamp}'".format(
+        table_name=gs.IMAGES_TABLE,
+        timestamp=timestamp
+    )
+
+    return _cmd(cmd)
+

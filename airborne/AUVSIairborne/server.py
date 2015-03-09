@@ -8,7 +8,8 @@ from twisted.python.logfile import DailyLogFile
 
 from camera import SimulationCamera, CanonCamera
 import global_settings as gs
-from database import DataBase
+import database as DB
+import images as IM
 import platform
 import json
 import os
@@ -17,12 +18,6 @@ import os
 __all__ = (
     'start_server'
 )
-
-
-#
-# Global objects
-#
-database = DataBase()
 
 
 class CameraResource(Resource):
@@ -71,7 +66,7 @@ class ImagesResource(Resource):
         else:
             timestamp = None
 
-        new_imgs = database.getNewImgs(timestamp)
+        new_imgs = DB.getNewImgs(timestamp)
 
         return json.dumps(new_imgs)
 
@@ -97,7 +92,7 @@ class FileSystemWatcher(object):
     """
     Watch for newly created files in a folder.
 
-    This is used for notifying when an imaged was captured by the camera.
+    This is used for notifying when an image was captured by the camera.
     
     Parameters
     ----------
@@ -143,7 +138,7 @@ class FileSystemWatcher(object):
             d = threads.deferToThread(self._watchThread)
             
     def OnChange(self, path):
-        database.storeImg(path)
+        DB.storeImg(path)
 
 
 def start_server(camera_type ,port=8000):
@@ -159,15 +154,22 @@ def start_server(camera_type ,port=8000):
     """
     
     #
-    # Setup logging.
+    # Create the auvsi data folder.
     #
     if not os.path.exists(gs.AUVSI_BASE_FOLDER):
         os.makedirs(gs.AUVSI_BASE_FOLDER)
         
-
+    #
+    # Setup logging.
+    #
     f = DailyLogFile('server.log', gs.AUVSI_BASE_FOLDER)
     log.startLogging(f)
 
+    #
+    # Initialize the data base.
+    #
+    DB.initDB()
+    
     #
     # Create the camera object.
     #
@@ -178,7 +180,7 @@ def start_server(camera_type ,port=8000):
         camera = SimulationCamera()
     else:
         raise NotImplementedError('Camera type {camera}, not supported.'.format(camera=camera_type))
-    
+
     #
     # add a watcher on the images folder
     #
