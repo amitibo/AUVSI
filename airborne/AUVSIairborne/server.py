@@ -138,7 +138,7 @@ class FileSystemWatcher(object):
             d = threads.deferToThread(self._watchThread)
             
     def OnChange(self, path):
-        DB.storeImg(path)
+        IM.handleNewImage(path)
 
 
 def start_server(camera_type ,port=8000):
@@ -191,7 +191,7 @@ def start_server(camera_type ,port=8000):
     # Config the server
     #
     root = HTTPserverMain()
-    root.putChild("images", File(camera.base_path.encode('ascii', 'ignore')))
+    root.putChild("images", File(gs.RESIZED_IMAGES_FOLDER))
     factory = Site(root)
 
     #

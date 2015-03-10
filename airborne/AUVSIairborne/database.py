@@ -28,12 +28,14 @@ def initDB():
         os.makedirs(gs.DB_FOLDER)
 
     _cmd(
-        cmd='create table if not exists {table_name} (id integer primary key, image_path text, [timestamp] timestamp)'.format(table_name=self.images_table)
+        cmd='create table if not exists {table_name} (id integer primary key, image_path text, [timestamp] timestamp)'.format(table_name=gs.IMAGES_TABLE)
     )    
     
 
-def storeImg(img_path):
+def storeImg(params):
     
+    img_path, img_data = params
+     
     cmd = "INSERT INTO {table_name}(image_path, timestamp) values (?, ?)".format(table_name=gs.IMAGES_TABLE)
     _cmd(cmd, (img_path, datetime.now().strftime('%Y-%m-%dT%H:%M:%S.%f')))
 

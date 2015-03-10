@@ -6,6 +6,7 @@ import warnings
 #
 AUVSI_BASE_FOLDER = os.path.expanduser('~/.auvsi_airborne')
 IMAGES_FOLDER = os.path.join(AUVSI_BASE_FOLDER, 'images')
+RESIZED_IMAGES_FOLDER = os.path.join(AUVSI_BASE_FOLDER, 'resized_images')
 DB_FOLDER = os.path.join(AUVSI_BASE_FOLDER, 'db')
 DB_PATH = os.path.join(DB_FOLDER, 'auvsi.db')
 
