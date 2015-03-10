@@ -14,11 +14,17 @@ from kivy.uix.settings import SettingsWithSidebar
 from kivy.properties import ObjectProperty
 from kivy.uix.stencilview import StencilView
 from kivy.uix.button import Button
+from kivy.uix.relativelayout import RelativeLayout
+from kivy.uix.floatlayout import FloatLayout
+from kivy.graphics import Color, Rectangle, Point, GraphicException
+from kivy.uix.image import AsyncImage
 
 import pkg_resources
 import global_settings as gs
 from configobj import ConfigObj
 import os
+from random import random
+from math import sqrt
 
 from settingsjson import network_json, camera_json, admin_json
 
@@ -29,6 +35,76 @@ class BGLabel(Label):
 
 class BoxStencil(BoxLayout, StencilView):
     pass
+
+
+class TouchAsyncImage(AsyncImage):
+    
+    def on_touch_down(self, touch):
+        
+        #if not self.collide_point(*touch.pos):
+            #return super(TouchAsyncImage, self).on_touch_down(touch)
+
+        win = self.get_parent_window()
+        ud = touch.ud
+        ud['group'] = g = str(touch.uid)
+        ud['color'] = random()
+
+        with self.canvas:
+            Color(ud['color'], 1, 1, mode='hsv', group=g)
+            ud['lines'] = [
+                Rectangle(pos=(touch.x, 0), size=(1, win.height), group=g),
+                Rectangle(pos=(0, touch.y), size=(win.width, 1), group=g),
+            ]
+            
+        ud['label'] = Label(size_hint=(None, None))
+        self.update_touch_label(ud['label'], touch)
+        self.add_widget(ud['label'])
+        touch.grab(self)
+        return super(TouchAsyncImage, self).on_touch_down(touch)
+
+    def on_touch_move(self, touch):
+        
+        if touch.grab_current is not self:
+            return super(TouchAsyncImage, self).on_touch_move(touch)
+
+        ud = touch.ud
+         
+        ud['lines'][0].pos = touch.x, 0
+        ud['lines'][1].pos = 0, touch.y
+
+        ud['label'].pos = touch.pos
+        self.update_touch_label(ud['label'], touch)
+        
+        return super(TouchAsyncImage, self).on_touch_move(touch)
+        
+    def on_touch_up(self, touch):
+        if touch.grab_current is not self:
+            return super(TouchAsyncImage, self).on_touch_up(touch)
+        
+        touch.ungrab(self)
+        ud = touch.ud
+        self.canvas.remove_group(ud['group'])
+        self.remove_widget(ud['label'])
+        
+        return super(TouchAsyncImage, self).on_touch_up(touch)
+
+    def update_touch_label(self, label, touch):
+        
+        offset_x = self.center[0]-self.norm_image_size[0]/2
+        offset_y = self.center[1]-self.norm_image_size[1]/2
+
+        scale_ratio = self.texture_size[0]/self.norm_image_size[0]
+        
+        texture_x = (touch.x - offset_x)*scale_ratio
+        texture_y = (touch.y - offset_y)*scale_ratio
+         
+        label.text = 'X: {x}, Y: {y}'.format(
+            x=texture_x,
+            y=texture_y
+        )
+        label.texture_update()
+        label.pos = touch.pos
+        label.size = label.texture_size[0] + 20, label.texture_size[1] + 20
 
 
 class ImagesGalleryWin(BoxLayout):
