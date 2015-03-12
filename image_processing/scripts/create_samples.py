@@ -40,8 +40,10 @@ def main():
     img.paste(target)
     
     cv2.namedWindow('image', flags=cv2.WINDOW_NORMAL)
-    cv2.imshow('image', img.img)
-    cv2.imwrite('image_with_targets.jpg', img.img)
+    resized_img = cv2.resize(img.img, (0, 0), fx=0.1, fy=0.1)
+    
+    cv2.imshow('image', resized_img)
+    cv2.imwrite('image_with_targets.jpg', resized_img)
     
     cv2.waitKey(0)
     cv2.destroyAllWindows()

@@ -1,5 +1,6 @@
 from __future__ import division
 from twisted.internet import threads
+import multiprocessing as mp
 import database as DB
 from datetime import datetime
 import global_settings as gs
@@ -8,6 +9,7 @@ import time
 import cv2
 import os
 
+pool = None
 
 def tagRatio(tag):
     ratio = tag.values[0].num/tag.values[0].den
@@ -23,8 +25,7 @@ def handleNewImage(img_path):
     # Create the image processing pipeline
     #
     d = threads.deferToThread(getImgData, img_path)
-    d.addCallback(resizeImg)
-    d.addCallback(createCrops)
+    d.addCallback(dispatchImgJob)
     d.addCallback(DB.storeImg)
 
 
@@ -49,22 +50,26 @@ def getImgData(img_path):
     
     return img_path, img_data
 
+def dispatchImgJob(params):
+    """Dispatch the image processing task to a process worker."""
 
-def resizeImg(params):
-    #
-    #
-    #
     img_path, img_data = params
     
+    return pool.apply(processImg, (img_path, img_data))
+
+
+
+def processImg(img_path, img_data):
     #
     # sleep to let the image be created.
     #
     time.sleep(0.5)
     img = cv2.imread(img_path)
-    resized_img = cv2.resize(img, (0,0), fx=0.5, fy=0.5) 
-    
-    if not os.path.exists(gs.RESIZED_IMAGES_FOLDER):
-        os.makedirs(gs.RESIZED_IMAGES_FOLDER)
+
+    #
+    # Resize the image.
+    #
+    resized_img = cv2.resize(img, (0,0), fx=0.25, fy=0.25) 
     
     filename = 'resized_{formated_time}.jpg'.format(
         formated_time=datetime.now().strftime("%Y_%m_%d_%H_%M_%S_%f")
@@ -75,11 +80,11 @@ def resizeImg(params):
     return resized_img_path, img_data
 
 
-def createCrops(params):
-    #
-    #
-    #
-    img_path, img_data = params
+def initIM():
+    global pool
     
-    return img_path, img_data
-
+    pool = mp.Pool()
+    
+    if not os.path.exists(gs.RESIZED_IMAGES_FOLDER):
+        os.makedirs(gs.RESIZED_IMAGES_FOLDER)
+      

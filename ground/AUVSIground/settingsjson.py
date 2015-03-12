@@ -44,6 +44,18 @@ camera_json = json.dumps(
     ]
 )
 
+cv_json = json.dumps(
+    [
+        {'type': 'title',
+         'title': 'Image Processing'},
+        {'type': 'numeric',
+         'title': 'Image Rescaling',
+         'desc': 'Rate of image rescaling for transmission',
+         'section': 'CV',
+         'key': 'image_rescaling'},         
+    ]
+)
+
 admin_json = json.dumps(
     [
         {'type': 'title',

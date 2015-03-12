@@ -52,6 +52,27 @@ class CameraResource(Resource):
             return NoResource()
 
 
+class CVResource(Resource):
+    """Handle image processing related communication."""
+    
+    def render_GET(self, request):
+        """"""
+        #
+        # Get the type of command
+        #
+        cmd = request.prepath[0]
+        args = request.args
+        
+        if cmd == 'cv_set':
+            for key, item in args.items():
+                #
+                # TODO: handle cv settings.
+                #
+                pass
+            
+            return NoResource()
+
+
 class ImagesResource(Resource):
     """Handle image related communication."""
 
@@ -169,6 +190,11 @@ def start_server(camera_type ,port=8000):
     # Initialize the data base.
     #
     DB.initDB()
+    
+    #
+    # Initialize the imageprocessing module.
+    #
+    IM.initIM()
     
     #
     # Create the camera object.

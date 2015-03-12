@@ -21,12 +21,11 @@ from kivy.uix.image import AsyncImage
 
 import pkg_resources
 import global_settings as gs
-from configobj import ConfigObj
 import os
 from random import random
 from math import sqrt
 
-from settingsjson import network_json, camera_json, admin_json
+from settingsjson import network_json, camera_json, cv_json, admin_json
 
 
 class BGLabel(Label):
@@ -191,7 +190,10 @@ class GUIApp(App):
             'Camera', {'ISO': 100, 'Shutter': 5000, 'Aperture': 4, 'Zoom': 45}
         )
         config.setdefaults(
-            'Admin', {'Logging Path': gs.AUVSI_BASE_FOLDER}
+            'Camera', {'ISO': 100, 'Shutter': 5000, 'Aperture': 4, 'Zoom': 45}
+        )
+        config.setdefaults(
+            'CV', {'image_rescaling': 0.25}
         )
     
     def build_settings(self, settings):
@@ -199,6 +201,7 @@ class GUIApp(App):
         
         settings.add_json_panel("Network", self.config, data=network_json)
         settings.add_json_panel("Camera", self.config, data=camera_json)
+        settings.add_json_panel("CV", self.config, data=cv_json)
         settings.add_json_panel("Admin", self.config, data=admin_json)
     
     def on_config_change(self, config, section, key, value):
@@ -214,6 +217,11 @@ class GUIApp(App):
                 'zoom': self.config.get('Camera', 'zoom'),
             }
             server.access('camera_set', args=args)
+        elif section == 'CV':
+            args = {
+                'image_rescaling': self.config.get('CV', 'image_rescaling'),
+            }
+            server.access('cv', args=args)
             
     def connect_to_server(self):
         """Initiate connection to airborne server."""

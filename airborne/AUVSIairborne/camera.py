@@ -50,6 +50,7 @@ class SimulationCamera(BaseCamera):
             
             img = AUVSIcv.Image(imgs_paths[img_index])
             img_index += 1
+            img_index = img_index % len(imgs_paths)
             
             cv2.imwrite(self._getName(), img.img)
             
