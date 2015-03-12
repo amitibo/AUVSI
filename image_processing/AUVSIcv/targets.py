@@ -15,8 +15,9 @@ __all__ = [
     "CircleTarget",
     "RectangleTarget",
     "TriangleTarget",
-    "CrossTarget",    
+    "CrossTarget",
     "PolygonTarget",
+    "StarTarget",
     "QRTarget"
 ]
 
@@ -227,6 +228,34 @@ class PolygonTarget(BaseTarget):
         for i in range(self._nsides):
             polygon.append(r + r*np.cos(alpha*i))
             polygon.append(r + r*np.sin(alpha*i))
+            
+        ctx.polygon(polygon, brush)
+
+
+class StarTarget(BaseTarget):
+    """A target in the form of a n-star."""
+
+    def __init__(self, n, *args, **kwds):
+        
+        self._nstar = n
+        
+        super(StarTarget, self).__init__(*args, **kwds)
+        
+    def _drawForm(self, ctx, brush):
+
+        r_outer = c = self._template_size/2
+        r_inner = self._template_size/4
+        alpha = np.pi/self._nstar
+        
+        polygon = []
+        for i in range(2*self._nstar):
+            if i % 2 == 1:
+                r = r_outer
+            else:
+                r = r_inner
+                
+            polygon.append(c + r*np.cos(alpha*i))
+            polygon.append(c + r*np.sin(alpha*i))
             
         ctx.polygon(polygon, brush)
 

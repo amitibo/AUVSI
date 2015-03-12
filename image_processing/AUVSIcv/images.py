@@ -192,17 +192,14 @@ class Image(object):
         nx = int((self._img.shape[1] - patch_width)/patch_shift)
         ny = int((self._img.shape[0] - patch_height)/patch_shift)
         
-        patches = []
         for i in range(nx):
             for j in range(ny):
                 sx = i*patch_shift
                 sy = j*patch_shift
                 patch = self._img[sy:sy+patch_height, sx:sx+patch_width, :]
-                patches.append(patch.copy())
-        
-        return patches
+                yield patch.copy()
 
-    def pastePatches(self, patches, target):
+    def pastePatch(self, patch, target):
         """Paste a target on a patch"""
 
         target_H = target.H(
@@ -214,8 +211,7 @@ class Image(object):
         M2 = np.eye(3, 4)
         M = np.dot(self.K, np.dot(M2, np.dot(np.linalg.inv(self.Rt), np.dot(target_H, M1))))
 
-        for patch in patches:
-            overlayPatch(img=patch, overlay_img=target.img, overlay_alpha=target.alpha, M=M)
+        overlayPatch(img=patch, overlay_img=target.img, overlay_alpha=target.alpha, M=M)
     
     @property
     def img(self):

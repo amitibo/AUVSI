@@ -14,7 +14,7 @@ def main():
     img = AUVSIcv.Image(imgs_paths[3])
     
     for i in range(10):
-        target = AUVSIcv.PolygonTarget(
+        target = AUVSIcv.StarTarget(
             n=5+int(i/3),
             size=2,
             orientation=30*i,
@@ -40,7 +40,7 @@ def main():
     img.paste(target)
     
     cv2.namedWindow('image', flags=cv2.WINDOW_NORMAL)
-    resized_img = cv2.resize(img.img, (0, 0), fx=0.1, fy=0.1)
+    resized_img = cv2.resize(img.img, (0, 0), fx=0.25, fy=0.25)
     
     cv2.imshow('image', resized_img)
     cv2.imwrite('image_with_targets.jpg', resized_img)

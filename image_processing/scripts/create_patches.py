@@ -25,17 +25,18 @@ def main():
         font_color=(140, 230, 240)
     )
     
-    patches = img.createPatches(patch_size=(200, 200), patch_shift=200)
-    
-    img.pastePatches(patches=patches, target=target)
-    
-    cv2.namedWindow('image', flags=cv2.WINDOW_NORMAL)
-    for patch in patches:
-        patch = cv2.resize(patch, (0, 0), fx=0.1, fy=0.1)
-        cv2.imshow('image', patch)
-        cv2.waitKey(0)
+    patches = img.createPatches(patch_size=(200, 200), patch_shift=50)
         
-    cv2.destroyAllWindows()
+    samples = []
+    for patch in patches:
+        img.pastePatch(patch=patch, target=target)
+        
+        patch = cv2.resize(patch, (0, 0), fx=0.15, fy=0.15)
+        samples.append(patch.ravel())
+        
+    samples = np.array(samples)
+    
+    pass
 
 
 if __name__ == '__main__':
