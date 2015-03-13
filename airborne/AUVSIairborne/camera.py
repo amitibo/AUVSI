@@ -46,12 +46,37 @@ class SimulationCamera(BaseCamera):
         imgs_paths = glob.glob(os.path.join(base_path, '*.jpg'))
         img_index = 0
         while run.value == 1:
-            time.sleep(1)
-            
+
+            #
+            # Pick up an image from disk
+            #
             img = AUVSIcv.Image(imgs_paths[img_index])
             img_index += 1
             img_index = img_index % len(imgs_paths)
             
+            ##
+            ## Create a target.
+            ##
+            #target = AUVSIcv.StarTarget(
+                #n=6,
+                #size=2,
+                #orientation=30,
+                #altitude=0,
+                #longitude=32.8167+0.0001,
+                #latitude=34.9833+0.00001, 
+                #color=(70, 150, 100), 
+                #letter='A', 
+                #font_color=(140, 230, 240)
+            #)
+
+            ##
+            ## Paste it on the image.
+            ##
+            #img.paste(target)
+            
+            #
+            # Save the image to disk (should trigger the image processing code).
+            #
             cv2.imwrite(self._getName(), img.img)
             
     def startShooting(self):
