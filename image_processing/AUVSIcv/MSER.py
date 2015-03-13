@@ -1,34 +1,28 @@
-#!/usr/bin/python
 # -*- coding: latin-1 -*-
+"""
+MSER Code
+Code description:
+The code recives an image, an dict type strucure with details
+of the image (focal length, flight altitude, camera angles etc.),
+a scaling constant and returns a scaled down image, an array of
+crops (images) from the original image and a dict type structure with
+relevant data for each crop (size, location relative to the original 
+image etc.). The image data is structured as follows:
+Image_Information = {'Focal_Length': Number, 'Flight_Altitude': Number, 'Camera_Pitch_Angle': Number, 'Camera_Roll_Angle' : Number}
 
-#MSER Code
-#Written by: Shlomi Bouscher
-#Version: 1.0.0
-#Date: 03/03/2015
-#Code description:
-# The code recives an image, an dict type strucure with details of the image (focal length, flight altitude, camera angles etc.),
-# a scaling constant and returns a scaled down image, an array of crops (images) from the original image and a dict type structure with
-# relevant data for each crop (size, location relative to the original image etc.). 
-# The image data is structured as follows: Image_Information = {'Focal_Length': Number, 'Flight_Altitude': Number, 'Camera_Pitch_Angle': Number, 'Camera_Roll_Angle' : Number};
-#Here we go...
-#Defining required libraries
+Author: Shlomi Bouscher
+Version: 0.1.0
+Date: 03/03/2015
+"""
+
 import cv2
 import numpy as np
 import Image
-from matplotlib import pyplot as plt
 
 
-def Targets_Unifier(Crop_Data):
-
-
-#____________Function_Information____________#
-    Function_Information = {}
-    Function_Information['Version'] = '1.0.0'
-    Function_Information['Version_Date'] = '06/03/2015'
-
-    #____________Known_Issues____________#
-
-    #____________Function____________#
+def targetsUnifier(Crop_Data):
+    """"""
+    
     Error_Code = 0
     Error_String = 'None'
 
@@ -85,27 +79,26 @@ def Targets_Unifier(Crop_Data):
     return (New_Crop_Data,Error_Code,Error_String)
 
 
-def MSER_Primary(Image,Image_Information,Scaling_Constant,Crop_Save_Path):
+def MSER_primary(Image,Image_Information,Scaling_Constant,Crop_Save_Path):
+    """Primary airborne image processing function"""
 
-    #____________Function_Information____________%
-    Function_Information = {}
-    Function_Information['Description'] = 'Primary airborne image processing function'
-    Function_Information['Version'] = '1.0.0'
-    Function_Information['Version_Date'] = '03/03/2015'
+    #
+    # Acquire competition data (targets, camera spec etc.)
+    # 
+    Competition_Data_Block = competitionData()
 
-    #____________Known_Issues____________%
-
-    #Acquire competition data (targets, camera spec etc.)
-    Competition_Data_Block = Competition_Data()
-
-    #Define a safety gap with croping segments of the image
+    #
+    # Define a safety gap with croping segments of the image
+    #
     Crop_Safety_Gap = 10
     
-    #Obtain minimum & maximum target size in pixel number
-    Target_Size = list(Target_Size_Generator(Image_Information,Competition_Data_Block,Scaling_Constant))
+    #
+    # Obtain minimum & maximum target size in pixel number
+    #
+    Target_Size = list(targetSizeGenerator(Image_Information,Competition_Data_Block,Scaling_Constant))
     Resized_Image = cv2.resize(Image, (0,0), fx = Scaling_Constant, fy = Scaling_Constant)    
     
-    MSER_Result = Dynamic_MSER(Resized_Image,Image_Information,Target_Size)
+    MSER_Result = dynamicMSER(Resized_Image,Image_Information,Target_Size)
 
     Error_Code = MSER_Result[1]
     Crops = MSER_Result[0]
@@ -114,29 +107,22 @@ def MSER_Primary(Image,Image_Information,Scaling_Constant,Crop_Save_Path):
    
     if Error_Code == 0: 
         for i in range(0,len(Crops)):
-            Temp = list(Crop_Min_Max_Center(Crops[i],Crop_Safety_Gap,Scaling_Constant))
+            Temp = list(cropMinMaxCenter(Crops[i],Crop_Safety_Gap,Scaling_Constant))
             Crop_Data.append(Temp)
 
-        New_Crop_Data = Targets_Unifier(Crop_Data)
+        New_Crop_Data = targetsUnifier(Crop_Data)
         New_Crop_Data_2 = New_Crop_Data[0]
-        Image_Crop(Image,New_Crop_Data_2,Crop_Save_Path)
-    Image_Scale(Image,Crop_Save_Path,Scaling_Constant)
-def Image_Crop(Image,Crop_Data,Crop_Save_Path):
-
-    #%____________Function_Information____________%
-    Function_Information = {}
-    Function_Information['Version'] = '1.0.0'
-    Function_Information['Version_Date'] = '06/03/2015'
-
-    #%____________Known_Issues____________%
-    #%1. Might have problems with crop boundries out of range, but crop function
-    #%can handle it (tested).
-
-    #%____________Function____________%
-    Error_Code = 0
-    Error_String = 'None'
-
-    #%____________Code____________%
+        imageCrop(Image,New_Crop_Data_2,Crop_Save_Path)
+    scaleImage(Image,Crop_Save_Path,Scaling_Constant)
+    
+    
+def imageCrop(Image,Crop_Data,Crop_Save_Path):
+    """
+    Known_Issues
+    ------------
+    1. Might have problems with crop boundries out of range, but crop function
+       can handle it (tested).
+    """
     
     for i in range(0,len(Crop_Data)):
 
@@ -154,17 +140,10 @@ def Image_Crop(Image,Crop_Data,Crop_Save_Path):
             Crop = Image[Y_Min:Y_Max, X_Min:X_Max]
             cv2.imwrite(Crop_Save_Path + '\\' + 'Crop No.' + str(i) + '.jpg',Crop)     
 
-def Dynamic_MSER(Image,Image_Information,Target_Size):
+
+def dynamicMSER(Image,Image_Information,Target_Size):
+    """Returns a dict object containing the MSER regions located"""
     
-    #____________Function_Information____________%
-    Function_Information = {}
-    Function_Information['Description'] = 'Returns a dict object containing the MSER regions located'
-    Function_Information['Version'] = '1.0.0'
-    Function_Information['Version_Date'] = '06/03/15'
-
-    #____________Known_Issues____________%
-
-    #____________Function____________%
     Error_Code = 0
     Error_String = 'None'
 
@@ -174,7 +153,9 @@ def Dynamic_MSER(Image,Image_Information,Target_Size):
     Max_Variation = 0.05
     Min_Diversity = 0.1
 
-    #Convert Image from RGB color format to HSV color format
+    #
+    # Convert Image from RGB color format to HSV color format
+    #
     HSV_Image = cv2.cvtColor(Image, cv2.COLOR_BGR2HSV)                    
     Mser_Image = HSV_Image[:,:,2]
     cv2.imwrite('C:\Users\sbousche\Documents\AUVSI Images\gray_scale.png', Mser_Image)
@@ -184,7 +165,7 @@ def Dynamic_MSER(Image,Image_Information,Target_Size):
     if (len(regions) != 0) :
 
         return (regions,Error_Code,Error_String)
-
+    
     else:
         Error_Code = 1
         Error_String = 'No suspected targets were detected in this image'
@@ -192,19 +173,9 @@ def Dynamic_MSER(Image,Image_Information,Target_Size):
     return (regions,Error_Code,Error_String)
 
 
-def Competition_Data():
-    #____________Function_Information____________%
-    Function_Information = {}
-    Function_Information['Description'] = 'Returns a dict structure with relevant information'
-    Function_Information['Version'] = '1.0.0'
-    Function_Information['Version_Date'] = '03/03/2015'
-
-    #____________Known_Issues____________%
-
-    #____________Function____________%
-    Error_Code = 0
-    Error_String = 'None'
-
+def competitionData():
+    """Returns a dict structure with relevant information"""
+    
     Competition_Data = {}
     Competition_Data['Camera_Name'] = 'Canon Powershot S110'
     Competition_Data['Camera_Color_Matrix_Type'] = 'sRGB'
@@ -240,21 +211,17 @@ def Competition_Data():
     
     return Competition_Data
 
-def Target_Size_Generator(Image_Information,Competition_Data,Scaling_Constant):
-    #____________Function_Information____________#
-    Function_Information = {}
-    Function_Information['Description'] = 'Creates minimum & maximum target size in pixel numbers'
-    Function_Information['Version'] = '1.0.0'
-    Function_Information['Version_Date'] = '03/03/2015'
 
-    #____________Known_Issues____________#
-
-    #____________Function____________#
+def targetSizeGenerator(Image_Information,Competition_Data,Scaling_Constant):
+    """Creates minimum & maximum target size in pixel numbers"""
+    
     Error_Code = 0
     Error_String = 'None'
     Reduction_Factor = 0.375 #From sensor size difference and target sizes (triangles are smaller by a factor of 0.5!)
 
-    #Defining relevant factors
+    #
+    # Defining relevant factors
+    #
     mm_to_feet = 0.00328084 #Converting factor
     Max_Edge_Length = Competition_Data['Target_Max_Edge_Length']
     Min_Edge_Length = Competition_Data['Target_Min_Edge_Length']
@@ -264,7 +231,9 @@ def Target_Size_Generator(Image_Information,Competition_Data,Scaling_Constant):
     Camera_Focal_Length = Image_Information['Focal_Length']
     Flight_Altitude = Image_Information['Flight_Altitude']
     
-    #Calculating 
+    #
+    # Calculating 
+    #
     Sensor_Width_Feet = mm_to_feet*Camera_Sensor_Width_35mm
     Feet_Per_Pixel = Sensor_Width_Feet/Pixel_Num_Width; #Same for height!
     Camera_Focal_Length_Feet_35mm = mm_to_feet*Camera_Focal_Length*Convert_Factor
@@ -276,17 +245,8 @@ def Target_Size_Generator(Image_Information,Competition_Data,Scaling_Constant):
 
     return (Min_Target_Size,Max_Target_Size,Error_Code,Error_String)
 
-def Crop_Min_Max_Center(Crop_Data,Crop_Safety_Gap,Scaling_Constant):
-    #____________Function_Information____________#
-    Function_Information = {}
-    Function_Information['Version'] = '1.0.0'
-    Function_Information['Version_Date'] = '06/03/2015'
 
-    #____________Known_Issues____________#
-
-    #____________Function____________#
-    Error_Code = 0
-    Error_String = 'None'
+def cropMinMaxCenter(Crop_Data,Crop_Safety_Gap,Scaling_Constant):
     
     X_Max = max(a for [a,b] in Crop_Data)/Scaling_Constant + Crop_Safety_Gap
     X_Min = min(a for [a,b] in Crop_Data)/Scaling_Constant - Crop_Safety_Gap
@@ -297,17 +257,10 @@ def Crop_Min_Max_Center(Crop_Data,Crop_Safety_Gap,Scaling_Constant):
     
     return (X_Center,Y_Center,X_Max,X_Min,Y_Max,Y_Min)
 
-def Image_Scale(Image,Crop_Save_Path,Scaling_Constant):
-    #____________Function_Information____________#
-    Function_Information = {}
-    Function_Information['Version'] = '1.0.0'
-    Function_Information['Version_Date'] = '09/03/2015'
+
+def scaleImage(Image,Crop_Save_Path,Scaling_Constant):
+    """"""
     
-    #____________Known_Issues____________#
-    
-    #____________Function____________#
-    Error_Code = 0
-    Error_String = 'None'
     Resized_Image = cv2.resize(Image, (0,0), fx = Scaling_Constant, fy = Scaling_Constant)
     cv2.imwrite(Crop_Save_Path + '\\' + 'Scaled_Image.jpg',Resized_Image)
 

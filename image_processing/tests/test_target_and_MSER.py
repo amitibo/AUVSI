@@ -5,7 +5,7 @@ import cv2
 import glob
 import os
 import time
-from AUVSIcv import Mser_Scaled_Down
+from AUVSIcv import MSER
 import time
 
 
@@ -45,10 +45,14 @@ def main():
     Image_Information = {'Focal_Length': 5, 'Flight_Altitude': 190, 'Camera_Pitch_Angle': 0, 'Camera_Roll_Angle' : 0}
     Image = img.img
     Scaling_Constant = 0.25
-    Path = 'C:\Users\sbousche\Documents\AUVSI Images'
-
+    
+    file_name = os.path.splitext(os.path.split(__file__)[1])[0]
+    results_path = os.path.abspath(os.path.join('results', file_name))
+    if not os.path.exists(results_path):
+        os.makedirs(results_path)
+    
     start = time.time()
-    Mser_Scaled_Down.MSER_Primary(Image,Image_Information,Scaling_Constant,Path)
+    MSER.MSER_primary(Image,Image_Information,Scaling_Constant,results_path)
     end = time.time()
     print end - start  
     
