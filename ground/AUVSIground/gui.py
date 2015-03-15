@@ -18,6 +18,7 @@ from kivy.uix.relativelayout import RelativeLayout
 from kivy.uix.floatlayout import FloatLayout
 from kivy.graphics import Color, Rectangle, Point, GraphicException
 from kivy.uix.image import AsyncImage
+from kivy.uix.scatter import Scatter
 from kivy.uix.togglebutton import ToggleButton
 
 import pkg_resources
@@ -37,20 +38,35 @@ class BoxStencil(BoxLayout, StencilView):
     pass
 
 
+class ScatterStencil(Scatter):
+    
+    def on_touch_down(self, touch):
+
+        stencil = self.parent.parent
+
+        #
+        # Check if inside the encapsulating stencil.
+        #
+        if not stencil.collide_point(*self.to_window(*touch.pos)):
+            return False
+
+        return super(ScatterStencil, self).on_touch_down(touch)
+    
+    
 class TouchAsyncImage(AsyncImage):
     
     def on_touch_down(self, touch):
         
         #
-        # Check if inside the encapsulating stencil.
+        # Check if wheel event
         #
-        stencil = self.parent.parent.parent
-        scatter_pos = self.parent.pos
-        rel_pos = self.parent.parent.pos
+        if touch.button == 'scrolldown' and self.parent.scale > 0.6:
+            self.parent.scale -= 0.1
+            return
+        if touch.button == 'scrollup':
+            self.parent.scale += 0.1
+            return
         
-        if not stencil.collide_point(touch.pos[0]+scatter_pos[0]+rel_pos[0], touch.pos[1]+scatter_pos[1]+rel_pos[1]):
-            return super(TouchAsyncImage, self).on_touch_down(touch)
-
         win = self.get_parent_window()
         ud = touch.ud
         ud['group'] = g = str(touch.uid)
@@ -117,16 +133,6 @@ class TouchAsyncImage(AsyncImage):
 class ImagesGalleryWin(BoxLayout):
     scatter_image = ObjectProperty()
     stacked_layout = ObjectProperty()
-
-    #
-    # NOTE:
-    # I accidently found out that I need to put this
-    # handler or else when the scatter image overlaps
-    # the 'shoot' button, the button stops working.
-    # I don't have a good explanation for this.
-    #
-    def on_touch_down(self, touch):
-        super(ImagesGalleryWin, self).on_touch_down(touch)
 
 
 class ImageProcessingGui(BoxLayout):
@@ -214,6 +220,12 @@ class GUIApp(App):
             'CV', {'image_rescaling': 0.25}
         )
     
+        #
+        # Disable multi touch emulation with the mouse.
+        #
+        from kivy.config import Config
+        Config.set('input', 'mouse', 'mouse,disable_multitouch')
+        
     def build_settings(self, settings):
         """Build the settings menu."""
         

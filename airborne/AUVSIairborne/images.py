@@ -50,13 +50,13 @@ def getImgData(img_path):
     
     return img_path, img_data
 
+
 def dispatchImgJob(params):
     """Dispatch the image processing task to a process worker."""
 
     img_path, img_data = params
     
     return pool.apply(processImg, (img_path, img_data))
-
 
 
 def processImg(img_path, img_data):
@@ -80,6 +80,25 @@ def processImg(img_path, img_data):
     return resized_img_path, img_data
 
 
+def handleNewCrop(img_id, rect):
+    """Handle a request for a crop."""
+    
+    d = threads.deferToThread(getImage, img_id, rect)
+    d.addCallback(cropImage)
+    
+def cropImage(img_path, rect):
+    """Crop a rectangle from the full resolution image."""
+
+    img = cv2.imread(img_path)
+
+    #
+    # Create the image processing pipeline
+    #
+    d = threads.deferToThread(getImgData, img_path)
+    d.addCallback(dispatchImgJob)
+    d.addCallback(DB.storeImg)
+    
+    
 def initIM():
     global pool
     

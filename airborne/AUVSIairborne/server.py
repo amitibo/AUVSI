@@ -92,6 +92,27 @@ class ImagesResource(Resource):
         return json.dumps(new_imgs)
 
 
+class CropResource(Resource):
+    """Handle crop related communication."""
+
+    def render_GET(self, request):
+        
+        args = request.args
+
+        #
+        # Get the timestamp
+        #
+        splits = request.uri[1:].split('=')
+        if len(splits) > 1:
+            timestamp = splits[1]
+        else:
+            timestamp = None
+
+        new_imgs = DB.getNewImgs(timestamp)
+
+        return json.dumps(new_imgs)
+
+
 class HTTPserverMain(Resource):
     """HTTPserverMain handles the communication with the ground station."""
     
@@ -102,6 +123,8 @@ class HTTPserverMain(Resource):
             return CameraResource()
         elif name.startswith('new_imgs'):
             return ImagesResource()
+        elif name.startswith('crop'):
+            return CropResource()
         else:
             return NoResource()
 
