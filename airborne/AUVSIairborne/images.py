@@ -1,5 +1,6 @@
 from __future__ import division
 from twisted.internet import threads
+from twisted.python import log
 import multiprocessing as mp
 import database as DB
 from datetime import datetime
@@ -30,9 +31,17 @@ def handleNewImage(img_path):
 
 
 def getImgData(img_path):
+
+    #
+    # give the image some time to finish creation
+    #
+    time.sleep(2)
+
     #
     # Get some data from the EXIF
     #
+    log.msg('Processing image: {path}'.format(path=img_path))
+ 
     with open(img_path, 'rb') as f:
         tags = exifread.process_file(f)
 
@@ -48,11 +57,12 @@ def getImgData(img_path):
     
     time_stamp = tags['Image DateTime'].values.replace(':', '_').replace(' ', '_') + datetime.now().strftime("_%f.jpg")
     new_img_path = os.path.join(gs.RENAMED_IMAGES_FOLDER, time_stamp)
+    log.msg('Renaming {old} to {new}'.format(old=img_path, new=new_img_path))
     os.rename(img_path, new_img_path)
     
     img_data = {}
     
-    return img_path, new_img_path
+    return new_img_path, img_data
 
 
 def dispatchImgJob(params):
