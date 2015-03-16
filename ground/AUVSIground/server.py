@@ -169,6 +169,8 @@ class ServerFactory(protocol.ReconnectingClientFactory):
     def _loopNewImgs(self, new_imgs):
         """Loop on all new images. Download and store in database each image."""
         
+        log.msg('Following images left to download: {new_imgs}'.format(new_imgs=new_imgs))
+        
         if len(new_imgs) == 0:
             #
             # Finished processing all new images.

@@ -53,7 +53,8 @@ class SimulationCamera(BaseCamera):
         imgs_paths = glob.glob(os.path.join(base_path, '*.jpg'))
         img_index = 0
         while run.value == 1:
-
+            time.sleep(0.5)
+            
             #
             # Pick up an image from disk
             #

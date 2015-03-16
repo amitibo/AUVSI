@@ -86,6 +86,8 @@ class ImagesResource(Resource):
 
         new_imgs = DB.getNewImgs(timestamp)
 
+        log.msg('Datebase got the following new images:\n{new_imgs}'.format(new_imgs=new_imgs))
+        
         return json.dumps(new_imgs)
 
 
@@ -179,6 +181,7 @@ class FileSystemWatcher(object):
             d = threads.deferToThread(self._watchThread)
             
     def OnChange(self, path):
+        log.msg('Identified new image {img}'.format(img=path))
         IM.handleNewImage(path)
 
 

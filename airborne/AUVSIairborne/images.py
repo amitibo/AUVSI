@@ -54,8 +54,12 @@ def getImgData(img_path):
     #ImageLength = tagValue(tags['EXIF ExifImageLength'])
     #ImageWidth = tagValue(tags['EXIF ExifImageWidth'])
     #FocalLength = tagRatio(tags['EXIF FocalLength'])
-    
-    time_stamp = tags['Image DateTime'].values.replace(':', '_').replace(' ', '_') + datetime.now().strftime("_%f.jpg")
+    try:
+        time_stamp = tags['Image DateTime'].values.replace(':', '_').replace(' ', '_') + datetime.now().strftime("_%f.jpg")
+    except:
+        log.msg('No Image DateTime tag using computer time.')
+        time_stamp = datetime.now().strftime("%Y_%m_%d_%H_%M_%S_%f.jpg")
+        
     new_img_path = os.path.join(gs.RENAMED_IMAGES_FOLDER, time_stamp)
     log.msg('Renaming {old} to {new}'.format(old=img_path, new=new_img_path))
     os.rename(img_path, new_img_path)
@@ -70,6 +74,8 @@ def dispatchImgJob(params):
 
     img_path, img_data = params
     
+    log.msg('Dispatching new image {img}'.format(img=img_path))
+    
     return pool.apply(processImg, (img_path, img_data))
 
 
@@ -83,6 +89,8 @@ def processImg(img_path, img_data):
     #
     # Resize the image.
     #
+    log.msg('Resizing new image {img}'.format(img=img_path))
+    
     resized_img = cv2.resize(img, (0,0), fx=0.25, fy=0.25) 
     
     filename = 'resized_{formated_time}.jpg'.format(
