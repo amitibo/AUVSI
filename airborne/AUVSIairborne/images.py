@@ -102,7 +102,7 @@ def cropImage(img_path, rect):
 def initIM():
     global pool
     
-    pool = mp.Pool()
+    pool = mp.Pool(2)
     
     if not os.path.exists(gs.RESIZED_IMAGES_FOLDER):
         os.makedirs(gs.RESIZED_IMAGES_FOLDER)

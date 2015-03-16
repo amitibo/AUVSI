@@ -42,12 +42,9 @@ class CameraResource(Resource):
             return "<html><body>Off!</body></html>"
 
         elif cmd == 'camera_set':
-            for key, item in args.items():
-                if getattr(camera, key) == None:
-                    log.msg('Ignoring unkown camera settings: {key}, {item}'.format(key=key, item=item))
-                    continue
-                
-                setattr(camera, key, int(item[0]))
+            params_dict = {key:int(val[0]) for key, val in args.items()}
+            camera.setParams(**params_dict)
+
         else:
             return NoResource()
 
