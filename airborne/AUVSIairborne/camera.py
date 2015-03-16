@@ -18,7 +18,7 @@ import os
 
 class BaseCamera(object):
     """Abstract class for a camera, not to be used directly."""
-    
+
     def __init__(self, zoom=45, shutter=1600, ISO=100, aperture=4):
 
         self.base_path = gs.IMAGES_FOLDER
@@ -48,7 +48,7 @@ class SimulationCamera(BaseCamera):
 
     def _shootingLoop(self, run):
         """Inifinite shooting loop. To run on separate process."""
-        
+
         base_path = os.environ['AUVSI_CV_DATA']
         imgs_paths = glob.glob(os.path.join(base_path, '*.jpg'))
         img_index = 0
@@ -60,7 +60,7 @@ class SimulationCamera(BaseCamera):
             img = AUVSIcv.Image(imgs_paths[img_index])
             img_index += 1
             img_index = img_index % len(imgs_paths)
-            
+
             #
             # Create a target.
             #
@@ -80,21 +80,21 @@ class SimulationCamera(BaseCamera):
             # Paste it on the image.
             #
             img.paste(target)
-            
+
             #
             # Save the image to disk (should trigger the image processing code).
             #
             cv2.imwrite(self._getName(), img.img)
-            
+
     def startShooting(self):
         self._run_flag = mp.Value('i', 1)
         self._shooting_proc = mp.Process(target=self._shootingLoop, args=(self._run_flag, ))
         self._shooting_proc.start()
-        
+
     def stopShooting(self):
         if self._shooting_proc is None:
             return
-        
+
         #
         # Stop the loop
         #
@@ -162,9 +162,9 @@ class CanonCamera(BaseCamera):
 
     def setParams(self, **kwds):
 
-	super(CanonCamera, self).setParams(**kwds)
+        super(CanonCamera, self).setParams(**kwds)
 
-	if 'zoom' in kwds and self._set_zoom:
+        if 'zoom' in kwds and self._set_zoom:
             zoom_cmd = """\"luar set_zoom({zoom})\"""".format(zoom=self.zoom)
             self._blocking_cmds(zoom_cmd)
             self._set_zoom = False
@@ -186,5 +186,5 @@ class CanonCamera(BaseCamera):
 
         kill(self._shooting_proc.pid)
         self._shooting_proc = None
-        
+
         self._blocking_cmds('killscript')

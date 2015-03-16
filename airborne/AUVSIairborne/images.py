@@ -45,10 +45,14 @@ def getImgData(img_path):
     #ImageLength = tagValue(tags['EXIF ExifImageLength'])
     #ImageWidth = tagValue(tags['EXIF ExifImageWidth'])
     #FocalLength = tagRatio(tags['EXIF FocalLength'])
-
+    
+    time_stamp = tags['Image DateTime'].values.replace(':', '_').replace(' ', '_') + datetime.now().strftime("_%f.jpg")
+    new_img_path = os.path.join(gs.RENAMED_IMAGES_FOLDER, time_stamp)
+    os.rename(img_path, new_img_path)
+    
     img_data = {}
     
-    return img_path, img_data
+    return img_path, new_img_path
 
 
 def dispatchImgJob(params):
@@ -107,3 +111,6 @@ def initIM():
     if not os.path.exists(gs.RESIZED_IMAGES_FOLDER):
         os.makedirs(gs.RESIZED_IMAGES_FOLDER)
       
+    if not os.path.exists(gs.RENAMED_IMAGES_FOLDER):
+        os.makedirs(gs.RENAMED_IMAGES_FOLDER)
+          
