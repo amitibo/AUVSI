@@ -22,6 +22,15 @@ The airborne platform used in 2015 competition is the ODROID XU3 running xubunut
 * twisted
 * chdkptp - The communication with the Cannon camera (used in 2015) is done using the chdkptp code.
 
+To use the camera in mode simulation, the following should also be installed:
+
+* freetype - Install using 'sudo apt-get install libfreetype6'
+* aggdraw - Install from source (preferably from svn) set the variable FREETYPE_ROOT = "/usr/" in the setup.py file.
+* PIL
+* exifread: Install with 'pip install exifread'
+* pyqrcode: Install with 'pip install pyqrcode'
+* pypng: Install with 'pip install pypng'
+
 ### Installation
 
     > hg clone ...

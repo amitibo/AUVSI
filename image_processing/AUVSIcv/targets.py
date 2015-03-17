@@ -61,7 +61,7 @@ class BaseTarget(object):
         letter,
         font_color,
         font_size=200,
-        font=r"C:\Windows\Fonts\Arialbd.ttf",
+        font=None,
         template_size=400
         ):
         
@@ -78,7 +78,16 @@ class BaseTarget(object):
         self._letter = letter
         self._font_color = font_color
         self._font_size = font_size
-        self._font = font
+        if font is None:
+            import platform
+            if platform.system() == 'Linux':
+                self._font = r"/usr/share/fonts/truetype/freefont/FreeSans.ttf"
+            else:
+                self._font = r"C:\Windows\Fonts\Arialbd.ttf"
+        else:
+            self._font = font
+        print 'FONT:', self._font
+
         self._template_size = template_size
         
         self._drawTemplate()
