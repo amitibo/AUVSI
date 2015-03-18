@@ -60,12 +60,12 @@ class TouchAsyncImage(AsyncImage):
         #
         # Check if wheel event
         #
-        if touch.button == 'scrolldown' and self.parent.scale > 0.6:
-            self.parent.scale -= 0.1
-            return
-        if touch.button == 'scrollup':
-            self.parent.scale += 0.1
-            return
+        if touch.device == 'mouse':
+            if touch.button == 'scrolldown' and self.parent.scale > 0.6:
+                self.parent.scale -= 0.1
+            if touch.button == 'scrollup':
+                self.parent.scale += 0.1
+            return super(TouchAsyncImage, self).on_touch_down(touch)
         
         win = self.get_parent_window()
         ud = touch.ud
