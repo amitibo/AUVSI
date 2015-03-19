@@ -168,7 +168,8 @@ class Image(object):
         Parameters
         ----------
         target : Target object.
-            Target to draw on the image, should be an object from a subclass of AUVSIcv BaseTarget.
+            Target to draw on the image, should be an object from a subclass of
+            AUVSIcv BaseTarget.
         """
 
         #

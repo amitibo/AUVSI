@@ -3,6 +3,7 @@ __author__ = 'Ori'
 from twisted.internet.protocol import Factory
 from twisted.protocols.basic import LineReceiver
 from twisted.python import log
+from AUVSIairborne.camera import SimulationCamera, CanonCamera
 
 
 class CameraControlProtocol(LineReceiver):
@@ -15,7 +16,7 @@ class CameraControlProtocol(LineReceiver):
         self.address = address
 
     def connectionMade(self):
-        host = {'ip':self.address.host, 'port':self.address.port}
+        host = {'ip': self.address.host, 'port': self.address.port}
         if self.factory.is_connection_allowed():
             self.factory.connection_was_made()
             log.msg("Connection made by {ip}:{port}.".format(**host))
@@ -25,11 +26,23 @@ class CameraControlProtocol(LineReceiver):
                     "someone already connected.".format(**host))
             self.transport.loseConnection()
             return
-        self.sendLine("HI!!!")
+        self.sendLine("Welcome to camera control channel.")
 
     def lineReceived(self, line):
-        if "s" == line:
-            log.msg("got '{}' as data".format(line))
+        if "start shooting" == line:
+            self.factory.camera.startShooting()
+            log.msg("Start shooting!")
+
+        elif "stop shooting" == line:
+            #self.factory.camera.startShooting()
+            log.msg("Stop shooting!")
+
+        elif line.startswith("set"):
+            words = line.split(' ')
+            params = {words[i]: words[i+1] for i in range(1, len(words), 2)}
+            #self.factory.camera.setParams(params)
+            log.msg("Sets {}".format(str(params)))
+
         else:
             log.msg("Unknown command: {}".format(line))
 
@@ -37,6 +50,7 @@ class CameraControlProtocol(LineReceiver):
 class CameraControlFactory(Factory):
     def __init__(self):
         self.connectionsPool = 1
+        self.camera = SimulationCamera()
 
     def buildProtocol(self, addr):
         return CameraControlProtocol(self, addr)
@@ -65,5 +79,5 @@ if __name__ == "__main__":
     from sys import stdout
 
     log.startLogging(stdout)
-    reactor.listenTCP(8855, CameraControlFactory())
+    reactor.listenTCP(8844, CameraControlFactory())
     reactor.run()
