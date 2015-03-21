@@ -133,12 +133,20 @@ class Image(object):
         #
         # Calculate camera intrinsic matrix.
         #
+        # in_to_mm = 25.4
+        # FocalPlaneYResolution = tagRatio(tags['EXIF FocalPlaneYResolution'])
+        # FocalPlaneXResolution = tagRatio(tags['EXIF FocalPlaneXResolution'])
+        # ImageLength = tagValue(tags['EXIF ExifImageLength'])
+        # ImageWidth = tagValue(tags['EXIF ExifImageWidth'])
+        # FocalLength = tagRatio(tags['EXIF FocalLength'])
+
+        #TODO remove mock values and use real values
         in_to_mm = 25.4
-        FocalPlaneYResolution = tagRatio(tags['EXIF FocalPlaneYResolution'])
-        FocalPlaneXResolution = tagRatio(tags['EXIF FocalPlaneXResolution'])
-        ImageLength = tagValue(tags['EXIF ExifImageLength'])
-        ImageWidth = tagValue(tags['EXIF ExifImageWidth'])
-        FocalLength = tagRatio(tags['EXIF FocalLength'])
+        FocalPlaneYResolution = 1
+        FocalPlaneXResolution = 1
+        ImageLength = 1
+        ImageWidth = 1
+        FocalLength = 1
  
         f_x = FocalLength * FocalPlaneXResolution / in_to_mm
         f_y = FocalLength * FocalPlaneYResolution / in_to_mm
@@ -148,7 +156,8 @@ class Image(object):
         # Calculate camera extrinsic matrix
         # Note:
         # 1) The local cartesian mapping (NED) is centered at the camera.
-        # 2) For some reason, I need to add 90 degrees to make the coords correct.
+        # 2) For some reason, I need to add 90 degrees to make the coords
+        # correct.
         t = np.eye(4)
         R = transforms.euler_matrix(
             ai=math.radians(self._data['yaw']),

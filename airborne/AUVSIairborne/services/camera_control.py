@@ -29,18 +29,26 @@ class CameraControlProtocol(LineReceiver):
         self.sendLine("Welcome to camera control channel.")
 
     def lineReceived(self, line):
+        self.sendLine("More master?")
         if "start shooting" == line:
             self.factory.camera.startShooting()
             log.msg("Start shooting!")
 
         elif "stop shooting" == line:
-            #self.factory.camera.startShooting()
+            self.factory.camera.stopShooting()
             log.msg("Stop shooting!")
 
         elif line.startswith("set"):
+            #TODO set parameters isn't working, check the camera class
             words = line.split(' ')
-            params = {words[i]: words[i+1] for i in range(1, len(words), 2)}
-            #self.factory.camera.setParams(params)
+            try:
+                params = {words[i]: words[i+1] for i in range(1, len(words), 2)}
+            except:
+                log.msg("Could not set the desired parameters: "
+                        "'{}'".format(line))
+                return
+
+            self.factory.camera.setParams(params)
             log.msg("Sets {}".format(str(params)))
 
         else:
