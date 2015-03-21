@@ -12,9 +12,14 @@ DB_FOLDER = os.path.join(AUVSI_BASE_FOLDER, 'db')
 DB_PATH = os.path.join(DB_FOLDER, 'auvsi.db')
 
 #
-# Database data
+# Ftp connection details
 #
-IMAGES_TABLE = 'images_table'
+FTP = {'user': 'auvsi', 'pass': '1234'}
+
+#
+# Performance
+#
+LOW_RES_SYNC_TIME = 1
 
 #
 # Camera data
