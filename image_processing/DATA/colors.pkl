@@ -1,0 +1,5696 @@
+(dp0
+S'fawn'
+p1
+(I207
+I175
+I123
+tp2
+sS'light grey blue'
+p3
+(I157
+I188
+I212
+tp4
+sS'dirty orange'
+p5
+(I200
+I118
+I6
+tp6
+sS'light lilac'
+p7
+(I237
+I200
+I255
+tp8
+sS'clay brown'
+p9
+(I178
+I113
+I61
+tp10
+sS'peacock blue'
+p11
+(I1
+I103
+I149
+tp12
+sS'greenish cyan'
+p13
+(I42
+I254
+I183
+tp14
+sS'carnation pink'
+p15
+(I255
+I127
+I167
+tp16
+sS'pale violet'
+p17
+(I206
+I174
+I250
+tp18
+sS'yellow'
+p19
+(I255
+I255
+I20
+tp20
+sS'cobalt'
+p21
+(I30
+I72
+I143
+tp22
+sS'olive'
+p23
+(I110
+I117
+I14
+tp24
+sS'lemon lime'
+p25
+(I191
+I254
+I40
+tp26
+sS'minty green'
+p27
+(I11
+I247
+I125
+tp28
+sS'deep violet'
+p29
+(I73
+I6
+I72
+tp30
+sS'claret'
+p31
+(I104
+I0
+I24
+tp32
+sS'dull red'
+p33
+(I187
+I63
+I63
+tp34
+sS'apple green'
+p35
+(I118
+I205
+I38
+tp36
+sS'clear blue'
+p37
+(I36
+I122
+I253
+tp38
+sS'windows blue'
+p39
+(I55
+I120
+I191
+tp40
+sS'baby shit green'
+p41
+(I136
+I151
+I23
+tp42
+sS'gold'
+p43
+(I219
+I180
+I12
+tp44
+sS'prussian blue'
+p45
+(I0
+I69
+I119
+tp46
+sS'deep purple'
+p47
+(I54
+I1
+I63
+tp48
+sS'dark grey'
+p49
+(I54
+I55
+I55
+tp50
+sS'yellow ochre'
+p51
+(I203
+I157
+I6
+tp52
+sS'booger green'
+p53
+(I150
+I180
+I3
+tp54
+sS'vomit green'
+p55
+(I137
+I162
+I3
+tp56
+sS'melon'
+p57
+(I255
+I120
+I85
+tp58
+sS'candy pink'
+p59
+(I255
+I99
+I233
+tp60
+sS'ocher'
+p61
+(I191
+I155
+I12
+tp62
+sS'amethyst'
+p63
+(I155
+I95
+I192
+tp64
+sS'light forest green'
+p65
+(I79
+I145
+I83
+tp66
+sS'sage green'
+p67
+(I136
+I179
+I120
+tp68
+sS'dark maroon'
+p69
+(I60
+I0
+I8
+tp70
+sS'baby purple'
+p71
+(I202
+I155
+I247
+tp72
+sS'dirt'
+p73
+(I138
+I110
+I69
+tp74
+sS'purpley blue'
+p75
+(I95
+I52
+I231
+tp76
+sS'bright cyan'
+p77
+(I65
+I253
+I254
+tp78
+sS'greyish blue'
+p79
+(I94
+I129
+I157
+tp80
+sS'seafoam blue'
+p81
+(I120
+I209
+I182
+tp82
+sS'marigold'
+p83
+(I252
+I192
+I6
+tp84
+sS'grey'
+p85
+(I146
+I149
+I145
+tp86
+sS'asparagus'
+p87
+(I119
+I171
+I86
+tp88
+sS'light burgundy'
+p89
+(I168
+I65
+I91
+tp90
+sS'greyblue'
+p91
+(I119
+I161
+I181
+tp92
+sS'greenish teal'
+p93
+(I50
+I191
+I132
+tp94
+sS'toxic green'
+p95
+(I97
+I222
+I42
+tp96
+sS'blue/purple'
+p97
+(I90
+I6
+I239
+tp98
+sS'strong blue'
+p99
+(I12
+I6
+I247
+tp100
+sS'brownish purple'
+p101
+(I118
+I66
+I78
+tp102
+sS'teal'
+p103
+(I2
+I147
+I134
+tp104
+sS'greenish'
+p105
+(I64
+I163
+I104
+tp106
+sS'pinky purple'
+p107
+(I201
+I76
+I190
+tp108
+sS'eggplant purple'
+p109
+(I67
+I5
+I65
+tp110
+sS'blood red'
+p111
+(I152
+I0
+I2
+tp112
+sS'neon pink'
+p113
+(I254
+I1
+I154
+tp114
+sS'navy green'
+p115
+(I53
+I83
+I10
+tp116
+sS'tea'
+p117
+(I101
+I171
+I124
+tp118
+sS'vermillion'
+p119
+(I244
+I50
+I12
+tp120
+sS'darkish pink'
+p121
+(I218
+I70
+I125
+tp122
+sS'light violet'
+p123
+(I214
+I180
+I252
+tp124
+sS'dark slate blue'
+p125
+(I33
+I71
+I97
+tp126
+sS'orangey red'
+p127
+(I250
+I66
+I36
+tp128
+sS'earth'
+p129
+(I162
+I101
+I62
+tp130
+sS'lightish green'
+p131
+(I97
+I225
+I96
+tp132
+sS'sick green'
+p133
+(I157
+I185
+I44
+tp134
+sS'light orange'
+p135
+(I253
+I170
+I72
+tp136
+sS'ugly pink'
+p137
+(I205
+I117
+I132
+tp138
+sS'blue'
+p139
+(I3
+I67
+I223
+tp140
+sS'pale lilac'
+p141
+(I228
+I203
+I255
+tp142
+sS'rich purple'
+p143
+(I114
+I0
+I88
+tp144
+sS'metallic blue'
+p145
+(I79
+I115
+I142
+tp146
+sS'orange pink'
+p147
+(I255
+I111
+I82
+tp148
+sS'coral'
+p149
+(I252
+I90
+I80
+tp150
+sS'very dark brown'
+p151
+(I29
+I2
+I0
+tp152
+sS'burgundy'
+p153
+(I97
+I0
+I35
+tp154
+sS'purpleish'
+p155
+(I152
+I86
+I141
+tp156
+sS'blue with a hint of purple'
+p157
+(I83
+I60
+I198
+tp158
+sS'bright purple'
+p159
+(I190
+I3
+I253
+tp160
+sS'yellowish tan'
+p161
+(I252
+I252
+I129
+tp162
+sS'dark sage'
+p163
+(I89
+I133
+I86
+tp164
+sS'tan brown'
+p165
+(I171
+I126
+I76
+tp166
+sS'deep teal'
+p167
+(I0
+I85
+I90
+tp168
+sS'pastel pink'
+p169
+(I255
+I186
+I205
+tp170
+sS'mid blue'
+p171
+(I39
+I106
+I179
+tp172
+sS'tealish green'
+p173
+(I12
+I220
+I115
+tp174
+sS'orange brown'
+p175
+(I190
+I100
+I0
+tp176
+sS'bright aqua'
+p177
+(I11
+I249
+I234
+tp178
+sS'barbie pink'
+p179
+(I254
+I70
+I165
+tp180
+sS'dark cream'
+p181
+(I255
+I243
+I154
+tp182
+sS'bluey grey'
+p183
+(I137
+I160
+I176
+tp184
+sS'pea'
+p185
+(I164
+I191
+I32
+tp186
+sS'leafy green'
+p187
+(I81
+I183
+I59
+tp188
+sS'dark tan'
+p189
+(I175
+I136
+I74
+tp190
+sS'cloudy blue'
+p191
+(I172
+I194
+I217
+tp192
+sS'neon yellow'
+p193
+(I207
+I255
+I4
+tp194
+sS'bubble gum pink'
+p195
+(I255
+I105
+I175
+tp196
+sS'purply blue'
+p197
+(I102
+I26
+I238
+tp198
+sS'dark khaki'
+p199
+(I155
+I143
+I85
+tp200
+sS'mud brown'
+p201
+(I96
+I70
+I15
+tp202
+sS'cinnamon'
+p203
+(I172
+I79
+I6
+tp204
+sS'boring green'
+p205
+(I99
+I179
+I101
+tp206
+sS'dusty rose'
+p207
+(I192
+I115
+I122
+tp208
+sS'dark rose'
+p209
+(I181
+I72
+I93
+tp210
+sS'golden'
+p211
+(I245
+I191
+I3
+tp212
+sS'apple'
+p213
+(I110
+I203
+I60
+tp214
+sS'straw'
+p215
+(I252
+I246
+I121
+tp216
+sS'dried blood'
+p217
+(I75
+I1
+I1
+tp218
+sS'orangish'
+p219
+(I252
+I130
+I74
+tp220
+sS'sienna'
+p221
+(I169
+I86
+I30
+tp222
+sS'hot green'
+p223
+(I37
+I255
+I41
+tp224
+sS'dodger blue'
+p225
+(I62
+I130
+I252
+tp226
+sS'light mint green'
+p227
+(I166
+I251
+I178
+tp228
+sS'crimson'
+p229
+(I140
+I0
+I15
+tp230
+sS'burnt siena'
+p231
+(I183
+I82
+I3
+tp232
+sS'light seafoam'
+p233
+(I160
+I254
+I191
+tp234
+sS'seafoam'
+p235
+(I128
+I249
+I173
+tp236
+sS'lime'
+p237
+(I170
+I255
+I50
+tp238
+sS'purplish pink'
+p239
+(I206
+I93
+I174
+tp240
+sS'midnight blue'
+p241
+(I2
+I0
+I53
+tp242
+sS'fluorescent green'
+p243
+(I8
+I255
+I8
+tp244
+sS'ochre'
+p245
+(I191
+I144
+I5
+tp246
+sS'bright lime green'
+p247
+(I101
+I254
+I8
+tp248
+sS'cerulean blue'
+p249
+(I5
+I110
+I238
+tp250
+sS'puke'
+p251
+(I165
+I165
+I2
+tp252
+sS'dark periwinkle'
+p253
+(I102
+I95
+I209
+tp254
+sS'pine green'
+p255
+(I10
+I72
+I30
+tp256
+sS'deep turquoise'
+p257
+(I1
+I115
+I116
+tp258
+sS'blueberry'
+p259
+(I70
+I65
+I150
+tp260
+sS'chestnut'
+p261
+(I116
+I40
+I2
+tp262
+sS'charcoal'
+p263
+(I52
+I56
+I55
+tp264
+sS'brick orange'
+p265
+(I193
+I74
+I9
+tp266
+sS'ice blue'
+p267
+(I215
+I255
+I254
+tp268
+sS'navy blue'
+p269
+(I0
+I17
+I70
+tp270
+sS'electric purple'
+p271
+(I170
+I35
+I255
+tp272
+sS'tangerine'
+p273
+(I255
+I148
+I8
+tp274
+sS'light salmon'
+p275
+(I254
+I169
+I147
+tp276
+sS'orangish red'
+p277
+(I244
+I54
+I5
+tp278
+sS'lightgreen'
+p279
+(I118
+I255
+I123
+tp280
+sS'purpleish pink'
+p281
+(I223
+I78
+I200
+tp282
+sS'red pink'
+p283
+(I250
+I42
+I85
+tp284
+sS'flat green'
+p285
+(I105
+I157
+I76
+tp286
+sS'ugly brown'
+p287
+(I125
+I113
+I3
+tp288
+sS'light yellowish green'
+p289
+(I194
+I255
+I137
+tp290
+sS'pale salmon'
+p291
+(I255
+I177
+I154
+tp292
+sS'pale orange'
+p293
+(I255
+I167
+I86
+tp294
+sS'spearmint'
+p295
+(I30
+I248
+I118
+tp296
+sS'purplish grey'
+p297
+(I122
+I104
+I127
+tp298
+sS'pinky'
+p299
+(I252
+I134
+I170
+tp300
+sS'denim blue'
+p301
+(I59
+I91
+I146
+tp302
+sS'sun yellow'
+p303
+(I255
+I223
+I34
+tp304
+sS'dark red'
+p305
+(I132
+I0
+I0
+tp306
+sS'orangey yellow'
+p307
+(I253
+I185
+I21
+tp308
+sS'flat blue'
+p309
+(I60
+I115
+I168
+tp310
+sS'almost black'
+p311
+(I7
+I13
+I13
+tp312
+sS'barf green'
+p313
+(I148
+I172
+I2
+tp314
+sS'army green'
+p315
+(I75
+I93
+I22
+tp316
+sS'medium green'
+p317
+(I57
+I173
+I72
+tp318
+sS'yellow tan'
+p319
+(I255
+I227
+I110
+tp320
+sS'cool grey'
+p321
+(I149
+I163
+I166
+tp322
+sS'rose pink'
+p323
+(I247
+I135
+I154
+tp324
+sS'acid green'
+p325
+(I143
+I254
+I9
+tp326
+sS'blue blue'
+p327
+(I34
+I66
+I199
+tp328
+sS'light bright green'
+p329
+(I83
+I254
+I92
+tp330
+sS'greeny blue'
+p331
+(I66
+I179
+I149
+tp332
+sS'dull orange'
+p333
+(I216
+I134
+I59
+tp334
+sS'brown'
+p335
+(I101
+I55
+I0
+tp336
+sS'dark lavender'
+p337
+(I133
+I103
+I152
+tp338
+sS'azul'
+p339
+(I29
+I93
+I236
+tp340
+sS'deep aqua'
+p341
+(I8
+I120
+I127
+tp342
+sS'spruce'
+p343
+(I10
+I95
+I56
+tp344
+sS'dark hot pink'
+p345
+(I217
+I1
+I102
+tp346
+sS'brown grey'
+p347
+(I141
+I132
+I104
+tp348
+sS'light tan'
+p349
+(I251
+I238
+I172
+tp350
+sS'electric green'
+p351
+(I33
+I252
+I13
+tp352
+sS'swamp green'
+p353
+(I116
+I133
+I0
+tp354
+sS'egg shell'
+p355
+(I255
+I252
+I196
+tp356
+sS'warm grey'
+p357
+(I151
+I138
+I132
+tp358
+sS'primary blue'
+p359
+(I8
+I4
+I249
+tp360
+sS'light mustard'
+p361
+(I247
+I213
+I96
+tp362
+sS'yellowy green'
+p363
+(I191
+I241
+I40
+tp364
+sS'grape'
+p365
+(I108
+I52
+I97
+tp366
+sS'rust brown'
+p367
+(I139
+I49
+I3
+tp368
+sS'dark turquoise'
+p369
+(I4
+I92
+I90
+tp370
+sS'deep lavender'
+p371
+(I141
+I94
+I183
+tp372
+sS'bright lilac'
+p373
+(I201
+I94
+I251
+tp374
+sS'sandstone'
+p375
+(I201
+I174
+I116
+tp376
+sS'pine'
+p377
+(I43
+I93
+I52
+tp378
+sS'merlot'
+p379
+(I115
+I0
+I57
+tp380
+sS'sunny yellow'
+p381
+(I255
+I249
+I23
+tp382
+sS'light aqua'
+p383
+(I140
+I255
+I219
+tp384
+sS'soft blue'
+p385
+(I100
+I136
+I234
+tp386
+sS'dull green'
+p387
+(I116
+I166
+I98
+tp388
+sS'night blue'
+p389
+(I4
+I3
+I72
+tp390
+sS'yellowish'
+p391
+(I250
+I238
+I102
+tp392
+sS'grassy green'
+p393
+(I65
+I156
+I3
+tp394
+sS'bubblegum pink'
+p395
+(I254
+I131
+I204
+tp396
+sS'pale purple'
+p397
+(I183
+I144
+I212
+tp398
+sS'azure'
+p399
+(I6
+I154
+I243
+tp400
+sS'seafoam green'
+p401
+(I122
+I249
+I171
+tp402
+sS'barney'
+p403
+(I172
+I29
+I184
+tp404
+sS'dusty orange'
+p405
+(I240
+I131
+I58
+tp406
+sS'light pea green'
+p407
+(I196
+I254
+I130
+tp408
+sS'pale lime'
+p409
+(I190
+I253
+I115
+tp410
+sS'lighter purple'
+p411
+(I165
+I90
+I244
+tp412
+sS'very dark green'
+p413
+(I6
+I46
+I3
+tp414
+sS'tomato'
+p415
+(I239
+I64
+I38
+tp416
+sS'weird green'
+p417
+(I58
+I229
+I127
+tp418
+sS'off yellow'
+p419
+(I241
+I243
+I63
+tp420
+sS'light aquamarine'
+p421
+(I123
+I253
+I199
+tp422
+sS'poop brown'
+p423
+(I122
+I89
+I1
+tp424
+sS'bright light blue'
+p425
+(I38
+I247
+I253
+tp426
+sS'sand yellow'
+p427
+(I252
+I225
+I102
+tp428
+sS'chocolate brown'
+p429
+(I65
+I25
+I0
+tp430
+sS'mango'
+p431
+(I255
+I166
+I43
+tp432
+sS'green'
+p433
+(I21
+I176
+I26
+tp434
+sS'bright turquoise'
+p435
+(I15
+I254
+I249
+tp436
+sS'purply pink'
+p437
+(I240
+I117
+I230
+tp438
+sS'light gold'
+p439
+(I253
+I220
+I92
+tp440
+sS'easter purple'
+p441
+(I192
+I113
+I254
+tp442
+sS'dirty blue'
+p443
+(I63
+I130
+I157
+tp444
+sS'rich blue'
+p445
+(I2
+I27
+I249
+tp446
+sS'khaki green'
+p447
+(I114
+I134
+I57
+tp448
+sS'amber'
+p449
+(I254
+I179
+I8
+tp450
+sS'cadet blue'
+p451
+(I78
+I116
+I150
+tp452
+sS'green grey'
+p453
+(I119
+I146
+I111
+tp454
+sS'battleship grey'
+p455
+(I107
+I124
+I133
+tp456
+sS'copper'
+p457
+(I182
+I99
+I37
+tp458
+sS'irish green'
+p459
+(I1
+I149
+I41
+tp460
+sS'dark olive'
+p461
+(I55
+I62
+I2
+tp462
+sS'midnight'
+p463
+(I3
+I1
+I45
+tp464
+sS'indigo blue'
+p465
+(I58
+I24
+I177
+tp466
+sS'canary'
+p467
+(I253
+I255
+I99
+tp468
+sS'light green blue'
+p469
+(I86
+I252
+I162
+tp470
+sS'manilla'
+p471
+(I255
+I250
+I134
+tp472
+sS'purple/blue'
+p473
+(I93
+I33
+I208
+tp474
+sS'pinkish tan'
+p475
+(I217
+I155
+I130
+tp476
+sS'cyan'
+p477
+(I0
+I255
+I255
+tp478
+sS'baby blue'
+p479
+(I162
+I207
+I254
+tp480
+sS'dark sky blue'
+p481
+(I68
+I142
+I228
+tp482
+sS'puce'
+p483
+(I165
+I126
+I82
+tp484
+sS'purplish'
+p485
+(I148
+I86
+I140
+tp486
+sS'bright lime'
+p487
+(I135
+I253
+I5
+tp488
+sS'avocado'
+p489
+(I144
+I177
+I52
+tp490
+sS'off white'
+p491
+(I255
+I255
+I228
+tp492
+sS'darkish red'
+p493
+(I169
+I3
+I8
+tp494
+sS'light sky blue'
+p495
+(I198
+I252
+I255
+tp496
+sS'bluegreen'
+p497
+(I1
+I122
+I121
+tp498
+sS'lighter green'
+p499
+(I117
+I253
+I99
+tp500
+sS'baby shit brown'
+p501
+(I173
+I144
+I13
+tp502
+sS'orange'
+p503
+(I249
+I115
+I6
+tp504
+sS'pale aqua'
+p505
+(I184
+I255
+I235
+tp506
+sS'forest'
+p507
+(I11
+I85
+I9
+tp508
+sS'cornflower'
+p509
+(I106
+I121
+I247
+tp510
+sS'slime green'
+p511
+(I153
+I204
+I4
+tp512
+sS'kelley green'
+p513
+(I0
+I147
+I55
+tp514
+sS'dirty green'
+p515
+(I102
+I126
+I44
+tp516
+sS'violet pink'
+p517
+(I251
+I95
+I252
+tp518
+sS'bright sky blue'
+p519
+(I2
+I204
+I254
+tp520
+sS'emerald green'
+p521
+(I2
+I143
+I30
+tp522
+sS'lightish red'
+p523
+(I254
+I47
+I74
+tp524
+sS'faded red'
+p525
+(I211
+I73
+I78
+tp526
+sS'brownish green'
+p527
+(I106
+I110
+I9
+tp528
+sS'vomit'
+p529
+(I162
+I164
+I21
+tp530
+sS'dirt brown'
+p531
+(I131
+I101
+I57
+tp532
+sS'emerald'
+p533
+(I1
+I160
+I73
+tp534
+sS'faded orange'
+p535
+(I240
+I148
+I77
+tp536
+sS'pumpkin orange'
+p537
+(I251
+I125
+I7
+tp538
+sS'mocha'
+p539
+(I157
+I118
+I81
+tp540
+sS'twilight'
+p541
+(I78
+I81
+I139
+tp542
+sS'silver'
+p543
+(I197
+I201
+I199
+tp544
+sS'dusty teal'
+p545
+(I76
+I144
+I133
+tp546
+sS'dark navy blue'
+p547
+(I0
+I2
+I46
+tp548
+sS'goldenrod'
+p549
+(I250
+I194
+I5
+tp550
+sS'jade green'
+p551
+(I43
+I175
+I106
+tp552
+sS'rosy pink'
+p553
+(I246
+I104
+I142
+tp554
+sS'off green'
+p555
+(I107
+I163
+I83
+tp556
+sS'pale olive green'
+p557
+(I177
+I210
+I123
+tp558
+sS'dark violet'
+p559
+(I52
+I1
+I63
+tp560
+sS'reddy brown'
+p561
+(I110
+I16
+I5
+tp562
+sS'ecru'
+p563
+(I254
+I255
+I202
+tp564
+sS'soft pink'
+p565
+(I253
+I176
+I192
+tp566
+sS'scarlet'
+p567
+(I190
+I1
+I25
+tp568
+sS'milk chocolate'
+p569
+(I127
+I78
+I30
+tp570
+sS'rose red'
+p571
+(I190
+I1
+I60
+tp572
+sS'hot magenta'
+p573
+(I245
+I4
+I201
+tp574
+sS'dark royal blue'
+p575
+(I2
+I6
+I111
+tp576
+sS'greyish pink'
+p577
+(I200
+I141
+I148
+tp578
+sS'adobe'
+p579
+(I189
+I108
+I72
+tp580
+sS'lilac'
+p581
+(I206
+I162
+I253
+tp582
+sS"robin's egg blue"
+p583
+(I152
+I239
+I249
+tp584
+sS'mid green'
+p585
+(I80
+I167
+I71
+tp586
+sS'pea soup green'
+p587
+(I148
+I166
+I23
+tp588
+sS'steel blue'
+p589
+(I90
+I125
+I154
+tp590
+sS'light olive green'
+p591
+(I164
+I190
+I92
+tp592
+sS'grey blue'
+p593
+(I107
+I139
+I164
+tp594
+sS'deep green'
+p595
+(I2
+I89
+I15
+tp596
+sS'dusky rose'
+p597
+(I186
+I104
+I115
+tp598
+sS'navy'
+p599
+(I1
+I21
+I62
+tp600
+sS'greyish green'
+p601
+(I130
+I166
+I125
+tp602
+sS'bright yellow green'
+p603
+(I157
+I255
+I0
+tp604
+sS'velvet'
+p605
+(I117
+I8
+I81
+tp606
+sS'lipstick'
+p607
+(I213
+I23
+I78
+tp608
+sS'greyish teal'
+p609
+(I113
+I159
+I145
+tp610
+sS'plum'
+p611
+(I88
+I15
+I65
+tp612
+sS'sand'
+p613
+(I226
+I202
+I118
+tp614
+sS'pastel green'
+p615
+(I176
+I255
+I157
+tp616
+sS'brick red'
+p617
+(I143
+I20
+I2
+tp618
+sS'carolina blue'
+p619
+(I138
+I184
+I254
+tp620
+sS'camouflage green'
+p621
+(I75
+I97
+I19
+tp622
+sS'brownish'
+p623
+(I156
+I109
+I87
+tp624
+sS'dark plum'
+p625
+(I63
+I1
+I44
+tp626
+sS'red'
+p627
+(I229
+I0
+I0
+tp628
+sS'bright pink'
+p629
+(I254
+I1
+I177
+tp630
+sS'brownish red'
+p631
+(I158
+I54
+I35
+tp632
+sS'baby green'
+p633
+(I140
+I255
+I158
+tp634
+sS'pig pink'
+p635
+(I231
+I142
+I165
+tp636
+sS'ocre'
+p637
+(I198
+I156
+I4
+tp638
+sS'light magenta'
+p639
+(I250
+I95
+I247
+tp640
+sS'dark grass green'
+p641
+(I56
+I128
+I4
+tp642
+sS'royal blue'
+p643
+(I5
+I4
+I170
+tp644
+sS'reddish grey'
+p645
+(I153
+I117
+I112
+tp646
+sS'putty'
+p647
+(I190
+I174
+I138
+tp648
+sS'very light brown'
+p649
+(I211
+I182
+I131
+tp650
+sS'sky blue'
+p651
+(I117
+I187
+I253
+tp652
+sS'pastel purple'
+p653
+(I202
+I160
+I255
+tp654
+sS'deep lilac'
+p655
+(I150
+I110
+I189
+tp656
+sS'marine'
+p657
+(I4
+I46
+I96
+tp658
+sS'algae'
+p659
+(I84
+I172
+I104
+tp660
+sS'cornflower blue'
+p661
+(I81
+I112
+I215
+tp662
+sS'gunmetal'
+p663
+(I83
+I98
+I103
+tp664
+sS'puke green'
+p665
+(I154
+I174
+I7
+tp666
+sS'charcoal grey'
+p667
+(I60
+I65
+I66
+tp668
+sS'pale cyan'
+p669
+(I183
+I255
+I250
+tp670
+sS'midnight purple'
+p671
+(I40
+I1
+I55
+tp672
+sS'dark gold'
+p673
+(I181
+I148
+I16
+tp674
+sS'olive yellow'
+p675
+(I194
+I183
+I9
+tp676
+sS'grey pink'
+p677
+(I195
+I144
+I155
+tp678
+sS'hunter green'
+p679
+(I11
+I64
+I8
+tp680
+sS'muted purple'
+p681
+(I128
+I91
+I135
+tp682
+sS'blush'
+p683
+(I242
+I158
+I142
+tp684
+sS'darkish blue'
+p685
+(I1
+I65
+I130
+tp686
+sS'light pink'
+p687
+(I255
+I209
+I223
+tp688
+sS'blood'
+p689
+(I119
+I0
+I1
+tp690
+sS'poop green'
+p691
+(I111
+I124
+I0
+tp692
+sS'terracotta'
+p693
+(I202
+I102
+I65
+tp694
+sS'dusty lavender'
+p695
+(I172
+I134
+I168
+tp696
+sS'military green'
+p697
+(I102
+I124
+I62
+tp698
+sS'dark pink'
+p699
+(I203
+I65
+I107
+tp700
+sS'dark coral'
+p701
+(I207
+I82
+I78
+tp702
+sS'bluish'
+p703
+(I41
+I118
+I187
+tp704
+sS'deep pink'
+p705
+(I203
+I1
+I98
+tp706
+sS'pinkish brown'
+p707
+(I177
+I114
+I97
+tp708
+sS'bland'
+p709
+(I175
+I168
+I139
+tp710
+sS'orangered'
+p711
+(I254
+I66
+I15
+tp712
+sS'yellowy brown'
+p713
+(I174
+I139
+I12
+tp714
+sS'reddish pink'
+p715
+(I254
+I44
+I84
+tp716
+sS'aqua green'
+p717
+(I18
+I225
+I147
+tp718
+sS'pale sky blue'
+p719
+(I189
+I246
+I254
+tp720
+sS'forest green'
+p721
+(I6
+I71
+I12
+tp722
+sS'dark blue'
+p723
+(I0
+I3
+I91
+tp724
+sS'faded green'
+p725
+(I123
+I178
+I116
+tp726
+sS'lavender blue'
+p727
+(I139
+I136
+I248
+tp728
+sS'light moss green'
+p729
+(I166
+I200
+I117
+tp730
+sS'dusk blue'
+p731
+(I38
+I83
+I141
+tp732
+sS'pinkish grey'
+p733
+(I200
+I172
+I169
+tp734
+sS'cool blue'
+p735
+(I73
+I132
+I184
+tp736
+sS'muted pink'
+p737
+(I209
+I118
+I143
+tp738
+sS'blue purple'
+p739
+(I87
+I41
+I206
+tp740
+sS'drab green'
+p741
+(I116
+I149
+I81
+tp742
+sS'white'
+p743
+(I255
+I255
+I255
+tp744
+sS'light peach'
+p745
+(I255
+I216
+I177
+tp746
+sS'banana'
+p747
+(I255
+I255
+I126
+tp748
+sS'twilight blue'
+p749
+(I10
+I67
+I122
+tp750
+sS'kiwi'
+p751
+(I156
+I239
+I67
+tp752
+sS'butter'
+p753
+(I255
+I255
+I129
+tp754
+sS'light mauve'
+p755
+(I194
+I146
+I161
+tp756
+sS'muted blue'
+p757
+(I59
+I113
+I159
+tp758
+sS'turtle green'
+p759
+(I117
+I184
+I79
+tp760
+sS'pastel yellow'
+p761
+(I255
+I254
+I113
+tp762
+sS'lavender'
+p763
+(I199
+I159
+I239
+tp764
+sS'brownish grey'
+p765
+(I134
+I119
+I95
+tp766
+sS'heliotrope'
+p767
+(I217
+I79
+I245
+tp768
+sS'pinkish purple'
+p769
+(I214
+I72
+I215
+tp770
+sS'light sage'
+p771
+(I188
+I236
+I172
+tp772
+sS'blue/grey'
+p773
+(I117
+I141
+I163
+tp774
+sS'dark green'
+p775
+(I3
+I53
+I0
+tp776
+sS'greeny brown'
+p777
+(I105
+I96
+I6
+tp778
+sS'steel'
+p779
+(I115
+I133
+I149
+tp780
+sS'off blue'
+p781
+(I86
+I132
+I174
+tp782
+sS'electric blue'
+p783
+(I6
+I82
+I255
+tp784
+sS'ugly purple'
+p785
+(I164
+I66
+I160
+tp786
+sS'bright yellow'
+p787
+(I255
+I253
+I1
+tp788
+sS'teal green'
+p789
+(I37
+I163
+I111
+tp790
+sS'medium blue'
+p791
+(I44
+I111
+I187
+tp792
+sS'dark seafoam'
+p793
+(I31
+I181
+I122
+tp794
+sS'celadon'
+p795
+(I190
+I253
+I183
+tp796
+sS'pink/purple'
+p797
+(I239
+I29
+I231
+tp798
+sS'light blue grey'
+p799
+(I183
+I201
+I226
+tp800
+sS'deep brown'
+p801
+(I65
+I2
+I0
+tp802
+sS'greenish tan'
+p803
+(I188
+I203
+I122
+tp804
+sS'rusty red'
+p805
+(I175
+I47
+I13
+tp806
+sS'greenish beige'
+p807
+(I201
+I209
+I121
+tp808
+sS'true blue'
+p809
+(I1
+I15
+I204
+tp810
+sS'cherry red'
+p811
+(I247
+I2
+I42
+tp812
+sS'pale gold'
+p813
+(I253
+I222
+I108
+tp814
+sS'fire engine red'
+p815
+(I254
+I0
+I2
+tp816
+sS'sea'
+p817
+(I60
+I153
+I146
+tp818
+sS'pink purple'
+p819
+(I219
+I75
+I218
+tp820
+sS'dark aqua'
+p821
+(I5
+I105
+I107
+tp822
+sS'tea green'
+p823
+(I189
+I248
+I163
+tp824
+sS'raw umber'
+p825
+(I167
+I94
+I9
+tp826
+sS'baby puke green'
+p827
+(I182
+I196
+I6
+tp828
+sS'kermit green'
+p829
+(I92
+I178
+I0
+tp830
+sS'baby poop green'
+p831
+(I143
+I152
+I5
+tp832
+sS'lawn green'
+p833
+(I77
+I164
+I9
+tp834
+sS'pastel blue'
+p835
+(I162
+I191
+I254
+tp836
+sS'bordeaux'
+p837
+(I123
+I0
+I44
+tp838
+sS'light lavender'
+p839
+(I223
+I197
+I254
+tp840
+sS'snot'
+p841
+(I172
+I187
+I13
+tp842
+sS'barney purple'
+p843
+(I160
+I4
+I152
+tp844
+sS'green teal'
+p845
+(I12
+I181
+I119
+tp846
+sS'viridian'
+p847
+(I30
+I145
+I103
+tp848
+sS"robin's egg"
+p849
+(I109
+I237
+I253
+tp850
+sS'orangeish'
+p851
+(I253
+I141
+I73
+tp852
+sS'dark seafoam green'
+p853
+(I62
+I175
+I118
+tp854
+sS'dull blue'
+p855
+(I73
+I117
+I156
+tp856
+sS'red orange'
+p857
+(I253
+I60
+I6
+tp858
+sS'dark pastel green'
+p859
+(I86
+I174
+I87
+tp860
+sS'petrol'
+p861
+(I0
+I95
+I106
+tp862
+sS'hazel'
+p863
+(I142
+I118
+I24
+tp864
+sS'light pastel green'
+p865
+(I178
+I251
+I165
+tp866
+sS'periwinkle blue'
+p867
+(I143
+I153
+I251
+tp868
+sS'yellow brown'
+p869
+(I183
+I148
+I0
+tp870
+sS'pale brown'
+p871
+(I177
+I145
+I110
+tp872
+sS'dark yellow green'
+p873
+(I114
+I143
+I2
+tp874
+sS'greyish'
+p875
+(I168
+I164
+I149
+tp876
+sS'darkish green'
+p877
+(I40
+I124
+I55
+tp878
+sS'raw sienna'
+p879
+(I154
+I98
+I0
+tp880
+sS'racing green'
+p881
+(I1
+I70
+I0
+tp882
+sS'bright sea green'
+p883
+(I5
+I255
+I166
+tp884
+sS'red violet'
+p885
+(I158
+I1
+I104
+tp886
+sS'dark mustard'
+p887
+(I168
+I137
+I5
+tp888
+sS'jungle green'
+p889
+(I4
+I130
+I67
+tp890
+sS'swamp'
+p891
+(I105
+I131
+I57
+tp892
+sS'light lime green'
+p893
+(I185
+I255
+I102
+tp894
+sS'purpley'
+p895
+(I135
+I86
+I228
+tp896
+sS'purpley pink'
+p897
+(I200
+I60
+I185
+tp898
+sS'grey/blue'
+p899
+(I100
+I125
+I142
+tp900
+sS'really light blue'
+p901
+(I212
+I255
+I255
+tp902
+sS'wine'
+p903
+(I128
+I1
+I63
+tp904
+sS'vibrant blue'
+p905
+(I3
+I57
+I248
+tp906
+sS'orange yellow'
+p907
+(I255
+I173
+I1
+tp908
+sS'watermelon'
+p909
+(I253
+I70
+I89
+tp910
+sS'greyish brown'
+p911
+(I122
+I106
+I79
+tp912
+sS'bluey green'
+p913
+(I43
+I177
+I121
+tp914
+sS'deep orange'
+p915
+(I220
+I77
+I1
+tp916
+sS'sage'
+p917
+(I135
+I174
+I115
+tp918
+sS'royal purple'
+p919
+(I75
+I0
+I110
+tp920
+sS'pea soup'
+p921
+(I146
+I153
+I1
+tp922
+sS'dirty purple'
+p923
+(I115
+I74
+I101
+tp924
+sS'puke yellow'
+p925
+(I194
+I190
+I14
+tp926
+sS'seaweed'
+p927
+(I24
+I209
+I123
+tp928
+sS'rouge'
+p929
+(I171
+I18
+I57
+tp930
+sS'purple grey'
+p931
+(I134
+I111
+I133
+tp932
+sS'light khaki'
+p933
+(I230
+I242
+I162
+tp934
+sS'dark sand'
+p935
+(I168
+I143
+I89
+tp936
+sS'dusty blue'
+p937
+(I90
+I134
+I173
+tp938
+sS'cobalt blue'
+p939
+(I3
+I10
+I167
+tp940
+sS'violet red'
+p941
+(I165
+I0
+I85
+tp942
+sS'key lime'
+p943
+(I174
+I255
+I110
+tp944
+sS'pale light green'
+p945
+(I177
+I252
+I153
+tp946
+sS'greenish turquoise'
+p947
+(I0
+I251
+I176
+tp948
+sS'green brown'
+p949
+(I84
+I78
+I3
+tp950
+sS'very light blue'
+p951
+(I213
+I255
+I255
+tp952
+sS'greenish blue'
+p953
+(I11
+I139
+I135
+tp954
+sS'bluish grey'
+p955
+(I116
+I139
+I151
+tp956
+sS'celery'
+p957
+(I193
+I253
+I149
+tp958
+sS'muddy green'
+p959
+(I101
+I116
+I50
+tp960
+sS'black'
+p961
+(I0
+I0
+I0
+tp962
+sS'cerise'
+p963
+(I222
+I12
+I98
+tp964
+sS'indian red'
+p965
+(I133
+I14
+I4
+tp966
+sS'carmine'
+p967
+(I157
+I2
+I22
+tp968
+sS'light lavendar'
+p969
+(I239
+I192
+I254
+tp970
+sS'deep magenta'
+p971
+(I160
+I2
+I92
+tp972
+sS'blue grey'
+p973
+(I96
+I124
+I142
+tp974
+sS'pumpkin'
+p975
+(I225
+I119
+I1
+tp976
+sS'pale lavender'
+p977
+(I238
+I207
+I254
+tp978
+sS'yellow green'
+p979
+(I192
+I251
+I45
+tp980
+sS'lime yellow'
+p981
+(I208
+I254
+I29
+tp982
+sS'dandelion'
+p983
+(I254
+I223
+I8
+tp984
+sS'green blue'
+p985
+(I6
+I180
+I139
+tp986
+sS'pastel orange'
+p987
+(I255
+I150
+I79
+tp988
+sS'kiwi green'
+p989
+(I142
+I229
+I63
+tp990
+sS'foam green'
+p991
+(I144
+I253
+I169
+tp992
+sS'electric pink'
+p993
+(I255
+I4
+I144
+tp994
+sS'grey brown'
+p995
+(I127
+I112
+I83
+tp996
+sS'red wine'
+p997
+(I140
+I0
+I52
+tp998
+sS'light grass green'
+p999
+(I154
+I247
+I100
+tp1000
+sS'dark green blue'
+p1001
+(I31
+I99
+I87
+tp1002
+sS'purplish red'
+p1003
+(I176
+I5
+I75
+tp1004
+sS'auburn'
+p1005
+(I154
+I48
+I1
+tp1006
+sS'warm purple'
+p1007
+(I149
+I46
+I143
+tp1008
+sS'dark mint green'
+p1009
+(I32
+I192
+I115
+tp1010
+sS'lemon green'
+p1011
+(I173
+I248
+I2
+tp1012
+sS'ugly green'
+p1013
+(I122
+I151
+I3
+tp1014
+sS'leather'
+p1015
+(I172
+I116
+I52
+tp1016
+sS'greenish grey'
+p1017
+(I150
+I174
+I141
+tp1018
+sS'topaz'
+p1019
+(I19
+I187
+I175
+tp1020
+sS'caramel'
+p1021
+(I175
+I111
+I9
+tp1022
+sS'dirty pink'
+p1023
+(I202
+I123
+I128
+tp1024
+sS'apricot'
+p1025
+(I255
+I177
+I109
+tp1026
+sS'pink red'
+p1027
+(I245
+I5
+I79
+tp1028
+sS'yellow orange'
+p1029
+(I252
+I176
+I1
+tp1030
+sS'pale pink'
+p1031
+(I255
+I207
+I220
+tp1032
+sS'light light green'
+p1033
+(I200
+I255
+I176
+tp1034
+sS'pale teal'
+p1035
+(I130
+I203
+I178
+tp1036
+sS'golden yellow'
+p1037
+(I254
+I198
+I21
+tp1038
+sS'yellowish green'
+p1039
+(I176
+I221
+I22
+tp1040
+sS'bright magenta'
+p1041
+(I255
+I8
+I232
+tp1042
+sS'dull teal'
+p1043
+(I95
+I158
+I143
+tp1044
+sS'jade'
+p1045
+(I31
+I167
+I116
+tp1046
+sS'avocado green'
+p1047
+(I135
+I169
+I34
+tp1048
+sS'salmon'
+p1049
+(I255
+I121
+I108
+tp1050
+sS'muddy yellow'
+p1051
+(I191
+I172
+I5
+tp1052
+sS'light mint'
+p1053
+(I182
+I255
+I187
+tp1054
+sS'neon red'
+p1055
+(I255
+I7
+I58
+tp1056
+sS'mossy green'
+p1057
+(I99
+I139
+I39
+tp1058
+sS'green/blue'
+p1059
+(I1
+I192
+I141
+tp1060
+sS'puke brown'
+p1061
+(I148
+I119
+I6
+tp1062
+sS'snot green'
+p1063
+(I157
+I193
+I0
+tp1064
+sS'light bluish green'
+p1065
+(I118
+I253
+I168
+tp1066
+sS'violet'
+p1067
+(I154
+I14
+I234
+tp1068
+sS'forrest green'
+p1069
+(I21
+I68
+I6
+tp1070
+sS'very dark purple'
+p1071
+(I42
+I1
+I52
+tp1072
+sS'peachy pink'
+p1073
+(I255
+I154
+I138
+tp1074
+sS'light maroon'
+p1075
+(I162
+I72
+I87
+tp1076
+sS'pale yellow'
+p1077
+(I255
+I255
+I132
+tp1078
+sS'light grey green'
+p1079
+(I183
+I225
+I161
+tp1080
+sS'light purple'
+p1081
+(I191
+I119
+I246
+tp1082
+sS'darkblue'
+p1083
+(I3
+I7
+I100
+tp1084
+sS'duck egg blue'
+p1085
+(I195
+I251
+I244
+tp1086
+sS'light rose'
+p1087
+(I255
+I197
+I203
+tp1088
+sS'green/yellow'
+p1089
+(I181
+I206
+I8
+tp1090
+sS'mud'
+p1091
+(I115
+I92
+I18
+tp1092
+sS'creme'
+p1093
+(I255
+I255
+I182
+tp1094
+sS'frog green'
+p1095
+(I88
+I188
+I8
+tp1096
+sS'dark brown'
+p1097
+(I52
+I28
+I2
+tp1098
+sS'vivid green'
+p1099
+(I47
+I239
+I16
+tp1100
+sS'faded blue'
+p1101
+(I101
+I140
+I187
+tp1102
+sS'sickly green'
+p1103
+(I148
+I178
+I28
+tp1104
+sS'plum purple'
+p1105
+(I78
+I5
+I80
+tp1106
+sS'sandy yellow'
+p1107
+(I253
+I238
+I115
+tp1108
+sS'very pale green'
+p1109
+(I207
+I253
+I188
+tp1110
+sS'yellowish brown'
+p1111
+(I155
+I122
+I1
+tp1112
+sS'slate'
+p1113
+(I81
+I101
+I114
+tp1114
+sS'light green'
+p1115
+(I150
+I249
+I123
+tp1116
+sS'bright orange'
+p1117
+(I255
+I91
+I0
+tp1118
+sS'shit brown'
+p1119
+(I123
+I88
+I4
+tp1120
+sS'grey purple'
+p1121
+(I130
+I109
+I140
+tp1122
+sS'cerulean'
+p1123
+(I4
+I133
+I209
+tp1124
+sS'brown red'
+p1125
+(I146
+I43
+I5
+tp1126
+sS'sea green'
+p1127
+(I83
+I252
+I161
+tp1128
+sS'dark taupe'
+p1129
+(I127
+I104
+I78
+tp1130
+sS'umber'
+p1131
+(I178
+I100
+I0
+tp1132
+sS'light navy'
+p1133
+(I21
+I80
+I132
+tp1134
+sS'ugly blue'
+p1135
+(I49
+I102
+I138
+tp1136
+sS'very light green'
+p1137
+(I209
+I255
+I189
+tp1138
+sS'vivid purple'
+p1139
+(I153
+I0
+I250
+tp1140
+sS'burnt yellow'
+p1141
+(I213
+I171
+I9
+tp1142
+sS'dark lime'
+p1143
+(I132
+I183
+I1
+tp1144
+sS'slate green'
+p1145
+(I101
+I141
+I109
+tp1146
+sS'violet blue'
+p1147
+(I81
+I10
+I201
+tp1148
+sS'dusty purple'
+p1149
+(I130
+I95
+I135
+tp1150
+sS'hot pink'
+p1151
+(I255
+I2
+I141
+tp1152
+sS'light blue green'
+p1153
+(I126
+I251
+I179
+tp1154
+sS'bottle green'
+p1155
+(I4
+I74
+I5
+tp1156
+sS'pale olive'
+p1157
+(I185
+I204
+I129
+tp1158
+sS'warm pink'
+p1159
+(I251
+I85
+I129
+tp1160
+sS'berry'
+p1161
+(I153
+I15
+I75
+tp1162
+sS'eggplant'
+p1163
+(I56
+I8
+I53
+tp1164
+sS'rose'
+p1165
+(I207
+I98
+I117
+tp1166
+sS'lemon'
+p1167
+(I253
+I255
+I82
+tp1168
+sS'medium pink'
+p1169
+(I243
+I97
+I150
+tp1170
+sS'lightish purple'
+p1171
+(I165
+I82
+I230
+tp1172
+sS'dusky blue'
+p1173
+(I71
+I95
+I148
+tp1174
+sS'neon blue'
+p1175
+(I4
+I217
+I255
+tp1176
+sS'butter yellow'
+p1177
+(I255
+I253
+I116
+tp1178
+sS'pale grey'
+p1179
+(I253
+I253
+I254
+tp1180
+sS'sky'
+p1181
+(I130
+I202
+I252
+tp1182
+sS'denim'
+p1183
+(I59
+I99
+I140
+tp1184
+sS'pale rose'
+p1185
+(I253
+I193
+I197
+tp1186
+sS'pale turquoise'
+p1187
+(I165
+I251
+I213
+tp1188
+sS'steel grey'
+p1189
+(I111
+I130
+I138
+tp1190
+sS'poo'
+p1191
+(I143
+I115
+I3
+tp1192
+sS'nice blue'
+p1193
+(I16
+I122
+I176
+tp1194
+sS'pinky red'
+p1195
+(I252
+I38
+I71
+tp1196
+sS'dark blue green'
+p1197
+(I0
+I82
+I73
+tp1198
+sS'light urple'
+p1199
+(I179
+I111
+I246
+tp1200
+sS'grey teal'
+p1201
+(I94
+I155
+I138
+tp1202
+sS'dull purple'
+p1203
+(I132
+I89
+I126
+tp1204
+sS'brownish yellow'
+p1205
+(I201
+I176
+I3
+tp1206
+sS'wine red'
+p1207
+(I123
+I3
+I35
+tp1208
+sS'browny green'
+p1209
+(I111
+I108
+I10
+tp1210
+sS'wisteria'
+p1211
+(I168
+I125
+I194
+tp1212
+sS'light lime'
+p1213
+(I174
+I253
+I108
+tp1214
+sS'rust red'
+p1215
+(I170
+I39
+I4
+tp1216
+sS'deep rose'
+p1217
+(I199
+I71
+I103
+tp1218
+sS'kelly green'
+p1219
+(I2
+I171
+I46
+tp1220
+sS'pale lime green'
+p1221
+(I177
+I255
+I101
+tp1222
+sS'grapefruit'
+p1223
+(I253
+I89
+I86
+tp1224
+sS'sickly yellow'
+p1225
+(I208
+I228
+I41
+tp1226
+sS'bronze'
+p1227
+(I168
+I121
+I0
+tp1228
+sS'faded pink'
+p1229
+(I222
+I157
+I172
+tp1230
+sS'brick'
+p1231
+(I160
+I54
+I35
+tp1232
+sS'greenish yellow'
+p1233
+(I205
+I253
+I2
+tp1234
+sS'purple brown'
+p1235
+(I103
+I58
+I63
+tp1236
+sS'dark sea green'
+p1237
+(I17
+I135
+I93
+tp1238
+sS'mushroom'
+p1239
+(I186
+I158
+I136
+tp1240
+sS'mustard brown'
+p1241
+(I172
+I126
+I4
+tp1242
+sS'mustard green'
+p1243
+(I168
+I181
+I4
+tp1244
+sS'squash'
+p1245
+(I242
+I171
+I21
+tp1246
+sS'marine blue'
+p1247
+(I1
+I56
+I106
+tp1248
+sS'light light blue'
+p1249
+(I202
+I255
+I251
+tp1250
+sS'burnt sienna'
+p1251
+(I176
+I78
+I15
+tp1252
+sS'light indigo'
+p1253
+(I109
+I90
+I207
+tp1254
+sS'burnt umber'
+p1255
+(I160
+I69
+I14
+tp1256
+sS'ruby'
+p1257
+(I202
+I1
+I71
+tp1258
+sS'red purple'
+p1259
+(I130
+I7
+I71
+tp1260
+sS'banana yellow'
+p1261
+(I250
+I254
+I75
+tp1262
+sS'green apple'
+p1263
+(I94
+I220
+I31
+tp1264
+sS'bile'
+p1265
+(I181
+I195
+I6
+tp1266
+sS'easter green'
+p1267
+(I140
+I253
+I126
+tp1268
+sS'poison green'
+p1269
+(I64
+I253
+I20
+tp1270
+sS'reddish'
+p1271
+(I196
+I66
+I64
+tp1272
+sS'camo green'
+p1273
+(I82
+I101
+I37
+tp1274
+sS'radioactive green'
+p1275
+(I44
+I250
+I31
+tp1276
+sS'purple red'
+p1277
+(I153
+I1
+I71
+tp1278
+sS'moss green'
+p1279
+(I101
+I139
+I56
+tp1280
+sS'light plum'
+p1281
+(I157
+I87
+I131
+tp1282
+sS'warm brown'
+p1283
+(I150
+I78
+I2
+tp1284
+sS'dark cyan'
+p1285
+(I10
+I136
+I138
+tp1286
+sS'pea green'
+p1287
+(I142
+I171
+I18
+tp1288
+sS'taupe'
+p1289
+(I185
+I162
+I129
+tp1290
+sS'spring green'
+p1291
+(I169
+I249
+I113
+tp1292
+sS'aqua'
+p1293
+(I19
+I234
+I201
+tp1294
+sS'dark yellow'
+p1295
+(I213
+I182
+I10
+tp1296
+sS'coffee'
+p1297
+(I166
+I129
+I76
+tp1298
+sS'canary yellow'
+p1299
+(I255
+I254
+I64
+tp1300
+sS'shamrock'
+p1301
+(I1
+I180
+I76
+tp1302
+sS'neon green'
+p1303
+(I12
+I255
+I12
+tp1304
+sS'purple pink'
+p1305
+(I224
+I63
+I216
+tp1306
+sS'british racing green'
+p1307
+(I5
+I72
+I13
+tp1308
+sS'perrywinkle'
+p1309
+(I143
+I140
+I231
+tp1310
+sS'mud green'
+p1311
+(I96
+I102
+I2
+tp1312
+sS'dark magenta'
+p1313
+(I150
+I0
+I86
+tp1314
+sS'tree green'
+p1315
+(I42
+I126
+I25
+tp1316
+sS'light royal blue'
+p1317
+(I58
+I46
+I254
+tp1318
+sS'mint'
+p1319
+(I159
+I254
+I176
+tp1320
+sS'grey green'
+p1321
+(I120
+I155
+I115
+tp1322
+sS'eggshell'
+p1323
+(I255
+I255
+I212
+tp1324
+sS'gross green'
+p1325
+(I160
+I191
+I22
+tp1326
+sS'algae green'
+p1327
+(I33
+I195
+I111
+tp1328
+sS'pale green'
+p1329
+(I199
+I253
+I181
+tp1330
+sS'purplish brown'
+p1331
+(I107
+I66
+I71
+tp1332
+sS'carnation'
+p1333
+(I253
+I121
+I143
+tp1334
+sS'grass green'
+p1335
+(I63
+I155
+I11
+tp1336
+sS'browny orange'
+p1337
+(I202
+I107
+I2
+tp1338
+sS'water blue'
+p1339
+(I14
+I135
+I204
+tp1340
+sS'ugly yellow'
+p1341
+(I208
+I193
+I1
+tp1342
+sS'nasty green'
+p1343
+(I112
+I178
+I63
+tp1344
+sS'pinkish'
+p1345
+(I212
+I106
+I126
+tp1346
+sS'lightblue'
+p1347
+(I123
+I200
+I246
+tp1348
+sS'yellowish orange'
+p1349
+(I255
+I171
+I15
+tp1350
+sS'dusk'
+p1351
+(I78
+I84
+I129
+tp1352
+sS'aqua marine'
+p1353
+(I46
+I232
+I187
+tp1354
+sS'old rose'
+p1355
+(I200
+I127
+I137
+tp1356
+sS'cement'
+p1357
+(I165
+I163
+I145
+tp1358
+sS'greenish brown'
+p1359
+(I105
+I97
+I18
+tp1360
+sS'medium purple'
+p1361
+(I158
+I67
+I162
+tp1362
+sS'dark aquamarine'
+p1363
+(I1
+I115
+I113
+tp1364
+sS'orangey brown'
+p1365
+(I177
+I96
+I2
+tp1366
+sS'soft green'
+p1367
+(I111
+I194
+I118
+tp1368
+sS'deep sky blue'
+p1369
+(I13
+I117
+I248
+tp1370
+sS'dust'
+p1371
+(I178
+I153
+I110
+tp1372
+sS'purpleish blue'
+p1373
+(I97
+I64
+I239
+tp1374
+sS'brown yellow'
+p1375
+(I178
+I151
+I5
+tp1376
+sS'medium brown'
+p1377
+(I127
+I81
+I18
+tp1378
+sS'blood orange'
+p1379
+(I254
+I75
+I3
+tp1380
+sS'dark fuchsia'
+p1381
+(I157
+I7
+I89
+tp1382
+sS'peach'
+p1383
+(I255
+I176
+I124
+tp1384
+sS'piss yellow'
+p1385
+(I221
+I214
+I24
+tp1386
+sS'light olive'
+p1387
+(I172
+I191
+I105
+tp1388
+sS'very light purple'
+p1389
+(I246
+I206
+I252
+tp1390
+sS'ocean'
+p1391
+(I1
+I123
+I146
+tp1392
+sS'sap green'
+p1393
+(I92
+I139
+I21
+tp1394
+sS'medium grey'
+p1395
+(I125
+I127
+I124
+tp1396
+sS'mint green'
+p1397
+(I143
+I255
+I159
+tp1398
+sS'light brown'
+p1399
+(I173
+I129
+I80
+tp1400
+sS'neon purple'
+p1401
+(I188
+I19
+I254
+tp1402
+sS'light navy blue'
+p1403
+(I46
+I90
+I136
+tp1404
+sS'powder blue'
+p1405
+(I177
+I209
+I252
+tp1406
+sS'lightish blue'
+p1407
+(I61
+I122
+I253
+tp1408
+sS'dull brown'
+p1409
+(I135
+I110
+I75
+tp1410
+sS'ocean blue'
+p1411
+(I3
+I113
+I156
+tp1412
+sS'dark mint'
+p1413
+(I72
+I192
+I114
+tp1414
+sS'camel'
+p1415
+(I198
+I159
+I89
+tp1416
+sS'bright light green'
+p1417
+(I45
+I254
+I84
+tp1418
+sS'bruise'
+p1419
+(I126
+I64
+I113
+tp1420
+sS'turquoise green'
+p1421
+(I4
+I244
+I137
+tp1422
+sS'olive brown'
+p1423
+(I100
+I84
+I3
+tp1424
+sS'light turquoise'
+p1425
+(I126
+I244
+I204
+tp1426
+sS'dark olive green'
+p1427
+(I60
+I77
+I3
+tp1428
+sS'bubblegum'
+p1429
+(I255
+I108
+I181
+tp1430
+sS'dark forest green'
+p1431
+(I0
+I45
+I4
+tp1432
+sS'reddish brown'
+p1433
+(I127
+I43
+I10
+tp1434
+sS'parchment'
+p1435
+(I254
+I252
+I175
+tp1436
+sS'dark peach'
+p1437
+(I222
+I126
+I93
+tp1438
+sS'blue/green'
+p1439
+(I15
+I155
+I142
+tp1440
+sS'green yellow'
+p1441
+(I201
+I255
+I39
+tp1442
+sS'strong pink'
+p1443
+(I255
+I7
+I137
+tp1444
+sS'sunflower'
+p1445
+(I255
+I197
+I18
+tp1446
+sS'light yellow'
+p1447
+(I255
+I254
+I122
+tp1448
+sS'cherry'
+p1449
+(I207
+I2
+I52
+tp1450
+sS'very light pink'
+p1451
+(I255
+I244
+I242
+tp1452
+sS'royal'
+p1453
+(I12
+I23
+I147
+tp1454
+sS'rosa'
+p1455
+(I254
+I134
+I164
+tp1456
+sS'orange red'
+p1457
+(I253
+I65
+I30
+tp1458
+sS'purple blue'
+p1459
+(I99
+I45
+I233
+tp1460
+sS'chartreuse'
+p1461
+(I193
+I248
+I10
+tp1462
+sS'true green'
+p1463
+(I8
+I148
+I4
+tp1464
+sS'murky green'
+p1465
+(I108
+I122
+I14
+tp1466
+sS'periwinkle'
+p1467
+(I142
+I130
+I254
+tp1468
+sS'hospital green'
+p1469
+(I155
+I229
+I170
+tp1470
+sS'vomit yellow'
+p1471
+(I199
+I193
+I12
+tp1472
+sS'light neon green'
+p1473
+(I78
+I253
+I84
+tp1474
+sS'burple'
+p1475
+(I104
+I50
+I227
+tp1476
+sS'shocking pink'
+p1477
+(I254
+I2
+I162
+tp1478
+sS'salmon pink'
+p1479
+(I254
+I123
+I124
+tp1480
+sS'turquoise'
+p1481
+(I6
+I194
+I172
+tp1482
+sS'aubergine'
+p1483
+(I61
+I7
+I52
+tp1484
+sS'shit green'
+p1485
+(I117
+I128
+I0
+tp1486
+sS'light red'
+p1487
+(I255
+I71
+I76
+tp1488
+sS'ultramarine'
+p1489
+(I32
+I0
+I177
+tp1490
+sS'dull pink'
+p1491
+(I213
+I134
+I157
+tp1492
+sS'dark'
+p1493
+(I27
+I36
+I49
+tp1494
+sS'pale blue'
+p1495
+(I208
+I254
+I254
+tp1496
+sS'reddish orange'
+p1497
+(I248
+I72
+I28
+tp1498
+sS'pale magenta'
+p1499
+(I215
+I103
+I173
+tp1500
+sS'dark mauve'
+p1501
+(I135
+I76
+I98
+tp1502
+sS'olive green'
+p1503
+(I103
+I122
+I4
+tp1504
+sS'cool green'
+p1505
+(I51
+I184
+I100
+tp1506
+sS'darkgreen'
+p1507
+(I5
+I73
+I7
+tp1508
+sS'aqua blue'
+p1509
+(I2
+I216
+I233
+tp1510
+sS'light greenish blue'
+p1511
+(I99
+I247
+I180
+tp1512
+sS'grey/green'
+p1513
+(I134
+I161
+I125
+tp1514
+sS'toupe'
+p1515
+(I199
+I172
+I125
+tp1516
+sS'fern green'
+p1517
+(I84
+I141
+I68
+tp1518
+sS'liliac'
+p1519
+(I196
+I142
+I253
+tp1520
+sS'light beige'
+p1521
+(I255
+I254
+I182
+tp1522
+sS'bright blue'
+p1523
+(I1
+I101
+I252
+tp1524
+sS'dark lime green'
+p1525
+(I126
+I189
+I1
+tp1526
+sS'clay'
+p1527
+(I182
+I106
+I80
+tp1528
+sS'muddy brown'
+p1529
+(I136
+I104
+I6
+tp1530
+sS'buff'
+p1531
+(I254
+I246
+I158
+tp1532
+sS'sunshine yellow'
+p1533
+(I255
+I253
+I55
+tp1534
+sS'burnt orange'
+p1535
+(I192
+I78
+I1
+tp1536
+sS'wintergreen'
+p1537
+(I32
+I249
+I134
+tp1538
+sS'dark indigo'
+p1539
+(I31
+I9
+I84
+tp1540
+sS'dark lilac'
+p1541
+(I156
+I109
+I165
+tp1542
+sS'eggshell blue'
+p1543
+(I196
+I255
+I247
+tp1544
+sS'mauve'
+p1545
+(I174
+I113
+I129
+tp1546
+sS'pinkish orange'
+p1547
+(I255
+I114
+I76
+tp1548
+sS'very pale blue'
+p1549
+(I214
+I255
+I254
+tp1550
+sS'deep blue'
+p1551
+(I4
+I2
+I115
+tp1552
+sS'yellowgreen'
+p1553
+(I187
+I249
+I15
+tp1554
+sS'ultramarine blue'
+p1555
+(I24
+I5
+I219
+tp1556
+sS'deep red'
+p1557
+(I154
+I2
+I0
+tp1558
+sS'butterscotch'
+p1559
+(I253
+I177
+I71
+tp1560
+sS'orchid'
+p1561
+(I200
+I117
+I196
+tp1562
+sS'tiffany blue'
+p1563
+(I123
+I242
+I218
+tp1564
+sS'leaf'
+p1565
+(I113
+I170
+I52
+tp1566
+sS'bluegrey'
+p1567
+(I133
+I163
+I178
+tp1568
+sS'light seafoam green'
+p1569
+(I167
+I255
+I181
+tp1570
+sS'ice'
+p1571
+(I214
+I255
+I250
+tp1572
+sS'dark blue grey'
+p1573
+(I31
+I59
+I77
+tp1574
+sS'indigo'
+p1575
+(I56
+I2
+I130
+tp1576
+sS'purply'
+p1577
+(I152
+I63
+I178
+tp1578
+sS'blue violet'
+p1579
+(I93
+I6
+I233
+tp1580
+sS'purple/pink'
+p1581
+(I215
+I37
+I222
+tp1582
+sS'dark grey blue'
+p1583
+(I41
+I70
+I91
+tp1584
+sS'light periwinkle'
+p1585
+(I193
+I198
+I252
+tp1586
+sS'dusty red'
+p1587
+(I185
+I72
+I78
+tp1588
+sS'dusty green'
+p1589
+(I118
+I169
+I115
+tp1590
+sS'khaki'
+p1591
+(I170
+I166
+I98
+tp1592
+sS'wheat'
+p1593
+(I251
+I221
+I126
+tp1594
+sS'greyish purple'
+p1595
+(I136
+I113
+I145
+tp1596
+sS'icky green'
+p1597
+(I143
+I174
+I34
+tp1598
+sS'bright lavender'
+p1599
+(I199
+I96
+I255
+tp1600
+sS'tomato red'
+p1601
+(I236
+I45
+I1
+tp1602
+sS'golden rod'
+p1603
+(I249
+I188
+I8
+tp1604
+sS'dark purple'
+p1605
+(I53
+I6
+I62
+tp1606
+sS'raspberry'
+p1607
+(I176
+I1
+I73
+tp1608
+sS'light eggplant'
+p1609
+(I137
+I69
+I133
+tp1610
+sS'iris'
+p1611
+(I98
+I88
+I196
+tp1612
+sS'stone'
+p1613
+(I173
+I165
+I135
+tp1614
+sS'turquoise blue'
+p1615
+(I6
+I177
+I196
+tp1616
+sS'blush pink'
+p1617
+(I254
+I130
+I140
+tp1618
+sS'yellow/green'
+p1619
+(I200
+I253
+I61
+tp1620
+sS'light grey'
+p1621
+(I216
+I220
+I214
+tp1622
+sS'faded yellow'
+p1623
+(I254
+I255
+I127
+tp1624
+sS'bright red'
+p1625
+(I255
+I0
+I13
+tp1626
+sS'bluish purple'
+p1627
+(I112
+I59
+I231
+tp1628
+sS'vivid blue'
+p1629
+(I21
+I46
+I255
+tp1630
+sS'deep sea blue'
+p1631
+(I1
+I84
+I130
+tp1632
+sS'pistachio'
+p1633
+(I192
+I250
+I139
+tp1634
+sS'baby poop'
+p1635
+(I147
+I124
+I0
+tp1636
+sS'beige'
+p1637
+(I230
+I218
+I166
+tp1638
+sS'cranberry'
+p1639
+(I158
+I0
+I58
+tp1640
+sS'lipstick red'
+p1641
+(I192
+I2
+I47
+tp1642
+sS'seaweed green'
+p1643
+(I53
+I173
+I107
+tp1644
+sS'pure blue'
+p1645
+(I2
+I3
+I226
+tp1646
+sS'brownish pink'
+p1647
+(I194
+I126
+I121
+tp1648
+sS'muted green'
+p1649
+(I95
+I160
+I82
+tp1650
+sS'purpley grey'
+p1651
+(I148
+I126
+I148
+tp1652
+sS'lemon yellow'
+p1653
+(I253
+I255
+I56
+tp1654
+sS'moss'
+p1655
+(I118
+I153
+I88
+tp1656
+sS'dark orange'
+p1657
+(I198
+I81
+I2
+tp1658
+sS'greeny grey'
+p1659
+(I126
+I160
+I122
+tp1660
+sS'dark salmon'
+p1661
+(I200
+I90
+I83
+tp1662
+sS'hot purple'
+p1663
+(I203
+I0
+I245
+tp1664
+sS'fern'
+p1665
+(I99
+I169
+I80
+tp1666
+sS'cocoa'
+p1667
+(I135
+I95
+I66
+tp1668
+sS'dusky purple'
+p1669
+(I137
+I91
+I123
+tp1670
+sS'pink'
+p1671
+(I255
+I129
+I192
+tp1672
+sS'lime green'
+p1673
+(I137
+I254
+I5
+tp1674
+sS'burnt red'
+p1675
+(I159
+I35
+I5
+tp1676
+sS'dark teal'
+p1677
+(I1
+I77
+I78
+tp1678
+sS'sandy brown'
+p1679
+(I196
+I166
+I97
+tp1680
+sS'custard'
+p1681
+(I255
+I253
+I120
+tp1682
+sS'maize'
+p1683
+(I244
+I208
+I84
+tp1684
+sS'pinkish red'
+p1685
+(I241
+I12
+I69
+tp1686
+sS'orangish brown'
+p1687
+(I178
+I95
+I3
+tp1688
+sS'golden brown'
+p1689
+(I178
+I122
+I1
+tp1690
+sS'terracota'
+p1691
+(I203
+I104
+I67
+tp1692
+sS'slate grey'
+p1693
+(I89
+I101
+I109
+tp1694
+sS'fuchsia'
+p1695
+(I237
+I13
+I217
+tp1696
+sS'soft purple'
+p1697
+(I166
+I111
+I181
+tp1698
+sS'leaf green'
+p1699
+(I92
+I169
+I4
+tp1700
+sS'greenblue'
+p1701
+(I35
+I196
+I139
+tp1702
+sS'grape purple'
+p1703
+(I93
+I20
+I81
+tp1704
+sS'vibrant purple'
+p1705
+(I173
+I3
+I222
+tp1706
+sS'rusty orange'
+p1707
+(I205
+I89
+I9
+tp1708
+sS'pale red'
+p1709
+(I217
+I84
+I77
+tp1710
+sS'mahogany'
+p1711
+(I74
+I1
+I0
+tp1712
+sS'olive drab'
+p1713
+(I111
+I118
+I50
+tp1714
+sS'coral pink'
+p1715
+(I255
+I97
+I99
+tp1716
+sS'ivory'
+p1717
+(I255
+I255
+I203
+tp1718
+sS'tealish'
+p1719
+(I36
+I188
+I168
+tp1720
+sS'french blue'
+p1721
+(I67
+I107
+I173
+tp1722
+sS'light yellow green'
+p1723
+(I204
+I253
+I127
+tp1724
+sS'bluish green'
+p1725
+(I16
+I166
+I116
+tp1726
+sS'bright olive'
+p1727
+(I156
+I187
+I4
+tp1728
+sS'washed out green'
+p1729
+(I188
+I245
+I166
+tp1730
+sS'warm blue'
+p1731
+(I75
+I87
+I219
+tp1732
+sS'aquamarine'
+p1733
+(I4
+I216
+I178
+tp1734
+sS'mulberry'
+p1735
+(I146
+I10
+I78
+tp1736
+sS'poo brown'
+p1737
+(I136
+I95
+I1
+tp1738
+sS'robin egg blue'
+p1739
+(I138
+I241
+I254
+tp1740
+sS'pale mauve'
+p1741
+(I254
+I208
+I252
+tp1742
+sS'faded purple'
+p1743
+(I145
+I110
+I153
+tp1744
+sS'pastel red'
+p1745
+(I219
+I88
+I86
+tp1746
+sS'electric lime'
+p1747
+(I168
+I255
+I4
+tp1748
+sS'dark navy'
+p1749
+(I0
+I4
+I53
+tp1750
+sS'red brown'
+p1751
+(I139
+I46
+I22
+tp1752
+sS'bright teal'
+p1753
+(I1
+I249
+I198
+tp1754
+sS'strawberry'
+p1755
+(I251
+I41
+I67
+tp1756
+sS'light cyan'
+p1757
+(I172
+I255
+I252
+tp1758
+sS'sapphire'
+p1759
+(I33
+I56
+I171
+tp1760
+sS'sea blue'
+p1761
+(I4
+I116
+I149
+tp1762
+sS'tan green'
+p1763
+(I169
+I190
+I112
+tp1764
+sS'grass'
+p1765
+(I92
+I172
+I45
+tp1766
+sS'rust'
+p1767
+(I168
+I60
+I9
+tp1768
+sS'bluey purple'
+p1769
+(I98
+I65
+I199
+tp1770
+sS'russet'
+p1771
+(I161
+I57
+I5
+tp1772
+sS'rust orange'
+p1773
+(I196
+I85
+I8
+tp1774
+sS'very dark blue'
+p1775
+(I0
+I1
+I51
+tp1776
+sS'sepia'
+p1777
+(I152
+I94
+I43
+tp1778
+sS'maroon'
+p1779
+(I101
+I0
+I33
+tp1780
+sS'light sea green'
+p1781
+(I152
+I246
+I176
+tp1782
+sS'sunflower yellow'
+p1783
+(I255
+I218
+I3
+tp1784
+sS'powder pink'
+p1785
+(I255
+I178
+I208
+tp1786
+sS'lichen'
+p1787
+(I143
+I182
+I123
+tp1788
+sS'purplish blue'
+p1789
+(I96
+I30
+I249
+tp1790
+sS'terra cotta'
+p1791
+(I201
+I100
+I59
+tp1792
+sS'light blue'
+p1793
+(I149
+I208
+I252
+tp1794
+sS'sand brown'
+p1795
+(I203
+I165
+I96
+tp1796
+sS'shit'
+p1797
+(I127
+I95
+I0
+tp1798
+sS'cream'
+p1799
+(I255
+I255
+I194
+tp1800
+sS'heather'
+p1801
+(I164
+I132
+I172
+tp1802
+sS'baby poo'
+p1803
+(I171
+I144
+I4
+tp1804
+sS'bright violet'
+p1805
+(I173
+I10
+I253
+tp1806
+sS'pale'
+p1807
+(I255
+I249
+I208
+tp1808
+sS'diarrhea'
+p1809
+(I159
+I131
+I3
+tp1810
+sS'brownish orange'
+p1811
+(I203
+I119
+I35
+tp1812
+sS'saffron'
+p1813
+(I254
+I178
+I9
+tp1814
+sS'blue green'
+p1815
+(I19
+I126
+I109
+tp1816
+sS'sandy'
+p1817
+(I241
+I218
+I122
+tp1818
+sS'brown orange'
+p1819
+(I185
+I105
+I2
+tp1820
+sS'camo'
+p1821
+(I127
+I143
+I78
+tp1822
+sS'lavender pink'
+p1823
+(I221
+I133
+I215
+tp1824
+sS'fluro green'
+p1825
+(I10
+I255
+I2
+tp1826
+sS'dusky pink'
+p1827
+(I204
+I122
+I139
+tp1828
+sS'teal blue'
+p1829
+(I1
+I136
+I159
+tp1830
+sS'evergreen'
+p1831
+(I5
+I71
+I42
+tp1832
+sS'pale peach'
+p1833
+(I255
+I229
+I173
+tp1834
+sS'poop'
+p1835
+(I127
+I94
+I0
+tp1836
+sS'mustard'
+p1837
+(I206
+I179
+I1
+tp1838
+sS'booger'
+p1839
+(I155
+I181
+I60
+tp1840
+sS'reddish purple'
+p1841
+(I145
+I9
+I81
+tp1842
+sS'pear'
+p1843
+(I203
+I248
+I95
+tp1844
+sS'bright green'
+p1845
+(I1
+I255
+I7
+tp1846
+sS'vibrant green'
+p1847
+(I10
+I221
+I8
+tp1848
+sS'greeny yellow'
+p1849
+(I198
+I248
+I8
+tp1850
+sS'light teal'
+p1851
+(I144
+I228
+I193
+tp1852
+sS'brown green'
+p1853
+(I112
+I108
+I17
+tp1854
+sS'dark beige'
+p1855
+(I172
+I147
+I98
+tp1856
+sS'drab'
+p1857
+(I130
+I131
+I68
+tp1858
+sS'mustard yellow'
+p1859
+(I210
+I189
+I10
+tp1860
+sS'chocolate'
+p1861
+(I61
+I28
+I2
+tp1862
+sS'desert'
+p1863
+(I204
+I173
+I96
+tp1864
+sS'tan'
+p1865
+(I209
+I178
+I111
+tp1866
+sS'old pink'
+p1867
+(I199
+I121
+I134
+tp1868
+sS'dirty yellow'
+p1869
+(I205
+I197
+I10
+tp1870
+sS'magenta'
+p1871
+(I194
+I0
+I120
+tp1872
+sS'dull yellow'
+p1873
+(I238
+I220
+I91
+tp1874
+sS'highlighter green'
+p1875
+(I27
+I252
+I6
+tp1876
+sS'fresh green'
+p1877
+(I105
+I216
+I79
+tp1878
+sS'blurple'
+p1879
+(I85
+I57
+I204
+tp1880
+sS'macaroni and cheese'
+p1881
+(I239
+I180
+I53
+tp1882
+sS'stormy blue'
+p1883
+(I80
+I123
+I156
+tp1884
+sS'purple'
+p1885
+(I126
+I30
+I156
+tp1886
+sS'ocean green'
+p1887
+(I61
+I153
+I115
+tp1888
+sS'dusty pink'
+p1889
+(I213
+I138
+I148
+tp1890
+sS'shamrock green'
+p1891
+(I2
+I193
+I77
+tp1892
+sS'baby pink'
+p1893
+(I255
+I183
+I206
+tp1894
+sS'slate blue'
+p1895
+(I91
+I124
+I153
+tp1896
+sS'darkish purple'
+p1897
+(I117
+I25
+I115
+tp1898
+s.
