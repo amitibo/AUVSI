@@ -5,10 +5,9 @@ and send those new files downstream.
 """
 
 from twisted.internet import task
-from twisted.internet.protocol import ReconnectingClientFactory, ClientFactory
+from twisted.internet.protocol import ReconnectingClientFactory
 from twisted.protocols.ftp import FTPClient
 from twisted.python import log
-import AUVSIairborne.global_settings as settings
 import os
 
 
@@ -98,6 +97,8 @@ class DirSyncClientFactory(ReconnectingClientFactory):
 
 
 if __name__ == "__main__":
+
+    import AUVSIairborne.global_settings as settings
     from twisted.internet import reactor
     from sys import stdout
 
