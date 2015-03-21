@@ -1,9 +1,9 @@
 __author__ = 'Ori'
 
-from twisted.internet.protocol import Factory
+from twisted.internet.error import ConnectionDone
+from twisted.internet.protocol import Factory, Protocol
 from twisted.protocols.basic import LineReceiver
 from twisted.python import log
-from AUVSIairborne.camera import SimulationCamera, CanonCamera
 
 
 class CameraControlProtocol(LineReceiver):
@@ -29,36 +29,65 @@ class CameraControlProtocol(LineReceiver):
         self.sendLine("Welcome to camera control channel.")
 
     def lineReceived(self, line):
-        self.sendLine("More master?")
-        if "start shooting" == line:
-            self.factory.camera.startShooting()
-            log.msg("Start shooting!")
+        line = str.join(" ", line.split())
 
-        elif "stop shooting" == line:
-            self.factory.camera.stopShooting()
-            log.msg("Stop shooting!")
+        log.msg("Recived: '{}'".format(line))
 
-        elif line.startswith("set"):
-            #TODO set parameters isn't working, check the camera class
-            words = line.split(' ')
-            try:
-                params = {words[i]: words[i+1] for i in range(1, len(words), 2)}
-            except:
-                log.msg("Could not set the desired parameters: "
-                        "'{}'".format(line))
-                return
+        try:
+            cmd = line.split(' ', 1)[1]
+        except IndexError as e:
+            log.msg("Wrong format: '{}'".format(line))
+            log.err(e)
+            self.sendLine("More master?")
+            return
 
-            self.factory.camera.setParams(params)
-            log.msg("Sets {}".format(str(params)))
+        if line.startswith("camera"):
+            self.camera_control(cmd)
+
+        elif line.startswith("system"):
+            pass
 
         else:
-            log.msg("Unknown command: {}".format(line))
+            log.msg("Unknown system: '{}'".format(line))
+
+        self.sendLine("More master?")
+
+    def connectionLost(self, reason=ConnectionDone()):
+        log.msg("Connection was Lost: '{}".format(str(reason)))
+
+        self.factory.connection_terminated()
+        Protocol.connectionLost(self, reason)
+
+    def camera_control(self, cmd):
+        camera = self.factory.camera
+
+        if "start" == cmd:
+                camera.startShooting()
+                log.msg("Start shooting!")
+
+        elif "stop" == cmd:
+            camera.stopShooting()
+            log.msg("Stop shooting!")
+
+        elif cmd.startswith("set"):
+            #TODO set parameters isn't working, check the camera class
+            words = cmd.split()
+            try:
+               params = {words[i]: words[i+1] for i in range(1, len(words), 2)}
+            except IndexError as e:
+                log.msg("Parameters need to be in pairs <param> <data>: "
+                        "'{}'".format(cmd))
+                log.err(e)
+                return
+
+            camera.setParams(params)
+            log.msg("Sets {}".format(str(params)))
 
 
 class CameraControlFactory(Factory):
-    def __init__(self):
+    def __init__(self, camera):
         self.connectionsPool = 1
-        self.camera = SimulationCamera()
+        self.camera = camera
 
     def buildProtocol(self, addr):
         return CameraControlProtocol(self, addr)
@@ -85,7 +114,8 @@ if __name__ == "__main__":
     """
     from twisted.internet import reactor
     from sys import stdout
+    from AUVSIairborne.camera import SimulationCamera
 
     log.startLogging(stdout)
-    reactor.listenTCP(8844, CameraControlFactory())
+    reactor.listenTCP(8844, CameraControlFactory(SimulationCamera()))
     reactor.run()

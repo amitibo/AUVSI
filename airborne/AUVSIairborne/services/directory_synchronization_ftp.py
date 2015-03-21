@@ -35,23 +35,23 @@ class FileSendingScheduler(object):
         return None
 
 
-def send_image(consumer, path):
-    log.msg("send_image({})".format(path))
+def send_file(consumer, path):
+    log.msg("send_file({})".format(path))
 
-    with open(path, 'rb') as image:
-        for line in image.read():
+    with open(path, 'rb') as file:
+        for line in file.read():
             consumer.write(line)
 
     consumer.finish()
 
 
-def sync_images(ftp_client, scheduler):
-    log.msg("sync_images")
+def sync_files(ftp_client, scheduler):
+    log.msg("Syncing Files")
 
-    for image in scheduler:
-        consumer_defer, control_defer = ftp_client.storeFile(image)
-        image_path = os.path.join(scheduler.dir_path, image)
-        consumer_defer.addCallback(send_image, path=image_path)
+    for file in scheduler:
+        consumer_defer, control_defer = ftp_client.storeFile(file)
+        file_path = os.path.join(scheduler.dir_path, file)
+        consumer_defer.addCallback(send_file, path=file_path)
 
 
 class DirSyncClientFactory(ReconnectingClientFactory):
@@ -61,7 +61,7 @@ class DirSyncClientFactory(ReconnectingClientFactory):
                  ftp_user='anonymous', ftp_pass='Ori@auvsi.technion'):
 
         self.dir_to_sync = dir_to_sync
-        self.image_scheduler = FileSendingScheduler(dir_to_sync)
+        self.file_scheduler = FileSendingScheduler(dir_to_sync)
 
         self.sync_interval = sync_interval
         self.sync_task = None
@@ -81,9 +81,9 @@ class DirSyncClientFactory(ReconnectingClientFactory):
 
         ftp_client = FTPClient(username=self.user, password=self.password)
 
-        self.sync_task = task.LoopingCall(sync_images,
+        self.sync_task = task.LoopingCall(sync_files,
                                           ftp_client=ftp_client,
-                                          scheduler=self.image_scheduler)
+                                          scheduler=self.file_scheduler)
         self.sync_task.start(self.sync_interval)
 
         return ftp_client
