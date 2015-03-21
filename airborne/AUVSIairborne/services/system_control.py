@@ -6,7 +6,7 @@ from twisted.protocols.basic import LineReceiver
 from twisted.python import log
 
 
-class CameraControlProtocol(LineReceiver):
+class SystemControlProtocol(LineReceiver):
     """
     This is the protocol which the airborne server will use to
     get commands for the camera with.
@@ -84,13 +84,13 @@ class CameraControlProtocol(LineReceiver):
             log.msg("Sets {}".format(str(params)))
 
 
-class CameraControlFactory(Factory):
+class SystemControlFactory(Factory):
     def __init__(self, camera):
         self.connectionsPool = 1
         self.camera = camera
 
     def buildProtocol(self, addr):
-        return CameraControlProtocol(self, addr)
+        return SystemControlProtocol(self, addr)
 
     def is_connection_allowed(self):
         """
@@ -117,5 +117,5 @@ if __name__ == "__main__":
     from AUVSIairborne.camera import SimulationCamera
 
     log.startLogging(stdout)
-    reactor.listenTCP(8844, CameraControlFactory(SimulationCamera()))
+    reactor.listenTCP(8844, SystemControlFactory(SimulationCamera()))
     reactor.run()
