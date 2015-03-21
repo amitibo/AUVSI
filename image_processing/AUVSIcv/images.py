@@ -186,7 +186,19 @@ class Image(object):
         overlay(img=self._img, overlay_img=target.img, overlay_alpha=target.alpha, M=M)
 
     def createPatches(self, patch_size, patch_shift, copy=True):
-        """Create patches(crops) of an image"""
+        """Create patches(crops) of an image
+        
+        This function crops patches of an image on a regulary spaced grid.
+        
+        Parameters
+        ----------
+        patch_size : int
+            Scalar size (both width and height) of a rectangular patch.
+        patch_shift : int
+            Space (both horizontal and vertical) between patches.
+        copy: Boolean
+            Wheter to return a copy or a view into the original image.
+        """
         
         patch_height, patch_width = patch_size
         nx = int((self._img.shape[1] - patch_width)/patch_shift)
@@ -200,7 +212,17 @@ class Image(object):
                 yield patch.copy()
 
     def pastePatch(self, patch, target):
-        """Paste a target on a patch"""
+        """Paste a target on a patch
+        
+        The target is pasted in the center of the patch (the coords of the patch and target are ignored).
+        
+        Parameters
+        ----------
+        patch: array
+            The patch on which the target is pasted into.
+        target: target object.
+            The target to paste on the patch.
+        """
 
         target_H = target.H(
             latitude=self._data['latitude'],

@@ -4,6 +4,10 @@ import transformation_matrices as transforms
 import aggdraw
 import Image
 from .NED import NED
+import random
+import bisect
+import string
+import pickle
 import cv2
 import math
 import tempfile
@@ -18,8 +22,26 @@ __all__ = [
     "CrossTarget",
     "PolygonTarget",
     "StarTarget",
-    "QRTarget"
+    "QRTarget",
+    "randomTarget"
 ]
+
+
+class WeightedRandomGenerator(object):
+    def __init__(self, weights):
+        self.totals = []
+        running_total = 0
+
+        for w in weights:
+            running_total += w
+            self.totals.append(running_total)
+
+    def next(self):
+        rnd = random.random() * self.totals[-1]
+        return bisect.bisect_right(self.totals, rnd)
+
+    def __call__(self):
+        return self.next()
 
 
 class BaseTarget(object):
@@ -57,9 +79,9 @@ class BaseTarget(object):
         altitude,
         longitude,
         latitude,
-        color,
-        letter,
-        font_color,
+        color=None,
+        letter=None,
+        font_color=None,
         font_size=200,
         font=None,
         template_size=400
@@ -86,7 +108,6 @@ class BaseTarget(object):
                 self._font = r"C:\Windows\Fonts\Arialbd.ttf"
         else:
             self._font = font
-        print 'FONT:', self._font
 
         self._template_size = template_size
         
@@ -222,8 +243,10 @@ class CrossTarget(BaseTarget):
 class PolygonTarget(BaseTarget):
     """A target in the form of a n-sided polygon."""
 
-    def __init__(self, n, *args, **kwds):
+    def __init__(self, n=None, *args, **kwds):
         
+        if n is None:
+            n = random.randint(4, 8)
         self._nsides = n
         
         super(PolygonTarget, self).__init__(*args, **kwds)
@@ -244,8 +267,10 @@ class PolygonTarget(BaseTarget):
 class StarTarget(BaseTarget):
     """A target in the form of a n-star."""
 
-    def __init__(self, n, *args, **kwds):
+    def __init__(self, n=None, *args, **kwds):
         
+        if n is None:
+            n = random.randint(4, 8)
         self._nstar = n
         
         super(StarTarget, self).__init__(*args, **kwds)
@@ -272,29 +297,15 @@ class StarTarget(BaseTarget):
 class QRTarget(BaseTarget):
     """A target in the form of a circle."""
 
-    def __init__(
-        self,
-        size,
-        orientation,
-        altitude,
-        longitude,
-        latitude,
-        text,
-        template_size=400
-        ):
+    def __init__(self, text=None, *args, **kwds):
 
+        if text is None:
+            text = 'www.{random_string}.com'.format(
+                random_string=''.join(random.choice(string.letters+string.digits+'_') for _ in range(20))
+            )
         self._text = text
 
-        super(QRTarget, self).__init__(
-            size,
-            orientation,
-            altitude,
-            longitude,
-            latitude,
-            color=None,
-            letter=None,
-            font_color=None,
-            )
+        super(QRTarget, self).__init__(*args, **kwds)
         
 
     def _drawTemplate(self):
@@ -319,3 +330,46 @@ class QRTarget(BaseTarget):
         self._templateImg = img
         self._templateAlpha = np.ones(img.shape[:2], dtype=np.float32)
 
+
+#
+# Setup data for random selection.
+#
+TARGET_CLASSES = (
+    (CircleTarget, 1.),
+    (RectangleTarget, 1.),
+    (TriangleTarget, 1.),
+    (CrossTarget, 1.),
+    (PolygonTarget, 4.),
+    (StarTarget, 3.),
+    (QRTarget, 1.),
+)
+
+with open(os.path.join(os.environ['AUVSI_CV_DATA'], 'colors.pkl'), 'r') as f:
+    RGB_COLORS = pickle.load(f)
+
+WRG = WeightedRandomGenerator(weights=zip(*TARGET_CLASSES)[1])
+
+def randomColor():
+    return random.choice(RGB_COLORS.values())
+
+
+def randomTarget(longitude, latitude, altitude, coords_offset=0.0002, size_limits=(0.6, 2.4), **kwds):
+    """Create a random target
+    
+    The target is selected randomly from all possible targets, and placed in a random
+    offset from some given position.
+    """
+    
+    params = {
+        'size': (random.random()*size_limits[1]-size_limits[0])+size_limits[0],
+        'orientation': random.random()*360,
+        'longitude': longitude + 2*(random.random()-0.5)*coords_offset,
+        'latitude': latitude+2*(random.random()-0.5)*coords_offset,
+        'altitude': altitude,
+        'letter': random.choice(string.letters+string.digits),
+        'color': randomColor(), 
+        'font_color': randomColor(),
+    }
+    params.update(kwds)
+    target = TARGET_CLASSES[WRG.next()][0]
+    return target(**params)

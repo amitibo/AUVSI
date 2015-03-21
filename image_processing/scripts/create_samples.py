@@ -14,36 +14,19 @@ def main():
     img = AUVSIcv.Image(imgs_paths[3])
     
     for i in range(10):
-        target = AUVSIcv.StarTarget(
-            n=5+int(i/3),
-            size=2,
-            orientation=30*i,
+        target = AUVSIcv.randomTarget(
             altitude=0,
-            longitude=32.8167+0.00003*i,
-            latitude=34.9833+0.00003*i, 
-            color=(70, 150, 100), 
-            letter='A', 
-            font_color=(140, 230, 240)
+            longitude=32.8167,
+            latitude=34.9833
         )
         
         img.paste(target)
-    
-    target = AUVSIcv.QRTarget(
-        size=2,
-        orientation=20,
-        altitude=0,
-        longitude=32.8167,
-        latitude=34.9833,
-        text='www.google.com'
-    )
-
-    img.paste(target)
     
     cv2.namedWindow('image', flags=cv2.WINDOW_NORMAL)
     resized_img = cv2.resize(img.img, (0, 0), fx=0.25, fy=0.25)
     
     cv2.imshow('image', resized_img)
-    cv2.imwrite('image_with_targets.jpg', resized_img)
+    cv2.imwrite('image_with_targets.jpg', img.img)
     
     cv2.waitKey(0)
     cv2.destroyAllWindows()
