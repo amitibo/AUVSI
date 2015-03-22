@@ -1,3 +1,7 @@
+""" This module gives a control line to the aerial pc.
+ It is intended to work in pair the ground station gui.
+ In case of problem, can be accessed through telnet.
+"""
 __author__ = 'Ori'
 
 from twisted.internet.error import ConnectionDone
@@ -70,7 +74,8 @@ class SystemControlProtocol(LineReceiver):
             log.msg("Stop shooting!")
 
         elif cmd.startswith("set"):
-            #TODO set parameters isn't working, check the camera class
+            #TODO set parameters isn't working for each parameter,
+            # check the camera class
             words = cmd.split()
             try:
                params = {words[i]: words[i+1] for i in range(1, len(words), 2)}

@@ -1,8 +1,8 @@
+""" This module shall watch a given directory to watch for new files,
+and send those new files downstream using ftp.
+"""
 __author__ = 'Ori'
-"""
-This module shall watch a given directory for new files,
-and send those new files downstream.
-"""
+
 
 from twisted.internet import task
 from twisted.internet.protocol import ReconnectingClientFactory
