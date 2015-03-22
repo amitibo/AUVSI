@@ -154,6 +154,7 @@ class ServerFactory(protocol.ReconnectingClientFactory):
         #
         log.msg('Downloading image from url {img_url} to local path: {local_path}'.format(img_url=img_url, local_path=img_path))
         urllib.urlretrieve(img_url, img_path)
+        log.msg('Finished Downloading image from url {img_url}'.format(img_url=img_url))
         
         #
         # Resize a thumbnail.
