@@ -94,6 +94,8 @@ class DirSyncClientFactory(ReconnectingClientFactory):
 
     def clientConnectionFailed(self, connector, reason):
         log.msg("connection failed")
+        self.retry(connector)
+        self.sync_task.stop()
 
 
 if __name__ == "__main__":
@@ -101,12 +103,27 @@ if __name__ == "__main__":
     import AUVSIairborne.global_settings as settings
     from twisted.internet import reactor
     from sys import stdout
+    import argparse
 
     log.startLogging(stdout)
 
-    dir_sync_factory = DirSyncClientFactory(r'C:\Users\Ori\Pictures',
+    # parser = argparse.ArgumentParser(description='Start directory'
+    #                                              'synchronization via ftp.')
+    # parser.add_argument('dir', required=True,
+    #                     help='directory to watch')
+    # parser.add_argument('ip', required=True,
+    #                     help="server's ip (ground-station)")
+    # parser.add_argument('--port', type=int, defult=21,
+    #                     help="server's port")
+    # parser.add_argument(['-u', '--user'], type=str, defult='anonymous',
+    #                     help="login name")
+    # parser.add_argument(['-p', '--pass'], type=str, defult='auvsi@Technion',
+    #                     help="password")
+    # args = parser.parse_args()
+
+    dir_sync_factory = DirSyncClientFactory(r'C:\Users\Ori\ftp_playground',
                                             sync_interval=1,
                                             ftp_user=settings.FTP['user'],
                                             ftp_pass=settings.FTP['pass'])
-    reactor.connectTCP('localhost', 21, dir_sync_factory)
+    reactor.connectTCP('192.168.43.167', 21, dir_sync_factory)
     reactor.run()
