@@ -90,12 +90,14 @@ class DirSyncClientFactory(ReconnectingClientFactory):
     def clientConnectionLost(self, connector, reason):
         log.msg("connection lost")
         self.retry(connector)
-        self.sync_task.stop()
+        if self.sync_task is not None:
+            self.sync_task.stop()
 
     def clientConnectionFailed(self, connector, reason):
         log.msg("connection failed")
         self.retry(connector)
-        self.sync_task.stop()
+        if self.sync_task is not None:
+            self.sync_task.stop()
 
 
 if __name__ == "__main__":
@@ -107,23 +109,25 @@ if __name__ == "__main__":
 
     log.startLogging(stdout)
 
-    # parser = argparse.ArgumentParser(description='Start directory'
-    #                                              'synchronization via ftp.')
-    # parser.add_argument('dir', required=True,
-    #                     help='directory to watch')
-    # parser.add_argument('ip', required=True,
-    #                     help="server's ip (ground-station)")
-    # parser.add_argument('--port', type=int, defult=21,
-    #                     help="server's port")
-    # parser.add_argument(['-u', '--user'], type=str, defult='anonymous',
-    #                     help="login name")
-    # parser.add_argument(['-p', '--pass'], type=str, defult='auvsi@Technion',
-    #                     help="password")
-    # args = parser.parse_args()
+    parser = argparse.ArgumentParser(description='Start directory'
+                                                 'synchronization via ftp.')
+    parser.add_argument('dir',
+                        help='directory to watch')
+    parser.add_argument('ip',
+                        help="server's ip (ground-station)")
+    parser.add_argument('-T', type=float, default=1, dest='sync_interval',
+                        help="Time interval for synchronization")
+    parser.add_argument('--port', type=int, default=21,
+                        help="server's port")
+    parser.add_argument('-u', '--user', type=str, default='anonymous',
+                        help="login name")
+    parser.add_argument('-p', '--pass', type=str, default='auvsi@Technion',
+                        help="password", dest='pass_')
+    args = parser.parse_args()
 
-    dir_sync_factory = DirSyncClientFactory(r'C:\Users\Ori\ftp_playground',
-                                            sync_interval=1,
-                                            ftp_user=settings.FTP['user'],
-                                            ftp_pass=settings.FTP['pass'])
-    reactor.connectTCP('192.168.43.167', 21, dir_sync_factory)
+    dir_sync_factory = DirSyncClientFactory(args.dir,
+                                            sync_interval=args.sync_interval,
+                                            ftp_user=args.user,
+                                            ftp_pass=args.pass_)
+    reactor.connectTCP(args.ip, args.port, dir_sync_factory)
     reactor.run()
