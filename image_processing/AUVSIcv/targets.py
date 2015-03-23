@@ -361,7 +361,7 @@ def randomTarget(longitude, latitude, altitude, coords_offset=0.0002, size_limit
     """
     
     params = {
-        'size': (random.random()*size_limits[1]-size_limits[0])+size_limits[0],
+        'size': random.random()*(size_limits[1]-size_limits[0])+size_limits[0],
         'orientation': random.random()*360,
         'longitude': longitude + 2*(random.random()-0.5)*coords_offset,
         'latitude': latitude+2*(random.random()-0.5)*coords_offset,

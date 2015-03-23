@@ -294,7 +294,7 @@ class GUIApp(App):
             'Camera', {'ISO': 100, 'Shutter': 5000, 'Aperture': 4, 'Zoom': 45}
         )
         config.setdefaults(
-            'Camera', {'ISO': 100, 'Shutter': 5000, 'Aperture': 4, 'Zoom': 45}
+            'Admin', {'Logging Path': gs.AUVSI_BASE_FOLDER}
         )
         config.setdefaults(
             'CV', {'image_rescaling': 0.25}
