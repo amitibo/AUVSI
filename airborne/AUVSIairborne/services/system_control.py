@@ -38,21 +38,18 @@ class SystemControlProtocol(LineReceiver):
         log.msg("Recived: '{}'".format(line))
 
         try:
-            cmd = line.split(' ', 1)[1]
-        except IndexError as e:
+            subsystem_id, cmd = line.split(' ', 1)
+        except ValueError as e:
             log.msg("Wrong format: '{}'".format(line))
             log.err(e)
             self.sendLine("More master?")
             return
 
-        if line.startswith("camera"):
-            self.camera_control(cmd)
-
-        elif line.startswith("system"):
-            pass
-
-        else:
-            log.msg("Unknown system: '{}'".format(line))
+        try:
+            self.factory.subsystems[subsystem_id](cmd)
+        except IndexError as e:
+            log.msg("Unknown subsystem: '{}'".format(subsystem_id))
+            log.err(e)
 
         self.sendLine("More master?")
 
@@ -62,44 +59,26 @@ class SystemControlProtocol(LineReceiver):
         self.factory.connection_terminated()
         Protocol.connectionLost(self, reason)
 
-    def camera_control(self, cmd):
-        camera = self.factory.camera
-
-        if "start" == cmd:
-                camera.startShooting()
-                log.msg("Start shooting!")
-
-        elif "stop" == cmd:
-            camera.stopShooting()
-            log.msg("Stop shooting!")
-
-        elif cmd.startswith("set"):
-            #TODO set parameters isn't working for each parameter,
-            # check the camera class
-            words = cmd.split()
-            try:
-               params = {words[i]: words[i+1] for i in range(1, len(words), 2)}
-            except IndexError as e:
-                log.msg("Parameters need to be in pairs <param> <data>: "
-                        "'{}'".format(cmd))
-                log.err(e)
-                return
-
-            camera.setParams(params)
-            log.msg("Sets {}".format(str(params)))
-
 
 class SystemControlFactory(Factory):
-    def __init__(self, camera):
+    def __init__(self):
         self.connectionsPool = 1
-        self.camera = camera
+        self.subsystems = {}
 
     def buildProtocol(self, addr):
         return SystemControlProtocol(self, addr)
 
+    def subscribe_subsystem(self, subsystem_id, subsystem_handler):
+
+        assert callable(subsystem_handler)
+
+        if subsystem_id in self.subsystems:
+            raise ValueError("Subsystem id already exists.")
+
+        self.subsystems[subsystem_id] = subsystem_handler
+
     def is_connection_allowed(self):
-        """
-        :return:
+        """:return:
         true if a new connection is allowed
         false otherwise
         """
@@ -119,8 +98,18 @@ if __name__ == "__main__":
     """
     from twisted.internet import reactor
     from sys import stdout
-    from AUVSIairborne.camera import SimulationCamera
+    from AUVSIairborne.camera import SimulationCamera, CameraController
+
+    def dummy_shout(string):
+        """ Stub subsystem  """
+        print string
+
+    camera_controller = CameraController(SimulationCamera())
+
+    control_factory = SystemControlFactory()
+    control_factory.subscribe_subsystem("camera", camera_controller.apply_cmd)
+    control_factory.subscribe_subsystem("dummy_shout", dummy_shout)
 
     log.startLogging(stdout)
-    reactor.listenTCP(8844, SystemControlFactory(SimulationCamera()))
+    reactor.listenTCP(8844, control_factory)
     reactor.run()

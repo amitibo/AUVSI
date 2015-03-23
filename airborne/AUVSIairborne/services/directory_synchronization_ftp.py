@@ -102,12 +102,9 @@ class DirSyncClientFactory(ReconnectingClientFactory):
 
 if __name__ == "__main__":
 
-    import AUVSIairborne.global_settings as settings
     from twisted.internet import reactor
     from sys import stdout
     import argparse
-
-    log.startLogging(stdout)
 
     parser = argparse.ArgumentParser(description='Start directory'
                                                  'synchronization via ftp.')
@@ -123,7 +120,12 @@ if __name__ == "__main__":
                         help="login name")
     parser.add_argument('-p', '--pass', type=str, default='auvsi@Technion',
                         help="password", dest='pass_')
+    parser.add_argument('-l', '--log', type=str, default=None,
+                        help="log file path", dest='log_')
     args = parser.parse_args()
+
+    log_f = stdout if args.log_ is None else open(args.log_, 'w')
+    log.startLogging(log_f)
 
     dir_sync_factory = DirSyncClientFactory(args.dir,
                                             sync_interval=args.sync_interval,
