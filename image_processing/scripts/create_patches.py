@@ -13,6 +13,22 @@ def main():
 
     img = AUVSIcv.Image(imgs_paths[3])
 
+    #
+    # Load image data
+    #
+    data_path = os.path.splitext(imgs_paths[3])[0]+'.txt'
+    with open(data_path, 'r') as f:
+        data = json.load(f)
+        
+    img.calculateExtrinsicMatrix(
+        latitude=data['latitude'],
+        longitude=data['longitude'],
+        altitude=data['altitude'],
+        yaw=data['yaw'],
+        pitch=data['pitch'],
+        roll=data['roll'],
+    )
+
     target = AUVSIcv.PolygonTarget(
         n=5,
         size=2,

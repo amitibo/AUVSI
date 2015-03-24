@@ -1,22 +1,32 @@
 FEATURES:
 =========
 airborne:
-    - Better structure for the server (maybe turn separate functions to one classs)
-    - Add renaming of canon images (change from IMG### to <timestamp>)
-    - Resize image and send resized image.
     - Add automatic copying of the rc.local file to setup.py.
+    - Add support for cropping reply.
+    - Add connection to Pixhawk.
 ground:
     - Add skeleton for image processing
     - Add remote reboot of the airborne computer.
     - Add reset to data base.
+    - Add support for cropping request.
+    - Add support for cropping marking in GUI.
+    - Add support for downloading pixhawk data.
 image processing:
-    - Turn script into modules.
-
+    - Add target classification.
+    
 BUGS:
 =====
-ground:
-    - GUI doesn't shutdown properly, maybe gets stuck on some open process
 airborne:
     - Settings of camera (zoom, shutter etc) are not persistent
     - Turning off 'Shooting' can cause the camera to disconnect.
     - If the camera is disconnected, it might not be in 'rec' mode. 'Shooting' doesn't set the camera in 'rec' mode.
+    - Images don't download from the airborne computer in realtime.
+    - Images don't seem focused.
+ground:
+    - GUI doesn't shutdown properly, maybe gets stuck on some open process
+    - Images don't download from the airborne computer in realtime.
+    
+TESTING:
+========
+    - Test system in stress conditions, especially create a setup using the Bullet wireless.
+    - 

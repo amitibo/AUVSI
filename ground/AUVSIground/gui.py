@@ -20,6 +20,7 @@ from kivy.graphics import Color, Rectangle, Point, GraphicException
 from kivy.uix.image import AsyncImage
 from kivy.uix.scatter import Scatter
 from kivy.uix.togglebutton import ToggleButton
+from kivy.core.window import Window
 
 import pkg_resources
 import global_settings as gs
@@ -52,37 +53,137 @@ class ScatterStencil(Scatter):
 
         return super(ScatterStencil, self).on_touch_down(touch)
     
-    
+
+class CoordsAction(object):
+    def __init__(self, widget, touch):
+        
+        self._widget = widget
+        win = widget.get_parent_window()
+        
+        self._group = str(touch.uid)
+
+        with self._widget.canvas:
+            Color(1, 1, 1, mode='hsv', group=self._group)
+            self._lines = [
+                Rectangle(pos=(touch.x, 0), size=(1, win.height), group=self._group),
+                Rectangle(pos=(0, touch.y), size=(win.width, 1), group=self._group),
+            ]
+            
+        self._label = Label(size_hint=(None, None))
+        self.update_touch_label(touch)
+        self._widget.add_widget(self._label)
+ 
+    def on_touch_move(self, touch):
+        
+        self._lines[0].pos = touch.x, 0
+        self._lines[1].pos = 0, touch.y
+
+        self._label.pos = touch.pos
+        self.update_touch_label(touch)
+ 
+    def on_touch_up(self, touch):
+        
+        self._widget.canvas.remove_group(self._group)
+        self._widget.remove_widget(self._label)
+
+    def update_touch_label(self, touch):
+        
+        offset_x = self._widget.center[0]-self._widget.norm_image_size[0]/2
+        offset_y = self._widget.center[1]-self._widget.norm_image_size[1]/2
+
+        scale_ratio = self._widget.texture_size[0]/self._widget.norm_image_size[0]
+        
+        texture_x = (touch.x - offset_x)*scale_ratio
+        texture_y = (touch.y - offset_y)*scale_ratio
+         
+        self._label.text = 'X: {x}, Y: {y}'.format(
+            x=texture_x,
+            y=texture_y
+        )
+        self._label.texture_update()
+        self._label.pos = touch.pos
+        self._label.size = self._label.texture_size[0] + 20, self._label.texture_size[1] + 20
+
+        
+class CropAction(object):
+    def __init__(self, widget, touch):
+        
+        self._widget = widget
+        
+        self._group = str(touch.uid)
+
+        self._start_pos = touch.pos
+        with self._widget.canvas:
+            Color(1, 1, 1, .3, mode='rgba', group=self._group)
+            self._rect = \
+                Rectangle(pos=self._start_pos, size=(1, 1), group=self._group)
+        
+    def on_touch_move(self, touch):
+        
+        self._rect.size = [c-s for c, s in zip(touch.pos, self._start_pos)]
+
+    def on_touch_up(self, touch):
+        
+        self._widget.canvas.remove_group(self._group)
+        
+        coords = (
+            min(self._start_pos[0], touch.pos[0]),
+            min(self._start_pos[1], touch.pos[1]),
+            max(self._start_pos[0], touch.pos[0]),
+            max(self._start_pos[1], touch.pos[1]),
+        )
+        self._widget.roiSelect(coords)
+
 class TouchAsyncImage(AsyncImage):
     
+    def __init__(self, *args, **kwargs):
+        super(TouchAsyncImage, self).__init__(*args, **kwargs)
+        self._keyboard = Window.request_keyboard(self._keyboard_closed, self)
+        self._keyboard.bind(on_key_down=self._on_keyboard_down)
+        self._keyboard.bind(on_key_up=self._on_keyboard_up)
+        self._ctrl_held = False
+        
+    def _keyboard_closed(self):
+        self._keyboard.unbind(on_key_down=self._on_keyboard_down)
+        self._keyboard = None
+
+    def _on_keyboard_down(self, keyboard, keycode, text, modifiers):
+        if keycode[1] == 'ctrl':
+            self._ctrl_held = True
+
+        return True
+    
+    def _on_keyboard_up(self, *args, **kwargs):
+        self._ctrl_held = False
+
+        return True
+
     def on_touch_down(self, touch):
         
         #
-        # Check if wheel event
+        # Check if mouse event
         #
-        if touch.button == 'scrolldown' and self.parent.scale > 0.6:
-            self.parent.scale -= 0.1
-            return
-        if touch.button == 'scrollup':
-            self.parent.scale += 0.1
-            return
-        
-        win = self.get_parent_window()
-        ud = touch.ud
-        ud['group'] = g = str(touch.uid)
-        ud['color'] = random()
-
-        with self.canvas:
-            Color(ud['color'], 1, 1, mode='hsv', group=g)
-            ud['lines'] = [
-                Rectangle(pos=(touch.x, 0), size=(1, win.height), group=g),
-                Rectangle(pos=(0, touch.y), size=(win.width, 1), group=g),
-            ]
+        if touch.device == 'mouse' and touch.button in ('scrolldown', 'scrollup'):
             
-        ud['label'] = Label(size_hint=(None, None))
-        self.update_touch_label(ud['label'], touch)
-        self.add_widget(ud['label'])
+            #
+            # Check if the scroll wheel is used
+            #
+            if touch.button == 'scrolldown' and self.parent.scale > 0.6:
+                self.parent.scale -= 0.1
+            elif touch.button == 'scrollup':
+                self.parent.scale += 0.1
+            
+            return super(TouchAsyncImage, self).on_touch_down(touch)
+        
         touch.grab(self)
+        
+        if self._ctrl_held:
+            touch.ud['action'] = CropAction(self, touch)
+            return True
+        
+        else:
+            touch.ud['action'] = CoordsAction(self, touch)
+        
         return super(TouchAsyncImage, self).on_touch_down(touch)
 
     def on_touch_move(self, touch):
@@ -90,46 +191,25 @@ class TouchAsyncImage(AsyncImage):
         if touch.grab_current is not self:
             return super(TouchAsyncImage, self).on_touch_move(touch)
 
-        ud = touch.ud
+        touch.ud['action'].on_touch_move(touch)
          
-        ud['lines'][0].pos = touch.x, 0
-        ud['lines'][1].pos = 0, touch.y
-
-        ud['label'].pos = touch.pos
-        self.update_touch_label(ud['label'], touch)
-        
         return super(TouchAsyncImage, self).on_touch_move(touch)
         
     def on_touch_up(self, touch):
         if touch.grab_current is not self:
             return super(TouchAsyncImage, self).on_touch_up(touch)
         
+        touch.ud['action'].on_touch_up(touch)
+        touch.ud['action'] = None
+        
         touch.ungrab(self)
-        ud = touch.ud
-        self.canvas.remove_group(ud['group'])
-        self.remove_widget(ud['label'])
         
         return super(TouchAsyncImage, self).on_touch_up(touch)
 
-    def update_touch_label(self, label, touch):
-        
-        offset_x = self.center[0]-self.norm_image_size[0]/2
-        offset_y = self.center[1]-self.norm_image_size[1]/2
-
-        scale_ratio = self.texture_size[0]/self.norm_image_size[0]
-        
-        texture_x = (touch.x - offset_x)*scale_ratio
-        texture_y = (touch.y - offset_y)*scale_ratio
-         
-        label.text = 'X: {x}, Y: {y}'.format(
-            x=texture_x,
-            y=texture_y
-        )
-        label.texture_update()
-        label.pos = touch.pos
-        label.size = label.texture_size[0] + 20, label.texture_size[1] + 20
-
-
+    def roiSelect(self, coords):
+        pass
+    
+    
 class ImagesGalleryWin(BoxLayout):
     scatter_image = ObjectProperty()
     stacked_layout = ObjectProperty()
@@ -214,7 +294,7 @@ class GUIApp(App):
             'Camera', {'ISO': 100, 'Shutter': 5000, 'Aperture': 4, 'Zoom': 45}
         )
         config.setdefaults(
-            'Camera', {'ISO': 100, 'Shutter': 5000, 'Aperture': 4, 'Zoom': 45}
+            'Admin', {'Logging Path': gs.AUVSI_BASE_FOLDER}
         )
         config.setdefaults(
             'CV', {'image_rescaling': 0.25}

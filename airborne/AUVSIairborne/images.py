@@ -5,7 +5,7 @@ import multiprocessing as mp
 import database as DB
 from datetime import datetime
 import global_settings as gs
-import exifread
+import AUVSIcv
 import time
 import cv2
 import os
@@ -25,79 +25,59 @@ def handleNewImage(img_path):
     #
     # Create the image processing pipeline
     #
-    d = threads.deferToThread(getImgData, img_path)
-    d.addCallback(dispatchImgJob)
+    d = threads.deferToThread(dispatchImgJob, img_path)
     d.addCallback(DB.storeImg)
 
 
-def getImgData(img_path):
-
-    #
-    # give the image some time to finish creation
-    #
-    time.sleep(2)
-
-    #
-    # Get some data from the EXIF
-    #
-    log.msg('Processing image: {path}'.format(path=img_path))
- 
-    with open(img_path, 'rb') as f:
-        tags = exifread.process_file(f)
-
-    #
-    # Calculate camera intrinsic matrix.
-    #
-    in_to_mm = 25.4
-    #FocalPlaneYResolution = tagRatio(tags['EXIF FocalPlaneYResolution'])
-    #FocalPlaneXResolution = tagRatio(tags['EXIF FocalPlaneXResolution'])
-    #ImageLength = tagValue(tags['EXIF ExifImageLength'])
-    #ImageWidth = tagValue(tags['EXIF ExifImageWidth'])
-    #FocalLength = tagRatio(tags['EXIF FocalLength'])
-    try:
-        time_stamp = tags['Image DateTime'].values.replace(':', '_').replace(' ', '_') + datetime.now().strftime("_%f.jpg")
-    except:
-        log.msg('No Image DateTime tag using computer time.')
-        time_stamp = datetime.now().strftime("%Y_%m_%d_%H_%M_%S_%f.jpg")
-        
-    new_img_path = os.path.join(gs.RENAMED_IMAGES_FOLDER, time_stamp)
-    log.msg('Renaming {old} to {new}'.format(old=img_path, new=new_img_path))
-    os.rename(img_path, new_img_path)
-    
-    img_data = {}
-    
-    return new_img_path, img_data
-
-
-def dispatchImgJob(params):
+def dispatchImgJob(img_path):
     """Dispatch the image processing task to a process worker."""
-
-    img_path, img_data = params
     
     log.msg('Dispatching new image {img}'.format(img=img_path))
     
-    return pool.apply(processImg, (img_path, img_data))
+    return pool.apply(processImg, (img_path,))
 
 
-def processImg(img_path, img_data):
+def processImg(img_path):
+    """
+    Do all image processing actions. Should be called on a separate process to allow mutli processesors.
+    Currently does only resizing.
+    """
+    
     #
-    # sleep to let the image be created.
+    # give the image some time to finish creation
     #
-    time.sleep(0.5)
-    img = cv2.imread(img_path)
+    time.sleep(1)
 
+    #
+    # Load the image
+    #
+    log.msg('Loading new image {img}'.format(img=img_path))    
+    img = AUVSIcv.Image(img_path)
+    
+    #
+    # Rename it with time stamp.
+    #
+    new_img_path = os.path.join(gs.RENAMED_IMAGES_FOLDER, img.datetime+'.jpg')
+    
+    log.msg('Renaming {old} to {new}'.format(old=img_path, new=new_img_path))
+    os.rename(img_path, new_img_path)
+    
     #
     # Resize the image.
     #
-    log.msg('Resizing new image {img}'.format(img=img_path))
+    log.msg('Resizing new image {img}'.format(img=new_img_path))
     
-    resized_img = cv2.resize(img, (0,0), fx=0.25, fy=0.25) 
+    resized_img = cv2.resize(img.img, (0,0), fx=0.25, fy=0.25) 
+    filename = 'resized_{path}'.format(path=os.path.split(new_img_path)[1])
     
-    filename = 'resized_{formated_time}.jpg'.format(
-        formated_time=datetime.now().strftime("%Y_%m_%d_%H_%M_%S_%f")
-    )
     resized_img_path = os.path.join(gs.RESIZED_IMAGES_FOLDER, filename)
     cv2.imwrite(resized_img_path, resized_img)
+    
+    #
+    # Creating date of image.
+    # TODO
+    #
+    img_data = {}
     
     return resized_img_path, img_data
 
@@ -108,6 +88,7 @@ def handleNewCrop(img_id, rect):
     d = threads.deferToThread(getImage, img_id, rect)
     d.addCallback(cropImage)
     
+
 def cropImage(img_path, rect):
     """Crop a rectangle from the full resolution image."""
 

@@ -1,7 +1,9 @@
 from __future__ import division
 import exifread
 import transformation_matrices as transforms
+from twisted.python import log
 import numpy as np
+from datetime import datetime
 import math
 import cv2
 import json
@@ -12,6 +14,7 @@ __all__ = [
     "Image",
 ]
 
+in_to_mm = 25.4
 
 def tagRatio(tag):
     ratio = tag.values[0].num/tag.values[0].den
@@ -119,45 +122,79 @@ def overlayPatch(img, overlay_img, overlay_alpha, M):
 class Image(object):
     def __init__(self, img_path):
         
-        self._img = cv2.imread(img_path)
-        data_path = os.path.splitext(img_path)[0]+'.txt'
-        with open(data_path, 'r') as f:
-            self._data = json.load(f)
-            
         #
-        # Get some data from the EXIF
+        # Load image
+        #
+        self._img = cv2.imread(img_path)
+        
+        #
+        # Get the EXIF data
         #
         with open(img_path, 'rb') as f:
-            tags = exifread.process_file(f)
+            self._tags = exifread.process_file(f)
 
         #
-        # Calculate camera intrinsic matrix.
+        # Get the time stamp.
         #
-        in_to_mm = 25.4
-        FocalPlaneYResolution = tagRatio(tags['EXIF FocalPlaneYResolution'])
-        FocalPlaneXResolution = tagRatio(tags['EXIF FocalPlaneXResolution'])
-        ImageLength = tagValue(tags['EXIF ExifImageLength'])
-        ImageWidth = tagValue(tags['EXIF ExifImageWidth'])
-        FocalLength = tagRatio(tags['EXIF FocalLength'])
- 
+        if 'Image DateTime' in self._tags:            
+            self._datetime = self._tags['Image DateTime'].values.replace(':', '_').replace(' ', '_') + datetime.now().strftime("_%f")
+        else:
+            log.msg('No Image DateTime tag using computer time.')
+            self._datetime = datetime.now().strftime("%Y_%m_%d_%H_%M_%S_%f")
+
+        #
+        # Calculate the intrinsic data
+        #
+        self.calculateIntrinsicMatrix()
+        
+    def calculateIntrinsicMatrix(self):
+        """Calculate camera intrinsic matrix
+        
+        Calculate the intrinsic matrix based on EXIF data.
+        """
+
+        if not 'EXIF FocalPlaneYResolution' in self._tags:
+            ImageLength, ImageWidth = self._img.shape[:2]
+            self._K = np.array(((1, 0, ImageWidth/2), (0, 1, ImageLength/2), (0, 0, 1))) 
+            return
+        
+        FocalPlaneYResolution = tagRatio(self._tags['EXIF FocalPlaneYResolution'])
+        FocalPlaneXResolution = tagRatio(self._tags['EXIF FocalPlaneXResolution'])
+        ImageLength = tagValue(self._tags['EXIF ExifImageLength'])
+        ImageWidth = tagValue(self._tags['EXIF ExifImageWidth'])
+        FocalLength = tagRatio(self._tags['EXIF FocalLength'])
+
         f_x = FocalLength * FocalPlaneXResolution / in_to_mm
         f_y = FocalLength * FocalPlaneYResolution / in_to_mm
         self._K = np.array(((f_x, 0, ImageWidth/2), (0, f_y, ImageLength/2), (0, 0, 1)))        
 
+    def calculateExtrinsicMatrix(self, latitude, longitude, altitude, yaw, pitch, roll):
+        """Calculate camera extrinsic matrix
+        
+        Calculate the extrinsic matrix in local cartesian mapping (NED) which
+        is centered at the camera.
+        """
+
         #
         # Calculate camera extrinsic matrix
         # Note:
-        # 1) The local cartesian mapping (NED) is centered at the camera.
-        # 2) For some reason, I need to add 90 degrees to make the coords correct.
+        # 1) The local cartesian mapping (NED) is centered at the camera (therefore
+        #    the translation matrix is an eye matrix).
+        # 2) I need to add 90 degrees to make the coords correct, as X is
+        #    pointing east and not north.
+        #
         t = np.eye(4)
         R = transforms.euler_matrix(
-            ai=math.radians(self._data['yaw']),
-            aj=math.radians(self._data['pitch']),
-            ak=math.radians(self._data['roll']+90),
+            ai=math.radians(yaw),
+            aj=math.radians(pitch),
+            ak=math.radians(roll+90),
             axes='sxyz'
         )
-        
         self._Rt = np.dot(t, R)
+
+        self._latitude = latitude
+        self._longitude = longitude
+        self._altitude = altitude
         
     def paste(self, target):
         """Draw a target on the image.
@@ -175,9 +212,9 @@ class Image(object):
         # Calculate the transform matrix from the target coordinates to the camera coordinates.
         # 
         target_H = target.H(
-            latitude=self._data['latitude'],
-            longitude=self._data['longitude'],
-            altitude=self._data['altitude']
+            latitude=self._latitude,
+            longitude=self._longitude,
+            altitude=self._altitude
         )            
         M1 = np.array(((1, 0, 0), (0, 1, 0), (0, 0, 0), (0, 0, 1)))
         M2 = np.eye(3, 4)
@@ -186,7 +223,19 @@ class Image(object):
         overlay(img=self._img, overlay_img=target.img, overlay_alpha=target.alpha, M=M)
 
     def createPatches(self, patch_size, patch_shift, copy=True):
-        """Create patches(crops) of an image"""
+        """Create patches(crops) of an image
+        
+        This function crops patches of an image on a regulary spaced grid.
+        
+        Parameters
+        ----------
+        patch_size : int
+            Scalar size (both width and height) of a rectangular patch.
+        patch_shift : int
+            Space (both horizontal and vertical) between patches.
+        copy: Boolean
+            Wheter to return a copy or a view into the original image.
+        """
         
         patch_height, patch_width = patch_size
         nx = int((self._img.shape[1] - patch_width)/patch_shift)
@@ -200,12 +249,22 @@ class Image(object):
                 yield patch.copy()
 
     def pastePatch(self, patch, target):
-        """Paste a target on a patch"""
+        """Paste a target on a patch
+        
+        The target is pasted in the center of the patch (the coords of the patch and target are ignored).
+        
+        Parameters
+        ----------
+        patch: array
+            The patch on which the target is pasted into.
+        target: target object.
+            The target to paste on the patch.
+        """
 
         target_H = target.H(
-            latitude=self._data['latitude'],
-            longitude=self._data['longitude'],
-            altitude=self._data['altitude']
+            latitude=self._latitude,
+            longitude=self._longitude,
+            altitude=self._altitude
         )            
         M1 = np.array(((1, 0, 0), (0, 1, 0), (0, 0, 0), (0, 0, 1)))
         M2 = np.eye(3, 4)
@@ -234,3 +293,9 @@ class Image(object):
         """
         
         return self._K
+    
+    @property
+    def datetime(self):
+        """Get date time tag"""
+        
+        return self._datetime
