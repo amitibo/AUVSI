@@ -10,6 +10,7 @@ import multiprocessing as mp
 import AUVSIcv
 import signal
 import shlex
+import json
 import time
 import glob
 import cv2
@@ -59,12 +60,31 @@ class SimulationCamera(BaseCamera):
             # Pick up an image from disk
             #
             img = AUVSIcv.Image(imgs_paths[img_index])
+            data_path = os.path.splitext(imgs_paths[3])[0]+'.txt'            
+            with open(data_path, 'r') as f:
+                data = json.load(f)
+                
+            img.calculateExtrinsicMatrix(
+                latitude=data['latitude'],
+                longitude=data['longitude'],
+                altitude=data['altitude'],
+                yaw=data['yaw'],
+                pitch=data['pitch'],
+                roll=data['roll'],
+            )
+
             img_index += 1
             img_index = img_index % len(imgs_paths)
 
             #
             # Create a target.
             #
+            target = AUVSIcv.randomTarget(
+                altitude=0,
+                longitude=32.8167,
+                latitude=34.9833
+            )
+                 
             target = AUVSIcv.StarTarget(
                 n=6,
                 size=2,
