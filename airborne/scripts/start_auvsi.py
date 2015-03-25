@@ -25,7 +25,7 @@ if __name__ == '__main__':
     control_factory.subscribe_subsystem("camera", camera_controller.apply_cmd)
 
     image_sending = DirSyncClientFactory(
-        dir_to_sync=settings.IMAGES_FOLDER,
+        dir_to_sync=settings.RESIZED_IMAGES_FOLDER,
         sync_interval=1,
         ftp_user='auvsi',
         ftp_pass='1234'
