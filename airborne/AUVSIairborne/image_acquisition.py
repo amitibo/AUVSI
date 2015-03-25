@@ -96,6 +96,7 @@ class ImageAcquirer(object):
 
         def handle_image(data_path):
             #TODO edit Popen settings (stdout...)
+            log.msg("Starts new process for image: {}".format(image_name))
             return Popen(["python", self.image_handler_path,
                           image_path, data_path])
 
@@ -103,6 +104,25 @@ class ImageAcquirer(object):
         d.addErrback(log.err)
 
         return d
+
+
+class AcquisitionController(object):
+    def __init__(self, acquirer):
+        self.acquirer = acquirer
+
+    def apply_cmd(self, cmd):
+        acquirer = self.acquirer
+
+        if "start" == cmd:
+                acquirer.start()
+                log.msg("Start image acquisition!")
+
+        elif "stop" == cmd:
+            acquirer.stop()
+            log.msg("Stop image acquisition!")
+
+        else:
+            log.msg("Unknown command: '{}'".format(cmd))
 
 
 if __name__ == "__main__":
