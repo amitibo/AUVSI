@@ -14,7 +14,7 @@ from sys import argv
 from time import sleep
 import os
 import cv2
-import datetime
+from datetime import datetime
 import global_settings as gs
 
 #TODO implement pipeline
