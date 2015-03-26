@@ -1,6 +1,8 @@
 """ This module gives a control line to the aerial pc.
- It is intended to work in pair the ground station gui.
- In case of problem, can be accessed through telnet.
+Subsystems may subscribe to the SystemControlFactory in
+order to be controlled through the ground-station.
+It is intended to work in pair the ground station gui.
+In case of problem, can be accessed through telnet.
 """
 __author__ = 'Ori'
 
@@ -8,12 +10,12 @@ from twisted.internet.error import ConnectionDone
 from twisted.internet.protocol import Factory, Protocol
 from twisted.protocols.basic import LineReceiver
 from twisted.python import log
+from AUVSIairborne import UnknownCommand
 
 
 class SystemControlProtocol(LineReceiver):
-    """
-    This is the protocol which the airborne server will use to
-    get commands for the camera with.
+    """ This is the protocol which the airborne server will use to
+    get commands for the system with.
     """
     def __init__(self, factory, address):
         self.factory = factory
@@ -89,6 +91,46 @@ class SystemControlFactory(Factory):
 
     def connection_terminated(self):
         self.connectionsPool += 1
+
+
+class ReflectionController(object):
+    """ This class uses reflection to implement an easy
+    generic control interface to any object.
+    """
+    def __init__(self, controlled_obj):
+        self.controlled_obj = controlled_obj
+
+    def _str_params_to_dic(self, params_str):
+        if params_str is None:
+            return {}
+
+        params_words = params_str.split()
+        try:
+            params_dic = {params_words[i]: params_words[i + 1] for i
+                          in range(0, len(params_words), 2)}
+        except IndexError:
+            raise UnknownCommand("Can't extract parameters from {params}"
+                                 "Parameters should come in pairs e.g."
+                                 " 'a 3 b 7...'".format(params=params_str))
+
+        return params_dic
+
+    def apply_cmd(self, cmd):
+        try:
+            method_name, params_str = cmd.split(' ', 1)
+        except ValueError:
+            method_name = cmd
+            params_str = None
+
+        params_dic = self._str_params_to_dic(params_str)
+
+        try:
+            method = getattr(self.controlled_obj, method_name)
+        except AttributeError:
+            raise UnknownCommand(str(type(self.controlled_obj)) +
+                                 " could not do: " + str(cmd))
+
+        return method(**params_dic)
 
 
 if __name__ == "__main__":
