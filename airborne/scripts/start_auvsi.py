@@ -11,10 +11,6 @@ import AUVSIairborne.global_settings as settings
 from AUVSIairborne.image_acquisition import ImageAcquirer, AcquisitionController
 
 
-
-
-
-
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Start the airborne server"
                                                  " - Oris' version.")
@@ -28,7 +24,6 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     camera_controller = CameraController(CanonCamera())
-
 
     image_sending = DirSyncClientFactory(
         dir_to_sync=settings.RESIZED_IMAGES_FOLDER,
