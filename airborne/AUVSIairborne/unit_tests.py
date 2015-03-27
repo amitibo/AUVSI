@@ -25,19 +25,19 @@ class ReflectionControllerCase(unittest.TestCase):
         self.a_controller = ReflectionController(self.a)
 
     def test_no_args(self):
-        self.assertEqual(self.a_controller.apply_cmd("hi"), "HI")
+        self.assertEqual(self.a_controller("hi"), "HI")
 
     def test_some_args(self):
-        self.assertEqual(self.a_controller.apply_cmd("str_mul x 3"), "33")
-        self.assertNotEqual(self.a_controller.apply_cmd("str_mul x 3"), 6)
+        self.assertEqual(self.a_controller("str_mul x 3"), "33")
+        self.assertNotEqual(self.a_controller("str_mul x 3"), 6)
 
-        self.assertEqual(self.a_controller.apply_cmd("float_mul x 3 y 5"), 15)
-        self.assertRaises(UnknownCommand, self.a_controller.apply_cmd,
+        self.assertEqual(self.a_controller("float_mul x 3 y 5"), 15)
+        self.assertRaises(UnknownCommand, self.a_controller,
                           "float_mul x 3 y")
 
     def test_no_method(self):
         self.assertRaises(UnknownCommand,
-                          self.a_controller.apply_cmd, "made_up")
+                          self.a_controller, "made_up")
 
 
 class FileSendingSchedulerCase(unittest.TestCase):

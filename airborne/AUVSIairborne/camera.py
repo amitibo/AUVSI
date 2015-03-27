@@ -195,7 +195,7 @@ class CameraController(object):
     def __init__(self, camera):
         self.camera = camera
 
-    def apply_cmd(self, cmd):
+    def __call__(self, cmd):
         camera = self.camera
 
         if "start" == cmd:

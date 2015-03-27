@@ -17,6 +17,8 @@ class SystemControlProtocol(LineReceiver):
     """ This is the protocol which the airborne server will use to
     get commands for the system with.
     """
+    next_command_greeting = "\nMore master?"
+
     def __init__(self, factory, address):
         self.factory = factory
         self.address = address
@@ -32,28 +34,36 @@ class SystemControlProtocol(LineReceiver):
                     "someone already connected.".format(**host))
             self.transport.loseConnection()
             return
-        self.sendLine("Welcome to camera control channel.")
+        self.sendLine("Welcome to system control channel.")
 
     def lineReceived(self, line):
         line = str.join(" ", line.split())
 
-        log.msg("Recived: '{}'".format(line))
+        log.msg("Received: '{}'".format(line))
 
         try:
             subsystem_id, cmd = line.split(' ', 1)
         except ValueError as e:
-            log.msg("Wrong format: '{}'".format(line))
+            err_msg = "Wrong format: '{}'".format(line)
+            log.msg(err_msg)
             log.err(e)
-            self.sendLine("More master?")
+            self.sendLine(err_msg)
+            self.sendLine(self.next_command_greeting)
             return
 
         try:
             self.factory.subsystems[subsystem_id](cmd)
-        except IndexError as e:
-            log.msg("Unknown subsystem: '{}'".format(subsystem_id))
+        except KeyError as e:
+            err_msg = "Unknown subsystem: '{}'".format(subsystem_id)
+            log.msg(err_msg)
             log.err(e)
+            self.sendLine(err_msg)
+        except (TypeError, UnknownCommand) as e:
+            log.msg("Illegal use: '{}'".format(line))
+            log.err(e)
+            self.sendLine(e.message)
 
-        self.sendLine("More master?")
+        self.sendLine(self.next_command_greeting)
 
     def connectionLost(self, reason=ConnectionDone()):
         log.msg("Connection was Lost: '{}".format(str(reason)))
@@ -100,22 +110,7 @@ class ReflectionController(object):
     def __init__(self, controlled_obj):
         self.controlled_obj = controlled_obj
 
-    def _str_params_to_dic(self, params_str):
-        if params_str is None:
-            return {}
-
-        params_words = params_str.split()
-        try:
-            params_dic = {params_words[i]: params_words[i + 1] for i
-                          in range(0, len(params_words), 2)}
-        except IndexError:
-            raise UnknownCommand("Can't extract parameters from {params}"
-                                 "Parameters should come in pairs e.g."
-                                 " 'a 3 b 7...'".format(params=params_str))
-
-        return params_dic
-
-    def apply_cmd(self, cmd):
+    def __call__(self, cmd):
         try:
             method_name, params_str = cmd.split(' ', 1)
         except ValueError:
@@ -127,10 +122,25 @@ class ReflectionController(object):
         try:
             method = getattr(self.controlled_obj, method_name)
         except AttributeError:
-            raise UnknownCommand(str(type(self.controlled_obj)) +
+            raise UnknownCommand(str(self.controlled_obj.__class__) +
                                  " could not do: " + str(cmd))
 
         return method(**params_dic)
+
+    def _str_params_to_dic(self, params_str):
+        if params_str is None:
+            return {}
+
+        params_words = params_str.split()
+        try:
+            params_dic = {params_words[i]: params_words[i + 1] for i
+                          in range(0, len(params_words), 2)}
+        except IndexError:
+            raise UnknownCommand("Can't extract parameters from '{params}', "
+                                 "Parameters should come in pairs e.g."
+                                 " 'a 3 b 7...'".format(params=params_str))
+
+        return params_dic
 
 
 if __name__ == "__main__":
@@ -149,7 +159,7 @@ if __name__ == "__main__":
     camera_controller = CameraController(SimulationCamera())
 
     control_factory = SystemControlFactory()
-    control_factory.subscribe_subsystem("camera", camera_controller.apply_cmd)
+    control_factory.subscribe_subsystem("camera", camera_controller)
     control_factory.subscribe_subsystem("dummy_shout", dummy_shout)
 
     log.startLogging(stdout)

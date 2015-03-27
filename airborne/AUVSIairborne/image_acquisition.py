@@ -27,8 +27,10 @@ class ImageAcquirer(object):
                               retrieve the image metadata
         """
 
-        assert os.path.isfile(image_handler_path)
-        assert callable(data_retriever)
+        if not os.path.isfile(image_handler_path):
+            raise ValueError("Image handler is not a file")
+        if not callable(data_retriever):
+            raise ValueError("Data retriever is not callable")
 
         self.dir_path = dir_path
         self.poll_interval = poll_interval
@@ -104,25 +106,6 @@ class ImageAcquirer(object):
         d.addErrback(log.err)
 
         return d
-
-
-class AcquisitionController(object):
-    def __init__(self, acquirer):
-        self.acquirer = acquirer
-
-    def apply_cmd(self, cmd):
-        acquirer = self.acquirer
-
-        if "start" == cmd:
-                acquirer.start()
-                log.msg("Start image acquisition!")
-
-        elif "stop" == cmd:
-            acquirer.stop()
-            log.msg("Stop image acquisition!")
-
-        else:
-            log.msg("Unknown command: '{}'".format(cmd))
 
 
 if __name__ == "__main__":

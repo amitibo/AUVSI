@@ -33,7 +33,7 @@ class FileSendingScheduler(object):
         files.sort(reverse=self.reverse_order)
 
         for file_name in files:
-            if self._needs_to_be_sent(file_name):
+            if self._need_to_be_sent(file_name):
                 self.files_sent.append(file_name)
                 return file_name
         return None
@@ -41,7 +41,7 @@ class FileSendingScheduler(object):
     def reset(self):
         skip_files = []
         for file_name in os.listdir(self.dir_path):
-            if self._needs_to_be_sent(file_name):
+            if self._need_to_be_sent(file_name):
                 skip_files.append(file_name)
 
         log.msg("FileSendingScheduler was reset,"
@@ -49,7 +49,7 @@ class FileSendingScheduler(object):
 
         self.files_skipped.extend(skip_files)
 
-    def _needs_to_be_sent(self, file_name):
+    def _need_to_be_sent(self, file_name):
         file_was_sent = file_name in self.files_sent
         file_was_skipped = file_name in self.files_skipped
         return (not file_was_sent) and (not file_was_skipped)
@@ -68,6 +68,8 @@ def send_file(consumer, path):
 def sync_files(ftp_client, scheduler):
     log.msg("Syncing Files")
 
+    #TODO this loop couses the reset_sending to be ineffective
+    # starts to send all the files before going back to main loop
     for file in scheduler:
         consumer_defer, control_defer = ftp_client.storeFile(file)
         file_path = os.path.join(scheduler.dir_path, file)
@@ -76,8 +78,12 @@ def sync_files(ftp_client, scheduler):
 
 class DirSyncClientFactory(ReconnectingClientFactory):
     protocol = FTPClient
+    maxDelay = 32
+    factor = 1.15
+    initialDelay = 2
+    # reactor my be extracted to controller
 
-    def __init__(self, dir_to_sync, sync_interval,
+    def __init__(self, dir_to_sync, sync_interval, reactor_,
                  ftp_user='anonymous', ftp_pass='Ori@auvsi.technion'):
 
         self.dir_to_sync = dir_to_sync
@@ -86,13 +92,16 @@ class DirSyncClientFactory(ReconnectingClientFactory):
         self.sync_interval = sync_interval
         self.sync_task = None
 
+        self.reactor = reactor_
+
         self.user = ftp_user
         self.password = ftp_pass
 
         super(type(self), self).__init__()
 
     def startedConnecting(self, connector):
-        log.msg("Trying to connect to ground station via ftp.")
+        log.msg("Trying to connect to ground station"
+                "({}) via ftp.".format(connector.host))
 
     def buildProtocol(self, addr):
         log.msg("TCP connected successfully, awaits ftp authorization.")
@@ -120,8 +129,8 @@ class DirSyncClientFactory(ReconnectingClientFactory):
         if self.sync_task is not None:
             self.sync_task.stop()
 
-    def connect(self, reactor, ip):
-        raise NotImplementedError()
+    def connect(self, ip):
+        self.reactor.connectTCP(ip, 21, self)
 
     def reset_sending(self):
         self.file_scheduler.reset()
