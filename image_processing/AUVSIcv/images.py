@@ -125,6 +125,7 @@ class Image(object):
         #
         # Load image
         #
+        self._path = img_path
         self._img = cv2.imread(img_path)
         
         #
@@ -299,3 +300,9 @@ class Image(object):
         """Get date time tag"""
         
         return self._datetime
+    
+    @property
+    def path(self):
+        """Get path of image"""
+        
+        return self._path    
