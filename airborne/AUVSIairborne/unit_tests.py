@@ -4,7 +4,7 @@ import unittest
 import os
 from AUVSIairborne.services.system_control import ReflectionController
 from AUVSIairborne.services.\
-    directory_synchronization_ftp import FileSendingScheduler
+    directory_synchronization_ftp import FileScheduler
 from AUVSIairborne import UnknownCommand
 
 
@@ -40,7 +40,7 @@ class ReflectionControllerCase(unittest.TestCase):
                           self.a_controller, "made_up")
 
 
-class FileSendingSchedulerCase(unittest.TestCase):
+class FileSchedulerCase(unittest.TestCase):
     def setUp(self):
         self.test_dir = "./tmp_file_sending_test"
         os.makedirs(self.test_dir)
@@ -49,11 +49,15 @@ class FileSendingSchedulerCase(unittest.TestCase):
         for name in self.file_names:
             self._create_test_file(name)
 
-        self.scheduler = FileSendingScheduler(self.test_dir)
+        self.scheduler = FileScheduler(self.test_dir)
 
     def tearDown(self):
         for name in os.listdir(self.test_dir):
-            os.remove(os.path.join(self.test_dir, name))
+            file_path = os.path.join(self.test_dir, name)
+            if os.path.isfile(file_path):
+                os.remove(file_path)
+            else:
+                os.rmdir(file_path)
 
         os.rmdir(self.test_dir)
 
@@ -79,6 +83,10 @@ class FileSendingSchedulerCase(unittest.TestCase):
         self.scheduler.reset()
 
         self.assertItemsEqual(self.scheduler, [])
+
+    def test_folder_skip(self):
+        os.mkdir(os.path.join(self.test_dir, "dont_send_me"))
+        self.assertItemsEqual(self.scheduler, self.file_names)
 
 
 if __name__ == '__main__':

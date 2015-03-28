@@ -8,51 +8,8 @@ from twisted.internet import task
 from twisted.internet.protocol import ReconnectingClientFactory
 from twisted.protocols.ftp import FTPClient
 from twisted.python import log
+from AUVSIairborne.file_scheduler import FileScheduler
 import os
-
-
-class FileSendingScheduler(object):
-    def __init__(self, dir_path, reversed_order=False):
-        self.dir_path = dir_path
-        self.files_sent = []
-        self.files_skipped = []
-        self.reverse_order = reversed_order
-
-    def __iter__(self):
-        return self
-
-    def next(self):
-        result = self._next_file()
-        if result is None:
-            raise StopIteration()
-
-        return result
-
-    def _next_file(self):
-        files = os.listdir(self.dir_path)
-        files.sort(reverse=self.reverse_order)
-
-        for file_name in files:
-            if self._need_to_be_sent(file_name):
-                self.files_sent.append(file_name)
-                return file_name
-        return None
-
-    def reset(self):
-        skip_files = []
-        for file_name in os.listdir(self.dir_path):
-            if self._need_to_be_sent(file_name):
-                skip_files.append(file_name)
-
-        log.msg("FileSendingScheduler was reset,"
-                "skipping: {}".format(skip_files))
-
-        self.files_skipped.extend(skip_files)
-
-    def _need_to_be_sent(self, file_name):
-        file_was_sent = file_name in self.files_sent
-        file_was_skipped = file_name in self.files_skipped
-        return (not file_was_sent) and (not file_was_skipped)
 
 
 def send_file(consumer, path):
@@ -81,13 +38,13 @@ class DirSyncClientFactory(ReconnectingClientFactory):
     maxDelay = 32
     factor = 1.15
     initialDelay = 2
-    # reactor my be extracted to controller
+    # reactor_ my be extracted to controller
 
     def __init__(self, dir_to_sync, sync_interval, reactor_,
                  ftp_user='anonymous', ftp_pass='Ori@auvsi.technion'):
 
         self.dir_to_sync = dir_to_sync
-        self.file_scheduler = FileSendingScheduler(dir_to_sync)
+        self.file_scheduler = FileScheduler(dir_to_sync)
 
         self.sync_interval = sync_interval
         self.sync_task = None
@@ -164,6 +121,7 @@ if __name__ == "__main__":
 
     dir_sync_factory = DirSyncClientFactory(args.dir,
                                             sync_interval=args.sync_interval,
+                                            reactor_=reactor,
                                             ftp_user=args.user,
                                             ftp_pass=args.pass_)
     reactor.connectTCP(args.ip, args.port, dir_sync_factory)

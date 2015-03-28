@@ -6,6 +6,7 @@ __author__ = 'Ori'
 
 from twisted.internet import task, defer
 from twisted.python import log
+from AUVSIairborne.file_scheduler import FileScheduler
 from subprocess import Popen
 import os
 
@@ -32,47 +33,35 @@ class ImageAcquirer(object):
         if not callable(data_retriever):
             raise ValueError("Data retriever is not callable")
 
-        self.dir_path = dir_path
+        self.file_scheduler = FileScheduler(dir_path)
         self.poll_interval = poll_interval
-        self.files_acquired = []
+
         self.image_handler_path = image_handler_path
         self.data_retriever = data_retriever
         self.poll_task = None
 
     def start(self):
-        log.msg("Starts polling images from: {}".format(self.dir_path))
+        log.msg("Starts polling images from: {}"
+                .format(self.file_scheduler.dir_path))
         if self.poll_task is None:
             self.poll_task = task.LoopingCall(self._poll)
 
         self.poll_task.start(self.poll_interval)
 
     def stop(self):
-        log.msg("Stops polling images from: {}".format(self.dir_path))
+        log.msg("Stops polling images from: {}"
+                .format(self.file_scheduler.dir_path))
         self.poll_task.stop()
-
-    def _new_files(self):
-        new_files = []
-
-        for file in os.listdir(self.dir_path):
-            if file not in self.files_acquired:
-                new_files.append(file)
-
-        return new_files
 
     def _poll(self):
         #TODO add inotify support for linux system
         image_defer_list = []
-        files_to_process = self._new_files()
 
-        if len(files_to_process) is not 0:
-            log.msg("Polled new files: {}".format(files_to_process))
-
-        for file_name in files_to_process:
+        for file_name in self.file_scheduler:
             image_defer = self._generate_pipeline(file_name)
             image_defer.callback(file_name)
             image_defer_list.append(image_defer)
-
-        self.files_acquired.extend(files_to_process)
+            log.msg("Polled new files: {}".format(file_name))
 
         return image_defer_list
 
@@ -91,7 +80,7 @@ class ImageAcquirer(object):
         return data_path
 
     def _generate_pipeline(self, image_name):
-        image_path = os.path.join(self.dir_path, image_name)
+        image_path = os.path.join(self.file_scheduler.dir_path, image_name)
 
         d = defer.Deferred()
         d.addCallback(self._acquire_data)
