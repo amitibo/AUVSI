@@ -38,8 +38,8 @@ class DirSyncClientFactory(ReconnectingClientFactory):
     maxDelay = 32
     factor = 1.15
     initialDelay = 2
-    # reactor_ my be extracted to controller
 
+    # reactor_ my be extracted to controller
     def __init__(self, dir_to_sync, sync_interval, reactor_,
                  ftp_user='anonymous', ftp_pass='Ori@auvsi.technion'):
 

@@ -13,20 +13,28 @@ from AUVSIairborne.services.system_control import ReflectionController
 
 
 if __name__ == '__main__':
+
     parser = argparse.ArgumentParser(description="Start the airborne server"
                                                  " - Oris' version.")
 
     parser.add_argument('--port', type=int, default=8844,
                         help='Control port(default=8844).')
+    parser.add_argument('--camera', type=str, default="cannon",
+                        help="The camera to use: cannon(default), simulation")
     parser.add_argument('--handler_path', type=str,
                         help='path to the image handler file')
     args = parser.parse_args()
 
-    camera_controller = CameraController(SimulationCamera())
+    camera = None
+    if args.camera == "cannon":
+        camera = CanonCamera()
+    elif args.camera == "simulation":
+        camera = SimulationCamera()
+
+    camera_controller = CameraController(camera)
 
     image_sending_controller = ReflectionController(DirSyncClientFactory(
-        # dir_to_sync=settings.RESIZED_IMAGES_FOLDER,
-        dir_to_sync=r"C:\Users\Ori\Pictures",
+        dir_to_sync=settings.RESIZED_IMAGES_FOLDER,
         sync_interval=1,
         reactor_=reactor,
         ftp_user='auvsi',
