@@ -5,7 +5,9 @@ import multiprocessing as mp
 import database as DB
 from datetime import datetime
 import global_settings as gs
+import PixHawk as PH
 import AUVSIcv
+import json
 import time
 import cv2
 import os
@@ -26,6 +28,7 @@ def handleNewImage(img_path):
     # Create the image processing pipeline
     #
     d = threads.deferToThread(dispatchImgJob, img_path)
+    d.addCallback(saveFlightData)
     d.addCallback(DB.storeImg)
 
 
@@ -73,15 +76,25 @@ def processImg(img_path):
     resized_img_path = os.path.join(gs.RESIZED_IMAGES_FOLDER, filename)
     cv2.imwrite(resized_img_path, resized_img)
     
-    #
-    # Creating date of image.
-    # TODO
-    #
-    img_data = {}
+    return resized_img_path, img.datetime, img.K
+
+
+def saveFlightData(params):
     
-    return resized_img_path, img_data
+    img_path, timestamp, K = params
+    
+    #
+    # Get the closest time stamp and save it with the image.
+    #
+    flight_data = PH.queryPHdata(timestamp)
+    flight_data['K']=K.tolist()
+    flight_data_path = os.path.splitext(img_path)[0]+'.json'
+    with open(flight_data_path, 'wb') as f:
+        json.dump(flight_data, f)
 
+    return img_path, {}
 
+    
 def handleNewCrop(img_id, rect):
     """Handle a request for a crop."""
     

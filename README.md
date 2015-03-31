@@ -20,7 +20,18 @@ The airborne platform used in 2015 competition is the ODROID XU3 running xubunut
 * python
 * opencv
 * twisted
+* sortedcontainers: Install with 'pip install sortedcontainers'
 * chdkptp - The communication with the Cannon camera (used in 2015) is done using the chdkptp code.
+
+###### Installing chdkptp
+
+* Can be downloaded form: https://github.com/tudelft/chdkptp
+* Install (on ODROID) using the following link: http://chdk.wikia.com/wiki/Getting_CHDKPTP_on_BeagleBone_Black_to_work Note that instead of lua5.1 it should be lua5.2 also there is a small typo in the name of libusb-1.0-0-dev
+* Follow the following links to deactivate gphoto2 (It seems to grab the camera before chdkptp): http://chdk.setepontos.com/index.php?topic=10664.10 http://chdk.setepontos.com/index.php?topic=6231.msg100671#msg100671
+* Important to run from the lua folder (or update the chdkptp-sample.sh to point to the chdkptp executable).
+* Important to run as sudo!!!
+* Last years cofigurations: http://chdk.setepontos.com/index.php?topic=11142.0 http://libptp.sourceforge.net/README
+* Maybe someday useful: https://pypi.python.org/pypi/pyptpchdk/0.2.1
 
 To use the camera in mode simulation, the following should also be installed:
 

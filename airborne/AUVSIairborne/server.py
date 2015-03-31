@@ -10,6 +10,7 @@ from camera import SimulationCamera, CanonCamera
 import global_settings as gs
 import database as DB
 import images as IM
+import PixHawk as PH
 import platform
 import json
 import os
@@ -185,7 +186,7 @@ class FileSystemWatcher(object):
         IM.handleNewImage(path)
 
 
-def start_server(camera_type ,port=8000):
+def start_server(camera_type, simulate_pixhawk, port=8000):
     """
     Start the airborne server.
     
@@ -218,6 +219,14 @@ def start_server(camera_type ,port=8000):
     # Initialize the imageprocessing module.
     #
     IM.initIM()
+    
+    #
+    # Initialize the pixhawk module.
+    #
+    if not simulate_pixhawk:
+        PH.initPixHawk()
+    else:
+        PH.initPixHawkSimulation()
     
     #
     # Create the camera object.

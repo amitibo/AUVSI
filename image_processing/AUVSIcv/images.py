@@ -120,7 +120,7 @@ def overlayPatch(img, overlay_img, overlay_alpha, M):
         
 
 class Image(object):
-    def __init__(self, img_path):
+    def __init__(self, img_path, data_path=None):
         
         #
         # Load image

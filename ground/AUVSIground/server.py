@@ -144,8 +144,11 @@ class ServerFactory(protocol.ReconnectingClientFactory):
         # Set paths
         #
         new_img = new_imgs[0]['name']
+        new_data = os.path.splitext(new_img)[0]+'.json'
         img_url = 'http://{ip}:{port}/images/{img}'.format(ip=_server_address['ip'], port=_server_address['port'], img=new_img)
+        data_url = 'http://{ip}:{port}/images/{data}'.format(ip=_server_address['ip'], port=_server_address['port'], data=new_data)
         img_path = os.path.join(gs.IMAGES_FOLDER, new_img)
+        data_path = os.path.join(gs.IMAGES_FOLDER, new_data)
         new_img_tn = '{}_tn{}'.format(*os.path.splitext(new_img))
         img_tn_path = os.path.join(gs.IMAGES_FOLDER, new_img_tn)
 
@@ -155,7 +158,10 @@ class ServerFactory(protocol.ReconnectingClientFactory):
         log.msg('Downloading image from url {img_url} to local path: {local_path}'.format(img_url=img_url, local_path=img_path))
         urllib.urlretrieve(img_url, img_path)
         log.msg('Finished Downloading image from url {img_url}'.format(img_url=img_url))
-        
+        log.msg('Downloading data from url {data_url} to local path: {local_path}'.format(data_url=data_url, local_path=data_path))
+        urllib.urlretrieve(data_url, data_path)
+        log.msg('Finished Downloading data from url {data_url}'.format(data_url=data_url))
+
         #
         # Resize a thumbnail.
         #
