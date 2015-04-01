@@ -18,44 +18,18 @@ from random import random as r
 from functools import partial
 import numpy as np
 import AUVSIcv.transformation_matrices as TM
+import AUVSIground.global_settings as gs
 import pandas as pd
 from AUVSIcv import NED
 import AUVSIcv
+import glob
+import time
 import os
 
-def loadData(path):
-    
-    data = pd.read_csv(path)
-    lat, lon, alt, yaw = [data[field].values for field in ['lat', 'lon', 'alt', 'yaw']]
-    
-    ned = NED.NED(lat[0], lon[0], 0)
-    x, y, h = [np.array(val) for val in zip(*[ned.geodetic2ned([la, lo, al]) for la, lo, al in zip(lat, lon, alt)])]
-    
-    #
-    # We need to make the coords positive. Also in the NED coords, z axis (h) points into the ground.
-    #
-    x = x - x.min()
-    y = y - y.min()
-    h = -h
-    
-    return x, y, h, yaw
 
-
-def calculateQuad(center, yaw, Kinv, resolution):
-    
-    points = np.array(((0, resolution[0], resolution[0], 0), (0, 0, resolution[1], resolution[1]), (1, 1, 1, 1.)))
-    Ryaw = TM.euler_matrix(0, 0, np.deg2rad(-yaw), axes='sxyz')
-    h = center[2]
-    offset = np.array(((center[0],), (center[1],), (h,)))
-    
-    projections = offset + h * np.dot(np.array(((1., 0, 0), (0, 1, 0), (0, 0, -1.))), np.dot(Ryaw[:3, :3], np.dot(Kinv, points)))
-    
-    return projections
-    
-    
 class Map(Scatter):
     do_rotation=False
-    
+
     def redraw(self, index):
         
         self.canvas.clear()
@@ -64,10 +38,10 @@ class Map(Scatter):
                 if i == index:
                     Color(1, 1, 1, 1, mode='rgba')
                 else:
-                    Color(1, 1, 1, 0.01, mode='rgba')
+                    Color(1, 1, 1, 0.1, mode='rgba')
                     
-                points = tuple(quad.T[...,:2].flatten())
-                Quad(source=img.path, points=points)
+                points = tuple(quad.T[...,:2].flatten()+100)
+                Quad(source=imgs[i].path, points=points)
             
     
 class CanvasApp(App):
@@ -80,15 +54,17 @@ class CanvasApp(App):
         self.quad_index = self.quad_index % len(quads)
         
         map_widget.redraw(index=self.quad_index)
-        if self.clock_trigger is not None:
-            self.clock_trigger.cancel()
+        #if self.clock_trigger is not None:
+            #self.clock_trigger.cancel()
         
-        self.clock_trigger = Clock.create_trigger(partial(self.setMapIndex, map_widget, delta))
-        self.clock_trigger()
+        #time.sleep(0.2)
+        #self.clock_trigger = Clock.create_trigger(partial(self.setMapIndex, map_widget, delta))
+        #self.clock_trigger()
     
     def build(self):
         
         map_widget = Map()
+        map_widget.size=[3000, 3000]
         map_widget.redraw(index=self.quad_index)
         
         btn_prev = Button(text='PREV',
@@ -110,20 +86,18 @@ class CanvasApp(App):
         return root
 
 
-
-
-
-
 if __name__ == '__main__':
     
-    x, y, h, yaw = loadData(os.path.join(os.environ['AUVSI_CV_DATA'], '49.csv'))
-    #yaw = 10*np.ones_like(yaw)
+    base_path = gs.IMAGES_FOLDER
+    imgs_paths = sorted(glob.glob(os.path.join(base_path, '*0.jpg')))
+    data_paths = [os.path.splitext(path)[0]+'.json' for path in imgs_paths]
+    imgs_paths = sorted(glob.glob(os.path.join(base_path, '*tn.jpg')))
     
-    img = AUVSIcv.Image(os.path.join(os.environ['AUVSI_CV_DATA'], 'IMG_0411.jpg'))
-    K = img.K
-    Kinv = np.linalg.inv(K)
+    imgs = [AUVSIcv.Image(img_path, data_path) for img_path, data_path in zip(imgs_paths, data_paths)]
+    ned = NED.NED(imgs[0].latitude, imgs[0].longitude, 0)
     
-    SIZE = 1000
-    quads = [calculateQuad((_y, _x, _h), yaw, Kinv, resolution=[4000, 3000]) for _x, _y, _h, yaw in zip(x[:SIZE], y[:SIZE], h[:SIZE], yaw[:SIZE])]
+    quads = [
+        img.calculateQuad(ned, resolution=[4000, 3000]) for img in imgs
+    ]
     
     CanvasApp().run()

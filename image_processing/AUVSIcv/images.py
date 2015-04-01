@@ -135,6 +135,30 @@ class Image(object):
             self._tags = exifread.process_file(f)
 
         #
+        # Load flight data
+        #
+        if data_path is not None:
+            with open(data_path, 'rb') as f:
+                self._flight_data = json.load(f)
+            self._flight_data['K'] = np.array(self._flight_data['K'])
+            
+            self._datetime = self._flight_data['timestamp']
+            self._K = self._flight_data['K']
+            self.calculateExtrinsicMatrix(
+                latitude=self._flight_data['lat']*1e-7,
+                longitude=self._flight_data['lon']*1e-7,
+                altitude=self._flight_data['relative_alt']*1e-3,
+                yaw=math.degrees(self._flight_data['yaw']), 
+                pitch=math.degrees(self._flight_data['pitch']), 
+                roll=math.degrees(self._flight_data['roll'])
+            )
+        else:
+            #
+            # Calculate the intrinsic data based on exif data if available.
+            #
+            self.calculateIntrinsicMatrix()            
+            
+        #
         # Get the time stamp.
         #
         if 'Image DateTime' in self._tags:            
@@ -143,10 +167,6 @@ class Image(object):
             log.msg('No Image DateTime tag using computer time.')
             self._datetime = datetime.now().strftime("%Y_%m_%d_%H_%M_%S_%f")
 
-        #
-        # Calculate the intrinsic data
-        #
-        self.calculateIntrinsicMatrix()
         
     def calculateIntrinsicMatrix(self):
         """Calculate camera intrinsic matrix
@@ -155,6 +175,7 @@ class Image(object):
         """
 
         if not 'EXIF FocalPlaneYResolution' in self._tags:
+            log.msg("'EXIF FocalPlaneYResolution' missing, assuming default shape.")
             ImageLength, ImageWidth = self._img.shape[:2]
             self._K = np.array(((1, 0, ImageWidth/2), (0, 1, ImageLength/2), (0, 0, 1))) 
             return
@@ -167,7 +188,9 @@ class Image(object):
 
         f_x = FocalLength * FocalPlaneXResolution / in_to_mm
         f_y = FocalLength * FocalPlaneYResolution / in_to_mm
+        
         self._K = np.array(((f_x, 0, ImageWidth/2), (0, f_y, ImageLength/2), (0, 0, 1)))        
+        log.msg("Setting the K matrix of the image to {K}.".format(K=self._K))
 
     def calculateExtrinsicMatrix(self, latitude, longitude, altitude, yaw, pitch, roll):
         """Calculate camera extrinsic matrix
@@ -196,6 +219,9 @@ class Image(object):
         self._latitude = latitude
         self._longitude = longitude
         self._altitude = altitude
+        self._yaw = yaw
+        self._pitch = pitch
+        self._roll = roll
         
     def paste(self, target):
         """Draw a target on the image.
@@ -273,6 +299,33 @@ class Image(object):
 
         overlayPatch(img=patch, overlay_img=target.img, overlay_alpha=target.alpha, M=M)
     
+    def calculateQuad(self, ned, resolution):
+        
+        Kinv = np.linalg.inv(self._K)
+        
+        points = np.array(
+            (
+                (0, resolution[0], resolution[0], 0),
+                (0, 0, resolution[1], resolution[1]),
+                (1, 1, 1, 1.)
+            )
+        )
+        Ryaw = transforms.euler_matrix(0, 0, -np.pi/2+np.deg2rad(self._yaw), axes='sxyz')
+        x, y, h = ned.geodetic2ned([self._latitude, self._longitude, self._altitude])
+        h = -h
+        
+        offset = np.array(
+            (
+                (x,),
+                (y,),
+                (h,)
+            )
+        )
+        
+        projections = offset + h * np.dot(np.array(((1., 0, 0), (0, 1, 0), (0, 0, -1.))), np.dot(Ryaw[:3, :3], np.dot(Kinv, points)))
+        
+        return projections
+
     @property
     def img(self):
         return self._img
@@ -305,4 +358,19 @@ class Image(object):
     def path(self):
         """Get path of image"""
         
-        return self._path    
+        return self._path
+
+    @property
+    def latitude(self):
+        
+        return self._latitude
+
+    @property
+    def longitude(self):
+        
+        return self._longitude
+
+    @property
+    def altitude(self):
+        
+        return self._altitude

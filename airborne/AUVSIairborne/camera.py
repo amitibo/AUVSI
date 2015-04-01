@@ -51,7 +51,7 @@ class SimulationCamera(BaseCamera):
         """Inifinite shooting loop. To run on separate process."""
 
         base_path = os.environ['AUVSI_CV_DATA']
-        imgs_paths = glob.glob(os.path.join(base_path, '*.jpg'))
+        imgs_paths = sorted(glob.glob(os.path.join(base_path, '*.jpg')))
         img_index = 0
         while run.value == 1:
             time.sleep(0.5)
@@ -59,44 +59,56 @@ class SimulationCamera(BaseCamera):
             #
             # Pick up an image from disk
             #
-            img = AUVSIcv.Image(imgs_paths[img_index])
+            #img = AUVSIcv.Image(imgs_paths[img_index])
+            new_name = self._getName()
+            print 'Capturing new image: {img_path} to path: {new_path}'.format(img_path=imgs_paths[img_index], new_path=new_name)            
+            os.rename(imgs_paths[img_index], new_name)
+            
             img_index += 1
             img_index = img_index % len(imgs_paths)
             
-            try:
-                data_path = os.path.splitext(imgs_paths[3])[0]+'.txt'            
-                with open(data_path, 'r') as f:
-                    data = json.load(f)
-                    
-                img.calculateExtrinsicMatrix(
-                    latitude=data['latitude'],
-                    longitude=data['longitude'],
-                    altitude=data['altitude'],
-                    yaw=data['yaw'],
-                    pitch=data['pitch'],
-                    roll=data['roll'],
-                )
-    
-                #
-                # Create a target.
-                #
-                target = AUVSIcv.randomTarget(
-                    altitude=0,
-                    longitude=32.8167,
-                    latitude=34.9833
-                )
-                     
-                #
-                # Paste it on the image.
-                #
-                img.paste(target)
-            except:
-                pass
             
             #
-            # Save the image to disk (should trigger the image processing code).
+            # TODO:
+            # I broke here the ability to add targets to images.
+            # the reason is that I don't want to lose the exif data
+            # in the image. This link http://stackoverflow.com/questions/9808451/how-to-add-custom-metadata-to-opencv-numpy-image
+            # might help to solve this.
             #
-            cv2.imwrite(self._getName(), img.img)
+            #try:
+                #data_path = os.path.splitext(imgs_paths[3])[0]+'.txt'            
+                #with open(data_path, 'r') as f:
+                    #data = json.load(f)
+                    
+                #img.calculateExtrinsicMatrix(
+                    #latitude=data['latitude'],
+                    #longitude=data['longitude'],
+                    #altitude=data['altitude'],
+                    #yaw=data['yaw'],
+                    #pitch=data['pitch'],
+                    #roll=data['roll'],
+                #)
+    
+                ##
+                ## Create a target.
+                ##
+                #target = AUVSIcv.randomTarget(
+                    #altitude=0,
+                    #longitude=32.8167,
+                    #latitude=34.9833
+                #)
+                     
+                ##
+                ## Paste it on the image.
+                ##
+                #img.paste(target)
+            #except:
+                #pass
+            
+            ##
+            ## Save the image to disk (should trigger the image processing code).
+            ##
+            #cv2.imwrite(self._getName(), img.img)
 
     def startShooting(self):
         self._run_flag = mp.Value('i', 1)

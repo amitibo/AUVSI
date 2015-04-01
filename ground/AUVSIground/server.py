@@ -155,12 +155,12 @@ class ServerFactory(protocol.ReconnectingClientFactory):
         #
         # Download image
         #
-        log.msg('Downloading image from url {img_url} to local path: {local_path}'.format(img_url=img_url, local_path=img_path))
-        urllib.urlretrieve(img_url, img_path)
-        log.msg('Finished Downloading image from url {img_url}'.format(img_url=img_url))
         log.msg('Downloading data from url {data_url} to local path: {local_path}'.format(data_url=data_url, local_path=data_path))
         urllib.urlretrieve(data_url, data_path)
         log.msg('Finished Downloading data from url {data_url}'.format(data_url=data_url))
+        log.msg('Downloading image from url {img_url} to local path: {local_path}'.format(img_url=img_url, local_path=img_path))
+        urllib.urlretrieve(img_url, img_path)
+        log.msg('Finished Downloading image from url {img_url}'.format(img_url=img_url))
 
         #
         # Resize a thumbnail.
