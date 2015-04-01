@@ -120,7 +120,7 @@ def overlayPatch(img, overlay_img, overlay_alpha, M):
         
 
 class Image(object):
-    def __init__(self, img_path, data_path=None):
+    def __init__(self, img_path, data_path=None, timestamp=None):
         
         #
         # Load image
@@ -161,7 +161,9 @@ class Image(object):
         #
         # Get the time stamp.
         #
-        if 'Image DateTime' in self._tags:            
+        if timestamp is not None:
+            self._datetime = timestamp
+        elif 'Image DateTime' in self._tags:            
             self._datetime = self._tags['Image DateTime'].values.replace(':', '_').replace(' ', '_') + datetime.now().strftime("_%f")
         else:
             log.msg('No Image DateTime tag using computer time.')

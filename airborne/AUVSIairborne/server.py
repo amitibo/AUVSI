@@ -7,6 +7,7 @@ from twisted.python import log
 from twisted.python.logfile import DailyLogFile
 
 from camera import SimulationCamera, CanonCamera
+from datetime import datetime
 import global_settings as gs
 import database as DB
 import images as IM
@@ -183,7 +184,7 @@ class FileSystemWatcher(object):
             
     def OnChange(self, path):
         log.msg('Identified new image {img}'.format(img=path))
-        IM.handleNewImage(path)
+        IM.handleNewImage(path, datetime.now().strftime("%Y_%m_%d_%H_%M_%S_%f"))
 
 
 def start_server(camera_type, simulate_pixhawk, port=8000):

@@ -23,24 +23,26 @@ def tagValue(tag):
     return tag.values[0]
 
 
-def handleNewImage(img_path):
+def handleNewImage(img_path, timestamp):
     #
     # Create the image processing pipeline
     #
-    d = threads.deferToThread(dispatchImgJob, img_path)
+    d = threads.deferToThread(dispatchImgJob, img_path, timestamp)
     d.addCallback(saveFlightData)
     d.addCallback(DB.storeImg)
 
 
-def dispatchImgJob(img_path):
+def dispatchImgJob(params):
     """Dispatch the image processing task to a process worker."""
+    
+    img_path, timestamp = params
     
     log.msg('Dispatching new image {img}'.format(img=img_path))
     
-    return pool.apply(processImg, (img_path,))
+    return pool.apply(processImg, (img_path, timestamp))
 
 
-def processImg(img_path):
+def processImg(img_path, timestamp):
     """
     Do all image processing actions. Should be called on a separate process to allow mutli processesors.
     Currently does only resizing.
@@ -55,7 +57,7 @@ def processImg(img_path):
     # Load the image
     #
     log.msg('Loading new image {img}'.format(img=img_path))    
-    img = AUVSIcv.Image(img_path)
+    img = AUVSIcv.Image(img_path, timestamp=timestamp)
     
     #
     # Rename it with time stamp.
