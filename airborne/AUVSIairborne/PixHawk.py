@@ -8,7 +8,6 @@ try:
     from pymavlink import mavutil
 except:
     pass
-import pandas
 import json
 import os
 
