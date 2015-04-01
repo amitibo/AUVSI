@@ -134,6 +134,7 @@ class CropAction(object):
         )
         self._widget.roiSelect(coords)
 
+
 class TouchAsyncImage(AsyncImage):
     
     def __init__(self, *args, **kwargs):
@@ -268,7 +269,7 @@ class GUIApp(App):
     
             return callback
         
-        for img_path, img_tn_path in images_list:
+        for img_path, img_tn_path, data_path in images_list:
             btn = Button(
                 size_hint=(None, None),
                 size=(100, 75),

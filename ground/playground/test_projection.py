@@ -88,24 +88,15 @@ class CanvasApp(App):
 
 if __name__ == '__main__':
     
+    TIME_OFFSET = 1
     base_path = gs.IMAGES_FOLDER
     imgs_paths = sorted(glob.glob(os.path.join(base_path, '*0.jpg')))
     data_paths = [os.path.splitext(path)[0]+'.json' for path in imgs_paths]
     imgs_paths = sorted(glob.glob(os.path.join(base_path, '*tn.jpg')))
     
-    imgs = [AUVSIcv.Image(img_path, data_path) for img_path, data_path in zip(imgs_paths, data_paths)]
+    imgs = [AUVSIcv.Image(img_path, data_path) for img_path, data_path in zip(imgs_paths[TIME_OFFSET:], data_paths[:-TIME_OFFSET])]
     ned = NED.NED(imgs[0].latitude, imgs[0].longitude, 0)
     
-    #angles = np.linspace(0, 2*np.pi, len(imgs))
-    #radius = 0.0005
-    #lats = imgs[0].latitude + radius * np.sin(angles)
-    #lons = imgs[0].longitude + radius * np.cos(angles)
-    
-    #for img, angle, lat, lon in zip(imgs, angles, lats, lons):
-        #img._latitude = lat
-        #img._longitude = lon
-        #img._yaw = -math.degrees(angle)
-        
     quads = [
         img.calculateQuad(ned, resolution=[4000, 3000]) for img in imgs
     ]

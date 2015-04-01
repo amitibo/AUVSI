@@ -171,7 +171,7 @@ class ServerFactory(protocol.ReconnectingClientFactory):
         img_tn = cv2.resize(img, dim, interpolation = cv2.INTER_AREA)
         cv2.imwrite(img_tn_path, img_tn)
         
-        return (img_path, img_tn_path), new_imgs
+        return (img_path, img_tn_path, data_path), new_imgs
     
     def _loopNewImgs(self, new_imgs):
         """Loop on all new images. Download and store in database each image."""
