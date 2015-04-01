@@ -4,7 +4,7 @@ from twisted.enterprise import adbapi
 from twisted.python import log
 import global_settings as gs
 from datetime import datetime
-import urllib
+import urllib2
 import json
 import cv2
 import os
@@ -72,7 +72,7 @@ class ServerFactory(protocol.ReconnectingClientFactory):
         import sqlite3
         conn = sqlite3.connect(self.images_db)
         cursor = conn.cursor()
-        cmd = 'create table if not exists {table_name} (id integer primary key, image_path text, image_tn_path text, [timestamp] timestamp)'.format(table_name=self.images_table)
+        cmd = 'create table if not exists {table_name} (id integer primary key, image_path text, image_tn_path text, data_path text, [timestamp] timestamp)'.format(table_name=self.images_table)
         log.msg('Initiating database: {cmd}'.format(cmd=cmd))
         cursor.execute(cmd)
         conn.commit()
@@ -128,8 +128,8 @@ class ServerFactory(protocol.ReconnectingClientFactory):
         # Store the new image in the data base and continue downloading the new images.
         #
         new_img = new_imgs.pop(0)
-        cmd = "INSERT INTO {table_name}(image_path, image_tn_path, timestamp) values (?, ?, ?)".format(table_name=self.images_table)
-        d = self._db_cmd(cmd, (new_img_paths[0], new_img_paths[1], new_img['timestamp']))
+        cmd = "INSERT INTO {table_name}(image_path, image_tn_path, data_path, timestamp) values (?, ?, ?, ?)".format(table_name=self.images_table)
+        d = self._db_cmd(cmd, (new_img_paths[0], new_img_paths[1], new_img_paths[2], new_img['timestamp']))
         d.addCallback(self._loopNewImgs)        
         
         #
@@ -156,10 +156,16 @@ class ServerFactory(protocol.ReconnectingClientFactory):
         # Download image
         #
         log.msg('Downloading data from url {data_url} to local path: {local_path}'.format(data_url=data_url, local_path=data_path))
-        urllib.urlretrieve(data_url, data_path)
+        with open(data_path, 'wb') as f:
+            page = urllib2.urlopen(data_url).read()
+            f.write(page)
+        #urllib.urlretrieve(data_url, data_path)
         log.msg('Finished Downloading data from url {data_url}'.format(data_url=data_url))
         log.msg('Downloading image from url {img_url} to local path: {local_path}'.format(img_url=img_url, local_path=img_path))
-        urllib.urlretrieve(img_url, img_path)
+        with open(img_path, 'wb') as f:
+            page = urllib2.urlopen(img_url).read()
+            f.write(page)
+        #urllib.urlretrieve(img_url, img_path)
         log.msg('Finished Downloading image from url {img_url}'.format(img_url=img_url))
 
         #
@@ -234,13 +240,13 @@ class ServerFactory(protocol.ReconnectingClientFactory):
     
     def _filterImagesPath(self, db_reply):
         """"""
-        images_list = [items[:2] for items in db_reply]
+        images_list = [items[:3] for items in db_reply]
         return images_list
     
     def getImagesList(self, callback):
         """Get the list of images in the data base"""
         
-        cmd = 'SELECT image_path, image_tn_path, timestamp FROM {table_name}'.format(table_name=self.images_table)
+        cmd = 'SELECT image_path, image_tn_path, data_path, timestamp FROM {table_name}'.format(table_name=self.images_table)
         d = self._db_cmd(cmd)
         d.addCallback(self._filterImagesPath)
         d.addCallback(callback)

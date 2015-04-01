@@ -22,6 +22,8 @@ from kivy.uix.scatter import Scatter
 from kivy.uix.togglebutton import ToggleButton
 from kivy.core.window import Window
 
+import AUVSIcv
+
 import pkg_resources
 import global_settings as gs
 import os
@@ -235,6 +237,7 @@ class GUIApp(App):
     
     kv_directory = pkg_resources.resource_filename('AUVSIground', 'resources')
     connection = None
+    imgs_list = []
     
     def build(self):
         """Main build function of the Kivy application."""
@@ -263,13 +266,17 @@ class GUIApp(App):
     def _populateImagesList(self, images_list):
         """Store new image paths in image list."""
 
-        def callback_factory(img_path):
+        def callback_factory(img_obj):
             def callback(instance):
-                self.root.images_gallery.scatter_image.source = img_path
-    
+                self.root.images_gallery.scatter_image.source = img_obj.path
+                self.root.images_gallery.scatter_image.parent.rotation = -img_obj._yaw
             return callback
         
         for img_path, img_tn_path, data_path in images_list:
+            
+            img_obj = AUVSIcv.Image(img_path, data_path)
+            self.imgs_list.append(img_obj)
+            
             btn = Button(
                 size_hint=(None, None),
                 size=(100, 75),
@@ -277,7 +284,7 @@ class GUIApp(App):
                 border=(0,0,0,0)
             )
     
-            btn.bind(on_press=callback_factory(img_path))
+            btn.bind(on_press=callback_factory(img_obj))
             self.root.images_gallery.stacked_layout.add_widget(btn)        
 
     def populateImagesList(self):
