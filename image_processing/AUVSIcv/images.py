@@ -310,14 +310,14 @@ class Image(object):
                 (1, 1, 1, 1.)
             )
         )
-        Ryaw = transforms.euler_matrix(0, 0, -np.pi/2+np.deg2rad(self._yaw), axes='sxyz')
+        Ryaw = transforms.euler_matrix(0, 0, -np.deg2rad(self._yaw), axes='sxyz')
         x, y, h = ned.geodetic2ned([self._latitude, self._longitude, self._altitude])
         h = -h
         
         offset = np.array(
             (
-                (x,),
                 (y,),
+                (x,),
                 (h,)
             )
         )

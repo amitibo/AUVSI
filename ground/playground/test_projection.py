@@ -14,7 +14,6 @@ from kivy.app import App
 from kivy.graphics import Color, Rectangle, Quad
 from kivy.uix.scatter import Scatter
 from kivy.clock import Clock
-from random import random as r
 from functools import partial
 import numpy as np
 import AUVSIcv.transformation_matrices as TM
@@ -24,6 +23,7 @@ from AUVSIcv import NED
 import AUVSIcv
 import glob
 import time
+import math
 import os
 
 
@@ -96,6 +96,16 @@ if __name__ == '__main__':
     imgs = [AUVSIcv.Image(img_path, data_path) for img_path, data_path in zip(imgs_paths, data_paths)]
     ned = NED.NED(imgs[0].latitude, imgs[0].longitude, 0)
     
+    #angles = np.linspace(0, 2*np.pi, len(imgs))
+    #radius = 0.0005
+    #lats = imgs[0].latitude + radius * np.sin(angles)
+    #lons = imgs[0].longitude + radius * np.cos(angles)
+    
+    #for img, angle, lat, lon in zip(imgs, angles, lats, lons):
+        #img._latitude = lat
+        #img._longitude = lon
+        #img._yaw = -math.degrees(angle)
+        
     quads = [
         img.calculateQuad(ned, resolution=[4000, 3000]) for img in imgs
     ]
