@@ -237,7 +237,13 @@ class ImageProcessingGui(BoxLayout):
         else:
             server.access('camera_off')
         
+    def downloadImages(self, start_downloading):
+        if start_downloading:
+            server.startDownloadingImages()
+        else:
+            server.stopDownloadingImages()
         
+
 class GUIApp(App):
     """Main AUVSI ground system application."""
     

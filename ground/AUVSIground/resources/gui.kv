@@ -30,6 +30,10 @@ ImageProcessingGui:
             text: 'Shoot'
             on_state: root.shoot(self.state == 'down')
             
+        ToggleButton:
+            text: 'Download'
+            on_state: root.downloadImages(self.state == 'down')
+
     #
     # Image gallery widget.
     #

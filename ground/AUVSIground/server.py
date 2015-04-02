@@ -34,6 +34,7 @@ class RemoteServer(protocol.Protocol):
 class ServerFactory(protocol.ReconnectingClientFactory):
     protocol = RemoteServer
     images_task = None
+    downloading_flag = False
     
     #
     # Reconnection parameters.
@@ -94,10 +95,12 @@ class ServerFactory(protocol.ReconnectingClientFactory):
         #
         self.app.on_connection(conn)
 
+    def startDownloadingImages(self):
         #
         # Add deffered task for getting new images.
         #
-        self.images_task = task.deferLater(reactor, 1, self.updateImagesDB)
+        self.downloading_flag = True        
+        self._sendLastTimeStamp(datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f"))
         
     def on_disconnection(self, conn):
         """Handle disconnection to remote server."""
@@ -106,10 +109,13 @@ class ServerFactory(protocol.ReconnectingClientFactory):
         # Notify the GUI application.
         #
         self.app.on_disconnection(conn)
+        self.stopDownloadingImages()
         
+    def stopDownloadingImages(self):
         #
         # Stop the task of getting new images.
         #
+        self.downloading_flag = False        
         if self.images_task is not None:
             self.images_task.cancel()
             self.images_task = None
@@ -188,7 +194,8 @@ class ServerFactory(protocol.ReconnectingClientFactory):
             #
             # Finished processing all new images.
             #
-            self.images_task = task.deferLater(reactor, 1, self.updateImagesDB)
+            if self.downloading_flag:
+                self.images_task = task.deferLater(reactor, 1, self.updateImagesDB)
             return
         
         #
@@ -206,7 +213,8 @@ class ServerFactory(protocol.ReconnectingClientFactory):
             #
             # No new images.
             #
-            self.images_task = task.deferLater(reactor, 1, self.updateImagesDB)
+            if self.downloading_flag:
+                self.images_task = task.deferLater(reactor, 1, self.updateImagesDB)
             return
         
         new_imgs = [{'name': os.path.split(entry[1])[1], 'timestamp': entry[2]} for entry in entries_list]
@@ -291,3 +299,11 @@ def access(page, args=None, callback=logReply):
     d.addCallbacks(callback, logError)
     
     return d
+
+
+def startDownloadingImages():
+    _server.startDownloadingImages()
+
+
+def stopDownloadingImages():
+    _server.stopDownloadingImages()
