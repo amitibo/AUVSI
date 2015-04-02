@@ -57,13 +57,15 @@ class ScatterStencil(Scatter):
     
 
 class CoordsAction(object):
-    def __init__(self, widget, touch):
+    def __init__(self, widget, touch, img_obj):
         
         self._widget = widget
         win = widget.get_parent_window()
         
-        self._group = str(touch.uid)
+        self.img_obj = img_obj
 
+        self._group = str(touch.uid)
+        
         with self._widget.canvas:
             Color(1, 1, 1, mode='hsv', group=self._group)
             self._lines = [
@@ -97,10 +99,13 @@ class CoordsAction(object):
         
         texture_x = (touch.x - offset_x)*scale_ratio
         texture_y = (touch.y - offset_y)*scale_ratio
-         
-        self._label.text = 'X: {x}, Y: {y}'.format(
-            x=texture_x,
-            y=texture_y
+        
+        if self.img_obj is not None:
+            lat, lon = self.img_obj.coords2LatLon(texture_x*4, texture_y*4)
+            
+        self._label.text = 'Lat: {lat}, Lon: {lon}'.format(
+            lat=lat,
+            lon=lon
         )
         self._label.texture_update()
         self._label.pos = touch.pos
@@ -145,6 +150,7 @@ class TouchAsyncImage(AsyncImage):
         self._keyboard.bind(on_key_down=self._on_keyboard_down)
         self._keyboard.bind(on_key_up=self._on_keyboard_up)
         self._ctrl_held = False
+        self.img_obj = None
         
     def _keyboard_closed(self):
         self._keyboard.unbind(on_key_down=self._on_keyboard_down)
@@ -181,11 +187,11 @@ class TouchAsyncImage(AsyncImage):
         touch.grab(self)
         
         if self._ctrl_held:
-            touch.ud['action'] = CropAction(self, touch)
+            touch.ud['action'] = CropAction(self, touch, self.img_obj)
             return True
         
         else:
-            touch.ud['action'] = CoordsAction(self, touch)
+            touch.ud['action'] = CoordsAction(self, touch, self.img_obj)
         
         return super(TouchAsyncImage, self).on_touch_down(touch)
 
@@ -268,6 +274,7 @@ class GUIApp(App):
 
         def callback_factory(img_obj):
             def callback(instance):
+                self.root.images_gallery.scatter_image.img_obj = img_obj                
                 self.root.images_gallery.scatter_image.source = img_obj.path
                 self.root.images_gallery.scatter_image.parent.rotation = -img_obj._yaw
             return callback

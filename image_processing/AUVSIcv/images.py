@@ -1,6 +1,7 @@
 from __future__ import division
 import exifread
 import transformation_matrices as transforms
+import NED
 from twisted.python import log
 import numpy as np
 from datetime import datetime
@@ -328,6 +329,36 @@ class Image(object):
         
         return projections
 
+    def coords2LatLon(self, x, y):
+        
+        Kinv = np.linalg.inv(self._K)
+          
+        point = np.array(
+            (
+                (x,),
+                (y,),
+                (1,)
+            )
+        )
+        Ryaw = transforms.euler_matrix(0, 0, -np.deg2rad(self._yaw), axes='sxyz')
+        ned = NED.NED(self._latitude, self._longitude, 0)
+        x, y, h = ned.geodetic2ned([self._latitude, self._longitude, self._altitude])
+        h = -h
+        
+        offset = np.array(
+            (
+                (y,),
+                (x,),
+                (h,)
+            )
+        )
+        
+        ned_coords = (offset + h * np.dot(np.array(((1., 0, 0), (0, 1, 0), (0, 0, -1.))), np.dot(Ryaw[:3, :3], np.dot(Kinv, point)))).flatten()
+        
+        lat, lon, alt = ned.ned2geodetic(ned=(ned_coords[1], ned_coords[0], ned_coords[2]))
+        
+        return lat, lon
+    
     @property
     def img(self):
         return self._img
