@@ -32,10 +32,8 @@ def handleNewImage(img_path, timestamp):
     d.addCallback(DB.storeImg)
 
 
-def dispatchImgJob(params):
+def dispatchImgJob(img_path, timestamp):
     """Dispatch the image processing task to a process worker."""
-    
-    img_path, timestamp = params
     
     log.msg('Dispatching new image {img}'.format(img=img_path))
     
