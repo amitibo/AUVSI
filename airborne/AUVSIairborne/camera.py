@@ -20,7 +20,7 @@ import os
 class BaseCamera(object):
     """Abstract class for a camera, not to be used directly."""
 
-    def __init__(self, zoom=45, shutter=1600, ISO=100, aperture=4):
+    def __init__(self, zoom=45, shutter=2000, ISO=100, aperture=5):
 
         self.base_path = gs.IMAGES_FOLDER
         if not os.path.exists(self.base_path):
@@ -194,7 +194,7 @@ class CanonCamera(BaseCamera):
             self._set_zoom = False
 
     def startShooting(self):
-        shoot_cmd = """\"remoteshoot {local_folder} -tv=1/{shutter} -sv={ISO} -av={aperture} -cont=1000\"""".format(
+        shoot_cmd = """\"remoteshoot {local_folder} -tv=1/{shutter} -sv={ISO} -av={aperture} -cont=9000\"""".format(
             local_folder=gs.IMAGES_FOLDER,
             shutter=self.shutter,
             ISO=self.ISO,
