@@ -38,10 +38,11 @@ class Map(Scatter):
                 if i == index:
                     Color(1, 1, 1, 1, mode='rgba')
                 else:
-                    Color(1, 1, 1, 0.5, mode='rgba')
+                    Color(1, 1, 1, 1, mode='rgba')
                     
                 points = tuple(quad.T[...,:2].flatten()+100)
                 Quad(source=imgs[i].path, points=points)
+                #Quad(points=points)
             
     
 class CanvasApp(App):
@@ -89,13 +90,20 @@ class CanvasApp(App):
 if __name__ == '__main__':
     
     TIME_OFFSET = 5
-    base_path = gs.IMAGES_FOLDER
-    imgs_paths = sorted(glob.glob(os.path.join(base_path, '*0.jpg')))
-    data_paths = [os.path.splitext(path)[0]+'.json' for path in imgs_paths]
+    base_path = r'C:\Users\User\Desktop\Go No Go 2.4\No Go\images'
+    #base_path = gs.IMAGES_FOLDER
+    
+    #imgs_paths = sorted(glob.glob(os.path.join(base_path, '*0.jpg')))
+    data_paths = sorted(glob.glob(os.path.join(base_path, '*.json')))
     imgs_paths = sorted(glob.glob(os.path.join(base_path, '*tn.jpg')))
     
+    print len(imgs_paths)
+    START = 200
+    END = 500
+    
     #imgs = [AUVSIcv.Image(img_path, data_path) for img_path, data_path in zip(imgs_paths[TIME_OFFSET:], data_paths[:-TIME_OFFSET])]
-    imgs = [AUVSIcv.Image(img_path, data_path) for img_path, data_path in zip(imgs_paths[:-TIME_OFFSET], data_paths[TIME_OFFSET:])]
+    #imgs = [AUVSIcv.Image(img_path, data_path) for img_path, data_path in zip(imgs_paths[:-TIME_OFFSET], data_paths[TIME_OFFSET:])]
+    imgs = [AUVSIcv.Image(img_path, data_path) for img_path, data_path in zip(imgs_paths[START:END], data_paths[START:END])]
     ned = NED.NED(imgs[0].latitude, imgs[0].longitude, 0)
     
     quads = [

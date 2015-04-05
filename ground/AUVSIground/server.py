@@ -3,7 +3,7 @@ from twisted.web.client import getPage, downloadPage
 from twisted.enterprise import adbapi
 from twisted.python import log
 import global_settings as gs
-from datetime import datetime
+from datetime import datetime, timedelta
 import urllib2
 import json
 import cv2
@@ -100,7 +100,7 @@ class ServerFactory(protocol.ReconnectingClientFactory):
         # Add deffered task for getting new images.
         #
         self.downloading_flag = True        
-        self._sendLastTimeStamp(datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f"))
+        self._sendLastTimeStamp('NOW')
         
     def on_disconnection(self, conn):
         """Handle disconnection to remote server."""
@@ -228,6 +228,8 @@ class ServerFactory(protocol.ReconnectingClientFactory):
             # The image database is empty
             #
             timestamp = ''
+        elif timestamp == 'NOW':
+            timestamp=(datetime.now()-timedelta(seconds=2)).strftime("%Y-%m-%dT%H:%M:%S.%f")
         else:
             timestamp=timestamp[0][0].replace(' ', 'T')
         
