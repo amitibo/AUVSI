@@ -70,13 +70,13 @@ def processImg(img_path, timestamp):
     #
     log.msg('Resizing new image {img}'.format(img=new_img_path))
     
-    resized_img = cv2.resize(img.img, (0,0), fx=0.25, fy=0.25) 
+    resized_img = cv2.resize(img.img, (0,0), fx=AUVSIcv.global_settings.IMAGE_RESIZE_RATIO, fy=AUVSIcv.global_settings.IMAGE_RESIZE_RATIO) 
     filename = 'resized_{path}'.format(path=os.path.split(new_img_path)[1])
     
     resized_img_path = os.path.join(gs.RESIZED_IMAGES_FOLDER, filename)
     cv2.imwrite(resized_img_path, resized_img)
     
-    return resized_img_path, img.datetime, img.K
+    return resized_img_path, img.datetime, np.dot(AUVSIcv.global_settings.IMAGE_RESIZE_MATRIX, img.K)
 
 
 def saveFlightData(params):
@@ -88,6 +88,7 @@ def saveFlightData(params):
     #
     flight_data = PH.queryPHdata(timestamp)
     flight_data['K']=K.tolist()
+    flight_data['resized_K'] = True
     flight_data_path = os.path.splitext(img_path)[0]+'.json'
     with open(flight_data_path, 'wb') as f:
         json.dump(flight_data, f)

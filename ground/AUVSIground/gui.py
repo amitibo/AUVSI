@@ -101,7 +101,7 @@ class CoordsAction(object):
         texture_y = (touch.y - offset_y)*scale_ratio
         
         if self.img_obj is not None:
-            lat, lon = self.img_obj.coords2LatLon(texture_x*4, texture_y*4)
+            lat, lon = self.img_obj.coords2LatLon(texture_x, texture_y)
             
         self._label.text = 'Lat: {lat}, Lon: {lon}'.format(
             lat=lat,

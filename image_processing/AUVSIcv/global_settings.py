@@ -1,0 +1,4 @@
+import numpy as np
+
+IMAGE_RESIZE_RATIO = 0.25
+IMAGE_RESIZE_MATRIX = np.array(((IMAGE_RESIZE_RATIO, 0, 0), (0, IMAGE_RESIZE_RATIO, 0), (0, 0, 1)))

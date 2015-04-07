@@ -3,6 +3,7 @@ import exifread
 import transformation_matrices as transforms
 import NED
 from twisted.python import log
+import global_settings as gs
 import numpy as np
 from datetime import datetime
 import math
@@ -141,17 +142,28 @@ class Image(object):
         if data_path is not None:
             with open(data_path, 'rb') as f:
                 self._flight_data = json.load(f)
-            self._flight_data['K'] = np.array(self._flight_data['K'])
+
+            self._K = np.array(self._flight_data['K'])
+        
+            #
+            # This is a hack to handle data_flight save in older
+            # versions.
+            #
+            if not self._flight_data.has_key('resized_K'):
+                self._K = np.dot(gs.IMAGE_RESIZE_MATRIX, self._K)
             
             self._datetime = self._flight_data['timestamp']
-            self._K = self._flight_data['K']
+            
+            #
+            # Calculate extrinsic Matrix. The pitch and roll are ignored.
+            #
             self.calculateExtrinsicMatrix(
                 latitude=self._flight_data['lat']*1e-7,
                 longitude=self._flight_data['lon']*1e-7,
                 altitude=self._flight_data['relative_alt']*1e-3,
                 yaw=math.degrees(self._flight_data['yaw']), 
-                pitch=math.degrees(self._flight_data['pitch']), 
-                roll=math.degrees(self._flight_data['roll'])
+                pitch=0,
+                roll=0
             )
         else:
             #
@@ -212,9 +224,9 @@ class Image(object):
         #
         t = np.eye(4)
         R = transforms.euler_matrix(
-            ai=math.radians(yaw),
+            ai=math.radians(roll),
             aj=math.radians(pitch),
-            ak=math.radians(roll+90),
+            ak=math.radians(yaw),
             axes='sxyz'
         )
         self._Rt = np.dot(t, R)
@@ -330,6 +342,7 @@ class Image(object):
         return projections
 
     def coords2LatLon(self, x, y):
+        
         
         Kinv = np.linalg.inv(self._K)
           
