@@ -90,12 +90,14 @@ class CanvasApp(App):
 if __name__ == '__main__':
     
     TIME_OFFSET = 5
-    base_path = r'C:\Users\User\Desktop\Go No Go 2.4\No Go\images'
+    #base_path = r'C:\Users\User\Desktop\Go No Go 2.4\No Go\images'
     #base_path = gs.IMAGES_FOLDER
+    base_path = os.environ['AUVSI_CV_DATA']
     
     #imgs_paths = sorted(glob.glob(os.path.join(base_path, '*0.jpg')))
-    data_paths = sorted(glob.glob(os.path.join(base_path, '*.json')))
-    imgs_paths = sorted(glob.glob(os.path.join(base_path, '*tn.jpg')))
+    #data_paths = sorted(glob.glob(os.path.join(base_path, '*.json')))
+    imgs_paths = sorted(glob.glob(os.path.join(base_path, '*.jpg')))
+    data_paths = [os.path.splitext(path)[0]+'.json' for path in imgs_paths]
     
     print len(imgs_paths)
     START = 200
@@ -103,11 +105,12 @@ if __name__ == '__main__':
     
     #imgs = [AUVSIcv.Image(img_path, data_path) for img_path, data_path in zip(imgs_paths[TIME_OFFSET:], data_paths[:-TIME_OFFSET])]
     #imgs = [AUVSIcv.Image(img_path, data_path) for img_path, data_path in zip(imgs_paths[:-TIME_OFFSET], data_paths[TIME_OFFSET:])]
-    imgs = [AUVSIcv.Image(img_path, data_path) for img_path, data_path in zip(imgs_paths[START:END], data_paths[START:END])]
+    #imgs = [AUVSIcv.Image(img_path, data_path) for img_path, data_path in zip(imgs_paths[START:END], data_paths[START:END])]
+    imgs = [AUVSIcv.Image(img_path, data_path) for img_path, data_path in zip(imgs_paths, data_paths)]
     ned = NED.NED(imgs[0].latitude, imgs[0].longitude, 0)
     
     quads = [
-        img.calculateQuad(ned, resolution=[4000, 3000]) for img in imgs
+        img.calculateQuad(ned) for img in imgs
     ]
     
     CanvasApp().run()

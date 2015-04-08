@@ -27,34 +27,13 @@ def tagValue(tag):
     return tag.values[0]
 
 
-def calcDstLimits(img, overlay_img, M):
-    """Calculate the limits of the overlay in the destination image."""
-
-    osize = overlay_img.shape[:2]
-    isize = img.shape[:2]
-    
-    limits = np.float32((((0, 0), (0, osize[0]), osize[::-1], (osize[1], 0)),))
-
-    limits_trans = cv2.perspectiveTransform(limits, M)
-    dst_xlimit = cv2.minMaxLoc(limits_trans[0, :, 0])[:2]
-    dst_ylimit = cv2.minMaxLoc(limits_trans[0, :, 1])[:2]
-
-    dst_xlimit = [min(max(int(dst_xlimit[0]), 0), img.shape[1]), min(max(int(dst_xlimit[1]+1), 0), img.shape[1])]
-    dst_ylimit = [min(max(int(dst_ylimit[0]), 0), img.shape[0]), min(max(int(dst_ylimit[1]+1), 0), img.shape[0])]
-    
-    offsets = (dst_xlimit[0], dst_ylimit[0])
-    shape = (dst_xlimit[1]-dst_xlimit[0], dst_ylimit[1]-dst_ylimit[0])
-    
-    return offsets, shape
-
-
-def overlay(img, overlay_img, overlay_alpha, M):
+def overlay(img, overlay_img, overlay_alpha, M, center_patch=False):
     
     #
     # Calculate the destination pixels of the patch. This allows for much more efficient
     # copies (instead of copying a full 4000x3000 image).
     #
-    offsets, dst_shape = calcDstLimits(img, overlay_img, M)
+    offsets, dst_shape, shifts = calcDstLimits(img, overlay_img, M, center_patch)
     
     if dst_shape[0] == 0 or dst_shape[1]==0:
         #
@@ -66,15 +45,35 @@ def overlay(img, overlay_img, overlay_alpha, M):
     T[0, 2] = -offsets[0]
     T[1, 2] = -offsets[1]
     
-    overlay_img = cv2.warpPerspective(overlay_img, np.dot(T, M), dsize=dst_shape)
-    overlay_alpha = cv2.warpPerspective(overlay_alpha, np.dot(T, M), dsize=dst_shape)[..., np.newaxis]
+    if center_patch:
+        T1 = np.eye(3)
+        T1[0, 2] = -shifts[0]
+        T1[1, 2] = -shifts[1]
 
+        T= np.dot(T, T1)
+    
+    flags = cv2.cv.CV_INTER_LINEAR+cv2.cv.CV_WARP_FILL_OUTLIERS
+    overlay_img = cv2.warpPerspective(overlay_img, np.dot(T, M), dsize=dst_shape, flags=flags)
+    overlay_alpha = cv2.warpPerspective(overlay_alpha, np.dot(T, M), dsize=dst_shape)
+    
+    #
+    # Edge feather the alpha channel
+    #
+    ksize = 3
+    ksigma = 0.3*((ksize-1)*0.5 - 1) + 0.8
+    overlay_alpha = (overlay_alpha*cv2.GaussianBlur(cv2.erode(overlay_alpha, kernel=np.ones(shape=(ksize, ksize))), (ksize, ksize), ksigma))
+    
+    overlay_alpha = overlay_alpha[..., np.newaxis]
+    
+    #
+    # Blend the image and overlay.
+    #
     img[offsets[1]:offsets[1]+dst_shape[1], offsets[0]:offsets[0]+dst_shape[0], :3] = \
         (img[offsets[1]:offsets[1]+dst_shape[1], offsets[0]:offsets[0]+dst_shape[0], :3].astype(np.float32)*(1-overlay_alpha) + \
         overlay_img[..., :3].astype(np.float32)*overlay_alpha).astype(np.uint8)
         
 
-def calcDstPatchLimits(img, overlay_img, M):
+def calcDstLimits(img, overlay_img, M, center_patch):
     """Calculate the limits of the overlay in the destination image."""
 
     osize = overlay_img.shape[:2]
@@ -89,37 +88,22 @@ def calcDstPatchLimits(img, overlay_img, M):
     #
     # Center the patch
     #
-    x_shift = (dst_xlimit[1]+dst_xlimit[0] - isize[1])/2
-    y_shift = (dst_ylimit[1]+dst_ylimit[0] - isize[0])/2
-    
-    dst_xlimit = [min(max(int(dst_xlimit[0]-x_shift), 0), isize[1]), min(max(int(dst_xlimit[1]-x_shift+1), 0), isize[1])]
-    dst_ylimit = [min(max(int(dst_ylimit[0]-y_shift), 0), isize[0]), min(max(int(dst_ylimit[1]-y_shift+1), 0), isize[0])]
-    
+    if center_patch:
+        x_shift = (dst_xlimit[1]+dst_xlimit[0] - isize[1])/2
+        y_shift = (dst_ylimit[1]+dst_ylimit[0] - isize[0])/2
+        
+        dst_xlimit = [min(max(int(dst_xlimit[0]-x_shift), 0), isize[1]), min(max(int(dst_xlimit[1]-x_shift+1), 0), isize[1])]
+        dst_ylimit = [min(max(int(dst_ylimit[0]-y_shift), 0), isize[0]), min(max(int(dst_ylimit[1]-y_shift+1), 0), isize[0])]
+    else:
+        x_shift, y_shift = 0, 0
+        dst_xlimit = [min(max(int(dst_xlimit[0]), 0), img.shape[1]), min(max(int(dst_xlimit[1]+1), 0), img.shape[1])]
+        dst_ylimit = [min(max(int(dst_ylimit[0]), 0), img.shape[0]), min(max(int(dst_ylimit[1]+1), 0), img.shape[0])]
+              
     offsets = (dst_xlimit[0], dst_ylimit[0])
     shape = (dst_xlimit[1]-dst_xlimit[0], dst_ylimit[1]-dst_ylimit[0])
     
     return offsets, shape, (x_shift, y_shift)
 
-
-def overlayPatch(img, overlay_img, overlay_alpha, M):
-    
-    offsets, dst_shape, shifts = calcDstPatchLimits(img, overlay_img, M)
-    
-    T2 = np.eye(3)
-    T2[0, 2] = -shifts[0]
-    T2[1, 2] = -shifts[1]
-
-    T1 = np.eye(3)
-    T1[0, 2] = -offsets[0]
-    T1[1, 2] = -offsets[1]
-    
-    overlay_img = cv2.warpPerspective(overlay_img, np.dot(T1, np.dot(T2, M)), dsize=dst_shape)
-    overlay_alpha = cv2.warpPerspective(overlay_alpha, np.dot(T1, np.dot(T2, M)), dsize=dst_shape)[..., np.newaxis]
-
-    img[offsets[1]:offsets[1]+dst_shape[1], offsets[0]:offsets[0]+dst_shape[0], :3] = \
-        (img[offsets[1]:offsets[1]+dst_shape[1], offsets[0]:offsets[0]+dst_shape[0], :3].astype(np.float32)*(1-overlay_alpha) + \
-        overlay_img[..., :3].astype(np.float32)*overlay_alpha).astype(np.uint8)
-        
 
 class Image(object):
     def __init__(self, img_path, data_path=None, timestamp=None):
@@ -182,6 +166,17 @@ class Image(object):
             log.msg('No Image DateTime tag using computer time.')
             self._datetime = datetime.now().strftime("%Y_%m_%d_%H_%M_%S_%f")
 
+        #
+        # Some 'preprocessing'
+        #
+        self._limits = np.array(
+            (
+                (0, self.shape[1], self.shape[1], 0),
+                (0, 0, self.shape[0], self.shape[0]),
+                (1, 1, 1, 1.)
+            )
+        )
+        self._Kinv = np.linalg.inv(self._K)
         
     def calculateIntrinsicMatrix(self):
         """Calculate camera intrinsic matrix
@@ -312,19 +307,10 @@ class Image(object):
         M2 = np.eye(3, 4)
         M = np.dot(self.K, np.dot(M2, np.dot(np.linalg.inv(self.Rt), np.dot(target_H, M1))))
 
-        overlayPatch(img=patch, overlay_img=target.img, overlay_alpha=target.alpha, M=M)
+        overlay(img=patch, overlay_img=target.img, overlay_alpha=target.alpha, M=M, center_patch=True)
     
-    def calculateQuad(self, ned, resolution):
+    def calculateQuad(self, ned):
         
-        Kinv = np.linalg.inv(self._K)
-        
-        points = np.array(
-            (
-                (0, resolution[0], resolution[0], 0),
-                (0, 0, resolution[1], resolution[1]),
-                (1, 1, 1, 1.)
-            )
-        )
         Ryaw = transforms.euler_matrix(0, 0, -np.deg2rad(self._yaw), axes='sxyz')
         x, y, h = ned.geodetic2ned([self._latitude, self._longitude, self._altitude])
         h = -h
@@ -337,7 +323,7 @@ class Image(object):
             )
         )
         
-        projections = offset + h * np.dot(np.array(((1., 0, 0), (0, 1, 0), (0, 0, -1.))), np.dot(Ryaw[:3, :3], np.dot(Kinv, points)))
+        projections = offset + h * np.dot(np.array(((1., 0, 0), (0, 1, 0), (0, 0, -1.))), np.dot(Ryaw[:3, :3], np.dot(self._Kinv, self._limits)))
         
         return projections
 
@@ -420,3 +406,8 @@ class Image(object):
     def altitude(self):
         
         return self._altitude
+    
+    @property
+    def shape(self):
+        
+        return self._img.shape

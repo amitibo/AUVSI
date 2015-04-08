@@ -87,12 +87,8 @@ class BaseTarget(object):
         template_size=400
         ):
         
-        #
-        # Note:
-        # For some reason I have add 90 degrees to the orientation to make the coords behave correctly.
-        #
         self._size = size
-        self._orientation = math.radians(orientation+90)
+        self._orientation = math.radians(orientation)
         self._altitude = altitude
         self._longitude = longitude
         self._latitude = latitude

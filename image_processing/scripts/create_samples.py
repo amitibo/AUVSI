@@ -24,8 +24,7 @@ def main():
         target = AUVSIcv.randomTarget(
             altitude=0,
             longitude=img.longitude,
-            latitude=img.latitude,
-            coords_offset=0
+            latitude=img.latitude
         )
         
         img.paste(target)
