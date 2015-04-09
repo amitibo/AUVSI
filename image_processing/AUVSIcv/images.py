@@ -27,7 +27,7 @@ def tagValue(tag):
     return tag.values[0]
 
 
-def overlay(img, overlay_img, overlay_alpha, M, center_patch=False):
+def overlay(img, overlay_img, overlay_alpha, M, mean_intensity, center_patch=False):
     
     #
     # Calculate the destination pixels of the patch. This allows for much more efficient
@@ -62,8 +62,22 @@ def overlay(img, overlay_img, overlay_alpha, M, center_patch=False):
     ksize = 3
     ksigma = 0.3*((ksize-1)*0.5 - 1) + 0.8
     overlay_alpha = (overlay_alpha*cv2.GaussianBlur(cv2.erode(overlay_alpha, kernel=np.ones(shape=(ksize, ksize))), (ksize, ksize), ksigma))
-    
     overlay_alpha = overlay_alpha[..., np.newaxis]
+
+    #
+    # Smoothen the overlay
+    #
+    overlay_img = cv2.GaussianBlur(overlay_img, (ksize, ksize), ksigma)
+        
+    #
+    # Scale the intensity and add poisson noise to the overlay.
+    #
+    overlay_yuv = cv2.cvtColor(overlay_img, cv2.COLOR_BGR2YUV).astype(np.float)
+    intensity_scale = mean_intensity / gs.EMPIRICAL_IMAGE_INTENSITY
+    overlay_yuv[:, :, 0] *= intensity_scale
+    overlay_yuv[:, :, 0] = np.random.poisson(overlay_yuv[:, :, 0]*gs.POISSON_INTENSITY_RATIO, overlay_img.shape[:2])/gs.POISSON_INTENSITY_RATIO
+    overlay_yuv[overlay_yuv>255] = 255
+    overlay_img = cv2.cvtColor(overlay_yuv.astype(np.uint8), cv2.COLOR_YUV2BGR)
     
     #
     # Blend the image and overlay.
@@ -178,6 +192,8 @@ class Image(object):
         )
         self._Kinv = np.linalg.inv(self._K)
         
+        self._intensity = np.mean(cv2.cvtColor(self._img, cv2.COLOR_BGR2GRAY))
+        
     def calculateIntrinsicMatrix(self):
         """Calculate camera intrinsic matrix
         
@@ -257,7 +273,7 @@ class Image(object):
         M2 = np.eye(3, 4)
         M = np.dot(self.K, np.dot(M2, np.dot(np.linalg.inv(self.Rt), np.dot(target_H, M1))))
 
-        overlay(img=self._img, overlay_img=target.img, overlay_alpha=target.alpha, M=M)
+        overlay(img=self._img, overlay_img=target.img, overlay_alpha=target.alpha, M=M, mean_intensity=self._intensity)
 
     def createPatches(self, patch_size, patch_shift, copy=True):
         """Create patches(crops) of an image
@@ -307,7 +323,7 @@ class Image(object):
         M2 = np.eye(3, 4)
         M = np.dot(self.K, np.dot(M2, np.dot(np.linalg.inv(self.Rt), np.dot(target_H, M1))))
 
-        overlay(img=patch, overlay_img=target.img, overlay_alpha=target.alpha, M=M, center_patch=True)
+        overlay(img=patch, overlay_img=target.img, overlay_alpha=target.alpha, M=M, mean_intensity=self._intensity, center_patch=True)
     
     def calculateQuad(self, ned):
         

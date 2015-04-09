@@ -15,7 +15,7 @@ def main():
     #
     # Load image and image data
     #
-    img_index = 3
+    img_index = np.random.randint(len(imgs_paths))
     img = AUVSIcv.Image(imgs_paths[img_index], data_path=data_paths[img_index])
     
     patches = img.createPatches(patch_size=(100, 100), patch_shift=50)
