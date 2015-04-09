@@ -1,6 +1,7 @@
 from __future__ import division
 import numpy as np
 import transformation_matrices as transforms
+import global_settings as gs
 import aggdraw
 import Image
 from .NED import NED
@@ -84,10 +85,15 @@ class BaseTarget(object):
         font_color=None,
         font_size=200,
         font=None,
+        size_limits=gs.NORMAL_TARGET_SIZE_RANGE,
         template_size=400
         ):
         
-        self._size = size
+        if size is None:    
+            self._size = random.random()*(size_limits[1]-size_limits[0])+size_limits[0]
+        else:
+            self._size = size
+            
         self._orientation = math.radians(orientation)
         self._altitude = altitude
         self._longitude = longitude
@@ -293,7 +299,7 @@ class StarTarget(BaseTarget):
 class QRTarget(BaseTarget):
     """A target in the form of a circle."""
 
-    def __init__(self, text=None, *args, **kwds):
+    def __init__(self, text=None, size_limits=gs.QR_TARGET_SIZE_RANGE, *args, **kwds):
 
         if text is None:
             text = 'www.{random_string}.com'.format(
@@ -301,7 +307,7 @@ class QRTarget(BaseTarget):
             )
         self._text = text
 
-        super(QRTarget, self).__init__(*args, **kwds)
+        super(QRTarget, self).__init__(*args, size_limits=size_limits, **kwds)
         
 
     def _drawTemplate(self):
@@ -357,7 +363,7 @@ def randomTarget(longitude, latitude, altitude, coords_offset=0.0002, size_limit
     """
     
     params = {
-        'size': random.random()*(size_limits[1]-size_limits[0])+size_limits[0],
+        'size': None,
         'orientation': random.random()*360,
         'longitude': longitude + 2*(random.random()-0.5)*coords_offset,
         'latitude': latitude+2*(random.random()-0.5)*coords_offset,
