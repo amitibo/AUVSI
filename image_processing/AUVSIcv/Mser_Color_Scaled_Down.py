@@ -120,6 +120,8 @@ def MSER_Primary(Image,Image_Information,Scaling_Constant,Crop_Save_Path):
         New_Crop_Data = Targets_Unifier(Crop_Data)
         New_Crop_Data_2 = New_Crop_Data[0]
         return New_Crop_Data_2   
+    else:
+        return -1
 def Image_Crop(Image,Crop_Data,Crop_Save_Path):
 
     #%____________Function_Information____________%
