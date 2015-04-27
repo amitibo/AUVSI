@@ -120,6 +120,14 @@ def calcDstLimits(img, overlay_img, M, center_patch):
 
 
 class Image(object):
+    """The Image class
+    
+    This Image class is used for encapsulating both the image and its telemetry data.
+    It used both on the airborne system when capturing images (with timestamp) and
+    on the ground system where it used for loading images and their respective flight
+    data and manipulating those in the GUI.
+    """
+    
     def __init__(self, img_path, data_path=None, timestamp=None):
         
         #
@@ -144,7 +152,7 @@ class Image(object):
             self._K = np.array(self._flight_data['K'])
         
             #
-            # This is a hack to handle data_flight save in older
+            # This is a hack to handle data_flight saved in older
             # versions.
             #
             if not self._flight_data.has_key('resized_K'):
@@ -153,7 +161,8 @@ class Image(object):
             self._datetime = self._flight_data['timestamp']
             
             #
-            # Calculate extrinsic Matrix. The pitch and roll are ignored.
+            # Calculate extrinsic Matrix. The pitch and roll are ignored
+            # as their not relevant (the camera is set on a gimbal).
             #
             self.calculateExtrinsicMatrix(
                 latitude=self._flight_data['lat']*1e-7,
@@ -169,17 +178,17 @@ class Image(object):
             #
             self.calculateIntrinsicMatrix()            
             
-        #
-        # Get the time stamp.
-        #
-        if timestamp is not None:
-            self._datetime = timestamp
-        elif 'Image DateTime' in self._tags:            
-            self._datetime = self._tags['Image DateTime'].values.replace(':', '_').replace(' ', '_') + datetime.now().strftime("_%f")
-        else:
-            log.msg('No Image DateTime tag using computer time.')
-            self._datetime = datetime.now().strftime("%Y_%m_%d_%H_%M_%S_%f")
-
+            #
+            # Get the time stamp.
+            #
+            if timestamp is not None:
+                self._datetime = timestamp
+            elif 'Image DateTime' in self._tags:            
+                self._datetime = self._tags['Image DateTime'].values.replace(':', '_').replace(' ', '_') + datetime.now().strftime("_%f")
+            else:
+                log.msg('No Image DateTime tag using computer time.')
+                self._datetime = datetime.now().strftime("%Y_%m_%d_%H_%M_%S_%f")
+    
         #
         # Some 'preprocessing'
         #
