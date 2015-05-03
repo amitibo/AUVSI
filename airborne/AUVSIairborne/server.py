@@ -13,7 +13,10 @@ import database as DB
 import images as IM
 import PixHawk as PH
 import platform
+import Image
 import json
+import zmq
+from txzmq import ZmqEndpoint, ZmqFactory, ZmqPushConnection, ZmqPullConnection
 import os
 
 
@@ -133,6 +136,58 @@ class HTTPserverMain(Resource):
         return "<html><body>Welcome to the AUSVI drone!</body></html>"
 
 
+def saveFlightData(img_path, timestamp, K):
+    
+    #
+    # Get the closest time stamp and save it with the image.
+    #
+    flight_data = PH.queryPHdata(timestamp)
+    flight_data['K'] = K.tolist()
+    flight_data['resized_K'] = True
+    flight_data_path = os.path.splitext(img_path)[0]+'.json'
+    with open(flight_data_path, 'wb') as f:
+        json.dump(flight_data, f)
+    log.msg('Saving flight data to path {path}'.format(path=os.path.split(flight_data_path)[-1]))
+    
+    return flight_data
+     
+
+def handleNewImage(path):
+
+    t = datetime.now()
+
+    try:
+        #
+        # Check if the image is already renamed (which means that it is
+        # a simulation camera)
+        #
+        img_name = os.path.split(path)[-1]
+        t = datetime.strptime(img_name[:-4], '%Y_%m_%d_%H_%M_%S_%f')
+    except:
+        pass
+    
+    #
+    # Handle the new image
+    #
+    resized_img_path, timestamp, K = IM.handleNewImage(path, t.strftime("%Y_%m_%d_%H_%M_%S_%f"))
+    resized_img_name = os.path.split(resized_img_path)[-1]
+    flight_data = saveFlightData(resized_img_path, timestamp, K)
+    DB.storeImg(resized_img_path)
+    
+    #
+    # Send the new image and flight_data
+    #
+    with open(resized_img_path, 'rb') as f:
+        data = [os.path.split(resized_img_path)[-1], f.read(), json.dumps(flight_data)]
+    
+    try:
+        zmq_socket.push(data)
+        log.msg("Finished sending of {img}.".format(img=resized_img_name))
+        
+    except zmq.error.Again:
+        log.msg("Skipping sending of {img}, no pull consumers...".format(img=resized_img_name))
+
+
 class FileSystemWatcher(object):
     """
     Watch for newly created files in a folder.
@@ -185,17 +240,8 @@ class FileSystemWatcher(object):
     def OnChange(self, path):
         log.msg('Identified new image {img}'.format(img=path))
         
-        #
-        # Check if the image is already renamed (which means that it is
-        # a simulation camera)
-        #
-        img_name = os.path.split(path)[-1]
-        try:
-            t = datetime.strptime(img_name[:-4], '%Y_%m_%d_%H_%M_%S_%f')
-        except:
-            t = datetime.now()
+        d = threads.deferToThread(handleNewImage, path)
 
-        IM.handleNewImage(path, t.strftime("%Y_%m_%d_%H_%M_%S_%f"))
 
 
 def start_server(camera_type, simulate_pixhawk, port=8000):
@@ -220,6 +266,7 @@ def start_server(camera_type, simulate_pixhawk, port=8000):
     # Setup logging.
     #
     f = DailyLogFile('server.log', gs.AUVSI_BASE_FOLDER)
+    log.addObserver(log.defaultObserver._emit)
     log.startLogging(f)
 
     #
@@ -264,6 +311,14 @@ def start_server(camera_type, simulate_pixhawk, port=8000):
     root.putChild("images", File(gs.RESIZED_IMAGES_FOLDER))
     factory = Site(root)
 
+    #
+    # Setup the zmq socket used for sending images.
+    #
+    global zmq_socket
+    zmq_factory = ZmqFactory()
+    endpoint = ZmqEndpoint('connect', 'tcp://localhost:8888')
+    zmq_socket = ZmqPushConnection(zmq_factory, endpoint)
+    
     #
     # Startup the reactor.
     #

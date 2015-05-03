@@ -32,10 +32,8 @@ def initDB():
     )    
     
 
-def storeImg(params):
+def storeImg(img_path):
     
-    img_path, img_data = params
-     
     cmd = "INSERT INTO {table_name}(image_path, timestamp) values (?, ?)".format(table_name=gs.IMAGES_TABLE)
     _cmd(cmd, (img_path, datetime.now().strftime('%Y-%m-%dT%H:%M:%S.%f')))
 

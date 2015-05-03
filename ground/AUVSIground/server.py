@@ -4,6 +4,8 @@ from twisted.enterprise import adbapi
 from twisted.python import log
 import global_settings as gs
 from datetime import datetime, timedelta
+import zmq
+from txzmq import ZmqEndpoint, ZmqFactory, ZmqPullConnection
 import urllib2
 import json
 import cv2
@@ -82,7 +84,56 @@ class ServerFactory(protocol.ReconnectingClientFactory):
         
         self.dbpool = adbapi.ConnectionPool("sqlite3", self.images_db)        
 
+        #
+        # Setup the zmq socket used for receiving images.
+        #
+        zmq_factory = ZmqFactory()
+        endpoint = ZmqEndpoint('bind', 'tcp://*:8888')
+        self.zmq_socket = ZmqPullConnection(zmq_factory, endpoint)
+        self.zmq_socket.onPull = self.handleNewImg
 
+    def handleNewImg(self, new_img_message):
+        """Handle the new image zmq message."""
+        
+        new_img, img_data, flight_data = new_img_message
+        flight_data = json.loads(flight_data)
+        
+        #
+        # Set paths
+        #
+        new_data = os.path.splitext(new_img)[0]+'.json'
+        img_path = os.path.join(gs.IMAGES_FOLDER, new_img)
+        data_path = os.path.join(gs.IMAGES_FOLDER, new_data)
+        new_img_tn = '{}_tn{}'.format(*os.path.splitext(new_img))
+        img_tn_path = os.path.join(gs.IMAGES_FOLDER, new_img_tn)
+
+        #
+        # Save flight data
+        #
+        with open(data_path, 'wb') as f:
+            json.dump(flight_data, f)
+        
+        #
+        # Save image
+        #
+        with open(img_path, 'wb') as f:
+            f.write(img_data)
+        log.msg('Finished Downloading image {new_img}'.format(new_img=new_img))
+
+        #
+        # Resize a thumbnail.
+        #
+        img = cv2.imread(img_path)
+        r = 100.0 / img.shape[1]
+        dim = (100, int(img.shape[0] * r))
+        img_tn = cv2.resize(img, dim, interpolation = cv2.INTER_AREA)
+        cv2.imwrite(img_tn_path, img_tn)
+        
+        #
+        # Add the new image to the GUI
+        #
+        self.app._populateImagesList([[img_path, img_tn_path, data_path]])
+            
     def _db_cmd(self, cmd, params=()):
         log.msg('Creating deferred sqlite3 cmd: {cmd}, {params}'.format(cmd=cmd, params=params))
         return self.dbpool.runQuery(cmd, params)
@@ -278,7 +329,7 @@ def connect(app):
     
     if _server is not None:
         _server.stopTrying()
-        
+    
     _server = ServerFactory(app)
     reactor.connectTCP(
         _server_address['ip'],

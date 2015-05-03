@@ -5,7 +5,6 @@ import multiprocessing as mp
 import database as DB
 from datetime import datetime
 import global_settings as gs
-import PixHawk as PH
 import numpy as np
 import AUVSIcv
 import json
@@ -25,15 +24,6 @@ def tagValue(tag):
 
 
 def handleNewImage(img_path, timestamp):
-    #
-    # Create the image processing pipeline
-    #
-    d = threads.deferToThread(dispatchImgJob, img_path, timestamp)
-    d.addCallback(saveFlightData)
-    d.addCallback(DB.storeImg)
-
-
-def dispatchImgJob(img_path, timestamp):
     """Dispatch the image processing task to a process worker."""
     
     log.msg('Dispatching new image {img}'.format(img=img_path))
@@ -80,24 +70,6 @@ def processImg(img_path, timestamp):
     return resized_img_path, img.datetime, np.dot(AUVSIcv.global_settings.IMAGE_RESIZE_MATRIX, img.K)
 
 
-def saveFlightData(params):
-    
-    img_path, timestamp, K = params
-    
-    #
-    # Get the closest time stamp and save it with the image.
-    #
-    flight_data = PH.queryPHdata(timestamp)
-    flight_data['K']=K.tolist()
-    flight_data['resized_K'] = True
-    flight_data_path = os.path.splitext(img_path)[0]+'.json'
-    with open(flight_data_path, 'wb') as f:
-        json.dump(flight_data, f)
-    log.msg('Saving flight data to path {path}'.format(path=os.path.split(flight_data_path)[-1]))
-
-    return img_path, {}
-
-    
 def handleNewCrop(img_id, rect):
     """Handle a request for a crop."""
     

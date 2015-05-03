@@ -261,6 +261,7 @@ class GUIApp(App):
             os.makedirs(gs.AUVSI_BASE_FOLDER)
         
         f = DailyLogFile('server.log', self.config.get('Admin', 'logging path'))
+        log.addObserver(log.defaultObserver._emit)        
         log.startLogging(f)
         
         self.settings_cls = SettingsWithSidebar
