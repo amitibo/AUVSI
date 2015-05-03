@@ -9,6 +9,7 @@ except ImportError:
 import multiprocessing as mp
 import AUVSIcv
 import signal
+import shutil
 import shlex
 import json
 import time
@@ -51,22 +52,20 @@ class SimulationCamera(BaseCamera):
         """Inifinite shooting loop. To run on separate process."""
 
         base_path = os.environ['AUVSI_CV_DATA']
-        imgs_paths = sorted(glob.glob(os.path.join(base_path, '*.jpg')))
+        imgs_paths = sorted(glob.glob(os.path.join(base_path, 'renamed_images', '*.jpg')))
         img_index = 0
         while run.value == 1:
-            time.sleep(0.5)
+            time.sleep(1)
             
             #
             # Pick up an image from disk
             #
-            #img = AUVSIcv.Image(imgs_paths[img_index])
-            new_name = self._getName()
+            new_name = os.path.join(self.base_path, os.path.split(imgs_paths[img_index])[-1])
             print 'Capturing new image: {img_path} to path: {new_path}'.format(img_path=imgs_paths[img_index], new_path=new_name)            
-            os.rename(imgs_paths[img_index], new_name)
+            shutil.copyfile(imgs_paths[img_index], new_name)
             
             img_index += 1
             img_index = img_index % len(imgs_paths)
-            
             
             #
             # TODO:

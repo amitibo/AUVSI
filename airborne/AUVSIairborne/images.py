@@ -6,6 +6,7 @@ import database as DB
 from datetime import datetime
 import global_settings as gs
 import PixHawk as PH
+import numpy as np
 import AUVSIcv
 import json
 import time
@@ -92,6 +93,7 @@ def saveFlightData(params):
     flight_data_path = os.path.splitext(img_path)[0]+'.json'
     with open(flight_data_path, 'wb') as f:
         json.dump(flight_data, f)
+    log.msg('Saving flight data to path {path}'.format(path=os.path.split(flight_data_path)[-1]))
 
     return img_path, {}
 

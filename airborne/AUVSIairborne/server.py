@@ -184,7 +184,18 @@ class FileSystemWatcher(object):
             
     def OnChange(self, path):
         log.msg('Identified new image {img}'.format(img=path))
-        IM.handleNewImage(path, datetime.now().strftime("%Y_%m_%d_%H_%M_%S_%f"))
+        
+        #
+        # Check if the image is already renamed (which means that it is
+        # a simulation camera)
+        #
+        img_name = os.path.split(path)[-1]
+        try:
+            t = datetime.strptime(img_name[:-4], '%Y_%m_%d_%H_%M_%S_%f')
+        except:
+            t = datetime.now()
+
+        IM.handleNewImage(path, t.strftime("%Y_%m_%d_%H_%M_%S_%f"))
 
 
 def start_server(camera_type, simulate_pixhawk, port=8000):
