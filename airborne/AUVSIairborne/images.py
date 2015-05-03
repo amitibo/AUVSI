@@ -28,7 +28,8 @@ def handleNewImage(img_path, timestamp):
     
     log.msg('Dispatching new image {img}'.format(img=img_path))
     
-    return pool.apply(processImg, (img_path, timestamp))
+    #return pool.apply(processImg, (img_path, timestamp))
+    return processImg(img_path, timestamp)
 
 
 def processImg(img_path, timestamp):
@@ -93,7 +94,7 @@ def cropImage(img_path, rect):
 def initIM():
     global pool
     
-    pool = mp.Pool(2)
+    #pool = mp.Pool(2)
     
     if not os.path.exists(gs.RESIZED_IMAGES_FOLDER):
         os.makedirs(gs.RESIZED_IMAGES_FOLDER)

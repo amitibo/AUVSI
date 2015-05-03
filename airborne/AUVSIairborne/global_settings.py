@@ -1,10 +1,13 @@
 import os
 import warnings
+from datetime import datetime
+
+BASE_TIMESTAMP = '%Y_%m_%d_%H_%M_%S_%f'
 
 #
 # Paths and Folders
 #
-AUVSI_BASE_FOLDER = os.path.expanduser('~/.auvsi_airborne')
+AUVSI_BASE_FOLDER = os.path.join(os.path.expanduser('~/.auvsi_airborne'), datetime.now().strftime(BASE_TIMESTAMP))
 IMAGES_FOLDER = os.path.join(AUVSI_BASE_FOLDER, 'images')
 RENAMED_IMAGES_FOLDER = os.path.join(AUVSI_BASE_FOLDER, 'renamed_images')
 RESIZED_IMAGES_FOLDER = os.path.join(AUVSI_BASE_FOLDER, 'resized_images')

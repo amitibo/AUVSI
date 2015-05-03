@@ -136,7 +136,7 @@ class HTTPserverMain(Resource):
         return "<html><body>Welcome to the AUSVI drone!</body></html>"
 
 
-def saveFlightData(img_path, timestamp, K):
+def getFlightData(timestamp, K):
     
     #
     # Get the closest time stamp and save it with the image.
@@ -144,35 +144,50 @@ def saveFlightData(img_path, timestamp, K):
     flight_data = PH.queryPHdata(timestamp)
     flight_data['K'] = K.tolist()
     flight_data['resized_K'] = True
-    flight_data_path = os.path.splitext(img_path)[0]+'.json'
-    with open(flight_data_path, 'wb') as f:
-        json.dump(flight_data, f)
-    log.msg('Saving flight data to path {path}'.format(path=os.path.split(flight_data_path)[-1]))
     
     return flight_data
      
 
 def handleNewImage(path):
 
-    t = datetime.now()
+    current_time = datetime.now()
 
     try:
         #
         # Check if the image is already renamed (which means that it is
         # a simulation camera)
+        # NOTE:
+        # The new image name is always based on the current time. But
+        # in case its a simulation camera, the old image name is used
+        # as timestamp for detecting corresponding flight_data.
         #
         img_name = os.path.split(path)[-1]
-        t = datetime.strptime(img_name[:-4], '%Y_%m_%d_%H_%M_%S_%f')
+        img_time = datetime.strptime(img_name[:-4], gs.BASE_TIMESTAMP)
     except:
-        pass
+        img_time = current_time
+    
+    img_timestamp = img_time.strftime(gs.BASE_TIMESTAMP)
+    current_timestamp = current_time.strftime(gs.BASE_TIMESTAMP)
     
     #
     # Handle the new image
     #
-    resized_img_path, timestamp, K = IM.handleNewImage(path, t.strftime("%Y_%m_%d_%H_%M_%S_%f"))
+    resized_img_path, timestamp, K = IM.handleNewImage(path, current_timestamp)
     resized_img_name = os.path.split(resized_img_path)[-1]
-    flight_data = saveFlightData(resized_img_path, timestamp, K)
-    DB.storeImg(resized_img_path)
+    
+    #
+    # Get and save the flight data.
+    #
+    flight_data = getFlightData(img_timestamp, K)    
+    flight_data_path = os.path.splitext(resized_img_path)[0]+'.json'
+    with open(flight_data_path, 'wb') as f:
+        json.dump(flight_data, f)
+    log.msg('Saving flight data to path {path}'.format(path=os.path.split(flight_data_path)[-1]))
+    
+    #
+    # Store in the database.
+    #
+    DB.storeImg(resized_img_path, flight_data_path)
     
     #
     # Send the new image and flight_data
@@ -241,7 +256,6 @@ class FileSystemWatcher(object):
         log.msg('Identified new image {img}'.format(img=path))
         
         d = threads.deferToThread(handleNewImage, path)
-
 
 
 def start_server(camera_type, simulate_pixhawk, port=8000):

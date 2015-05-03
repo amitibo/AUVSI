@@ -12,7 +12,7 @@ import json
 import os
 
 
-TIMESTAMP_SIGNATURE = "%Y_%m_%d_%H_%M_%S_%f"
+TIMESTAMP_SIGNATURE = gs.BASE_TIMESTAMP
 
 
 def wait_heartbeat(m):

@@ -31,7 +31,7 @@ class BaseCamera(object):
 
     def _getName(self):
         filename = '{formated_time}.jpg'.format(
-            formated_time=datetime.now().strftime("%Y_%m_%d_%H_%M_%S_%f")
+            formated_time=datetime.now().strftime(gs.BASE_TIMESTAMP)
         )
         return os.path.join(self.base_path, filename)
 

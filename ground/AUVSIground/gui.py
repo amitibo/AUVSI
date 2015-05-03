@@ -260,7 +260,7 @@ class GUIApp(App):
         if not os.path.exists(gs.AUVSI_BASE_FOLDER):
             os.makedirs(gs.AUVSI_BASE_FOLDER)
         
-        f = DailyLogFile('server.log', self.config.get('Admin', 'logging path'))
+        f = DailyLogFile('server.log', gs.AUVSI_BASE_FOLDER)
         log.addObserver(log.defaultObserver._emit)        
         log.startLogging(f)
         
