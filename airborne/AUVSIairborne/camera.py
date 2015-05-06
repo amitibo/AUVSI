@@ -20,7 +20,7 @@ import os
 class BaseCamera(object):
     """Abstract class for a camera, not to be used directly."""
 
-    def __init__(self, zoom=45, shutter=2000, ISO=100, aperture=5):
+    def __init__(self, zoom=45, shutter=2000, ISO=100, aperture=4):
 
         self.base_path = gs.IMAGES_FOLDER
         if not os.path.exists(self.base_path):
@@ -145,7 +145,7 @@ def kill(proc_pid):
 
 class CanonCamera(BaseCamera):
     def __init__(self, *params, **kwds):
-
+         
         rec_cmd = 'rec'
         init_cmd = """\"luar enter_alt();
             call_event_proc('SS.Create');
@@ -154,9 +154,10 @@ class CanonCamera(BaseCamera):
             set_focus(65000);
             set_prop(272,0);
             set_prop(105,3);
+            
             set_zoom_speed(1);
             set_lcd_display(0);\""""
-
+# set_prop(8,0);
         self._blocking_cmds(rec_cmd, init_cmd)
         self._shooting_proc = None
         self._set_zoom = True
@@ -194,13 +195,13 @@ class CanonCamera(BaseCamera):
             self._set_zoom = False
 
     def startShooting(self):
-        shoot_cmd = """\"remoteshoot {local_folder} -tv=1/{shutter} -sv={ISO} -av={aperture} -cont=9000\"""".format(
+        shoot_cmd = """\"remoteshoot {local_folder} -tv=1/{shutter} -av={aperture}  -sv={ISO} -cont=9000\"""".format(
             local_folder=gs.IMAGES_FOLDER,
             shutter=self.shutter,
             ISO=self.ISO,
             aperture=self.aperture
         )
-
+ 
         self._shooting_proc = self._nonblocking_cmds(shoot_cmd)
 
     def stopShooting(self):
