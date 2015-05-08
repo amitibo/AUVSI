@@ -1,1 +1,3 @@
-from .server import start_server
+
+class UnknownCommand(Exception):
+    pass

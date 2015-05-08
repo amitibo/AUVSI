@@ -212,3 +212,34 @@ class CanonCamera(BaseCamera):
         self._shooting_proc = None
 
         self._blocking_cmds('killscript')
+
+
+class CameraController(object):
+    def __init__(self, camera):
+        self.camera = camera
+
+    def __call__(self, cmd):
+        camera = self.camera
+
+        if "start" == cmd:
+                camera.startShooting()
+                log.msg("Start shooting!")
+
+        elif "stop" == cmd:
+            camera.stopShooting()
+            log.msg("Stop shooting!")
+
+        elif cmd.startswith("set"):
+            #TODO set parameters isn't working for each parameter,
+            # check the camera class
+            words = cmd.split()
+            try:
+               params = {words[i]: words[i+1] for i in range(1, len(words), 2)}
+            except IndexError as e:
+                log.msg("Parameters need to be in pairs <param> <data>: "
+                        "'{}'".format(cmd))
+                log.err(e)
+                return
+
+            camera.setParams(params)
+            log.msg("Sets {}".format(str(params)))
