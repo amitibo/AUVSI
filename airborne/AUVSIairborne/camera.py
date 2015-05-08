@@ -15,7 +15,7 @@ import time
 import glob
 import cv2
 import os
-
+import shutil
 
 class BaseCamera(object):
     """Abstract class for a camera, not to be used directly."""
@@ -50,7 +50,7 @@ class SimulationCamera(BaseCamera):
     def _shootingLoop(self, run):
         """Inifinite shooting loop. To run on separate process."""
 
-        base_path = os.environ['AUVSI_CV_DATA']
+        base_path = os.path.join(gs.SIMULATION_DATA, 'images')
         imgs_paths = sorted(glob.glob(os.path.join(base_path, '*.jpg')))
         img_index = 0
         while run.value == 1:
@@ -62,7 +62,7 @@ class SimulationCamera(BaseCamera):
             #img = AUVSIcv.Image(imgs_paths[img_index])
             new_name = self._getName()
             print 'Capturing new image: {img_path} to path: {new_path}'.format(img_path=imgs_paths[img_index], new_path=new_name)            
-            os.rename(imgs_paths[img_index], new_name)
+            shutil.copyfile(imgs_paths[img_index], new_name)
             
             img_index += 1
             img_index = img_index % len(imgs_paths)

@@ -70,7 +70,7 @@ class ImageAcquirer(object):
         #STUB
         #TODO implement
 
-        # meta_data = self.data_retriever()
+        meta_data = self.data_retriever(image_name)
 
         log.msg("Acquired data for image '{}'".format(image_name))
 
@@ -97,8 +97,7 @@ class ImageAcquirer(object):
         return d
 
 
-def pix_hawk_data_retriever():
-    pass
+
 
 if __name__ == "__main__":
     from sys import stdout

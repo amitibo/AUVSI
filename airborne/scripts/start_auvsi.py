@@ -11,7 +11,22 @@ import AUVSIairborne.global_settings as settings
 from AUVSIairborne.image_acquisition import ImageAcquirer
 from AUVSIairborne.services.system_control import ReflectionController
 from AUVSIairborne import global_settings
+from AUVSIairborne.PixHawk import initPixHawkSimulation
 
+
+def pixhawk_data_retriever(image_name):
+    import re
+    import json
+    import os
+    from AUVSIairborne.global_settings import IMAGES_DATA
+    from AUVSIairborne.PixHawk import queryPHdata
+
+    date_regex = "[0-9]+_[0-9]+_[0-9]+_[0-9]+_[0-9]+_[0-9]+_[0-9]+"
+    time = re.search(date_regex, image_name).group()
+
+    with open(os.path.join(IMAGES_DATA, time + ".json"), 'wb') as data_file:
+        json.dump(queryPHdata(time), data_file)
+        log.msg("New data file: " + data_file.name)
 
 if __name__ == '__main__':
 
@@ -43,15 +58,11 @@ if __name__ == '__main__':
         ftp_pass=global_settings.FTP_CREDENTIAL['pass']
     ))
 
-    def dummy_data(x):
-        log.msg("Data retrieved")
-        return "DATA!"
-
     acquirer_controller = ReflectionController(ImageAcquirer(
         dir_path=settings.IMAGES_FOLDER,
         poll_interval=1,
         image_handler_path=args.handler_path,
-        data_retriever=dummy_data)
+        data_retriever=pixhawk_data_retriever)
     )
 
     control_factory = SystemControlFactory()
@@ -61,5 +72,8 @@ if __name__ == '__main__':
     control_factory.subscribe_subsystem("ftp", image_sending_controller)
 
     log.startLogging(stdout)
+
+    initPixHawkSimulation()
+
     reactor.listenTCP(args.port, control_factory)
     reactor.run()
