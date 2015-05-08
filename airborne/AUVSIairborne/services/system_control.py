@@ -35,6 +35,8 @@ class SystemControlProtocol(LineReceiver):
             self.transport.loseConnection()
             return
         self.sendLine("Welcome to system control channel.")
+        subsystems_str = str(self.factory.subsystems.keys())
+        self.sendLine("Connected Systems: " + subsystems_str)
 
     def lineReceived(self, line):
         line = str.join(" ", line.split())

@@ -15,7 +15,7 @@ DB_PATH = os.path.join(DB_FOLDER, 'auvsi.db')
 #
 # Ftp connection details
 #
-FTP = {'user': 'auvsi', 'pass': '1234'}
+FTP_CREDENTIAL = {'user': 'auvsi', 'pass': '1234'}
 
 #
 # Performance

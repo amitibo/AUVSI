@@ -10,6 +10,7 @@ from AUVSIairborne.services.directory_synchronization_ftp import \
 import AUVSIairborne.global_settings as settings
 from AUVSIairborne.image_acquisition import ImageAcquirer
 from AUVSIairborne.services.system_control import ReflectionController
+from AUVSIairborne import global_settings
 
 
 if __name__ == '__main__':
@@ -35,10 +36,11 @@ if __name__ == '__main__':
 
     image_sending_controller = ReflectionController(DirSyncClientFactory(
         dir_to_sync=settings.RESIZED_IMAGES_FOLDER,
+        dest_dir="resized",
         sync_interval=1,
         reactor_=reactor,
-        ftp_user='auvsi',
-        ftp_pass='1234'
+        ftp_user=global_settings.FTP_CREDENTIAL['user'],
+        ftp_pass=global_settings.FTP_CREDENTIAL['pass']
     ))
 
     def dummy_data(x):

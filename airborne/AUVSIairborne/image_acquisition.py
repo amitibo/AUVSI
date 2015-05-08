@@ -97,6 +97,9 @@ class ImageAcquirer(object):
         return d
 
 
+def pix_hawk_data_retriever():
+    pass
+
 if __name__ == "__main__":
     from sys import stdout
     from time import sleep

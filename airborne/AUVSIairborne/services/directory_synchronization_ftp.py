@@ -40,10 +40,11 @@ class DirSyncClientFactory(ReconnectingClientFactory):
     initialDelay = 2
 
     # reactor_ my be extracted to controller
-    def __init__(self, dir_to_sync, sync_interval, reactor_,
+    def __init__(self, dir_to_sync, dest_dir, sync_interval, reactor_,
                  ftp_user='anonymous', ftp_pass='Ori@auvsi.technion'):
 
         self.dir_to_sync = dir_to_sync
+        self.dest_dir = dest_dir
         self.file_scheduler = FileScheduler(dir_to_sync)
 
         self.sync_interval = sync_interval
@@ -66,7 +67,8 @@ class DirSyncClientFactory(ReconnectingClientFactory):
         self.resetDelay()
 
         ftp_client = FTPClient(username=self.user, password=self.password)
-
+        ftp_client.makeDirectory(self.dest_dir)
+        ftp_client.cwd(self.dest_dir)
         self.sync_task = task.LoopingCall(sync_files,
                                           ftp_client=ftp_client,
                                           scheduler=self.file_scheduler)
