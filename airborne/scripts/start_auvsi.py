@@ -28,18 +28,23 @@ def pixhawk_data_retriever(image_name):
         json.dump(queryPHdata(time), data_file)
         log.msg("New data file: " + data_file.name)
 
-if __name__ == '__main__':
 
+def parse_commandline_args():
+    global parser, args
     parser = argparse.ArgumentParser(description="Start the airborne server"
                                                  " - Oris' version.")
-
     parser.add_argument('--port', type=int, default=8844,
                         help='Control port(default=8844).')
     parser.add_argument('--camera', type=str, default="cannon",
                         help="The camera to use: cannon(default), simulation")
     parser.add_argument('--handler_path', type=str,
                         help='path to the image handler file')
-    args = parser.parse_args()
+    return parser.parse_args()
+
+
+if __name__ == '__main__':
+
+    args = parse_commandline_args()
 
     camera = None
     if args.camera == "cannon":
@@ -55,8 +60,15 @@ if __name__ == '__main__':
         sync_interval=1,
         reactor_=reactor,
         ftp_user=global_settings.FTP_CREDENTIAL['user'],
-        ftp_pass=global_settings.FTP_CREDENTIAL['pass']
-    ))
+        ftp_pass=global_settings.FTP_CREDENTIAL['pass']))
+
+    data_sending_controller = ReflectionController(DirSyncClientFactory(
+        dir_to_sync=settings.IMAGES_DATA,
+        dest_dir="images_data",
+        sync_interval=1,
+        reactor_=reactor,
+        ftp_user=global_settings.FTP_CREDENTIAL['user'],
+        ftp_pass=global_settings.FTP_CREDENTIAL['pass']))
 
     acquirer_controller = ReflectionController(ImageAcquirer(
         dir_path=settings.IMAGES_FOLDER,
@@ -69,7 +81,10 @@ if __name__ == '__main__':
     control_factory.subscribe_subsystem("camera", camera_controller)
     control_factory.subscribe_subsystem("acquirer",
                                         acquirer_controller)
-    control_factory.subscribe_subsystem("ftp", image_sending_controller)
+    control_factory.subscribe_subsystem("resize_download",
+                                        image_sending_controller)
+    control_factory.subscribe_subsystem("data_download",
+                                        data_sending_controller)
 
     log.startLogging(stdout)
 
