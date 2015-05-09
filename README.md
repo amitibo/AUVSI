@@ -83,5 +83,35 @@ Setup
 4. Download some drone images (size 4000x3000) to some folder and create the 'AUVSI_CV_DATA'
    environment variable and set it to this folder path. This is used by the image_processing
    project and the simulation camera.
-  
-  
+
+Running the Target ID Code:
+-----
+Other than the regular libraries, you're required to install the following:
+a. Webcolors (version 1.5).
+b. pytesseract (Currently not used but this library appears at the start of the code so either delete that code line or download the library).
+
+To use the Target ID library, simply add the line "from AUVSIcv import Target_ID"
+The function you require is as follows:
+
+Is_Target,Possible_Target_Shape,Target_Color,Possible_Target_Letter,Letter_Color,Letter_Angle = Target_ID.Target_Flow(Image,Shape_Name_DB_Path,Shape_DB_Path,Letter_Name_DB_Path,Letter_DB_Path)
+
+Input:
+Image - A crop
+Shape_Name_DB_Path - The path to the Shape Name Database
+Shape_DB_Path - The path to the Shape Database
+Letter_Name_DB_Path - The path to the Letter Name Database
+Letter_DB_Path - The path to the Letter Database
+
+Output:
+Is_Target - String. Specifies if crop contains a target
+Possible_Target_Shape - String. Specifies the shape of the target
+Target_Color - String. Specifies the color of the target
+Possible_Target_Letter - String. Specifies the letter in the target
+Letter_Color - String. Specifies the color of the letter
+Letter_Angle - Float. Specifies the angle of the letter relative to the image.
+
+So where do you get the database files?
+I've uploaded a code which generates the database files from folders containing images of shapes & letters, all uploaded to bitbucket.
+
+Find the script, open it and set the path to the folders containing the images, then run the script.
+For either letters or targets, 2 files will be generated. The paths to these files are the paths you need to give the code.
