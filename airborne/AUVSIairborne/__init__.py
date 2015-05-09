@@ -26,3 +26,12 @@ try:
 except:
     pass
 
+try:
+    os.makedirs(gs.CROPS_FOLDER)
+except:
+    pass
+
+try:
+    os.makedirs(gs.IMAGES_RENAMED)
+except:
+    pass

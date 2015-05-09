@@ -12,6 +12,7 @@ from AUVSIairborne.image_acquisition import ImageAcquirer
 from AUVSIairborne.services.system_control import ReflectionController
 from AUVSIairborne import global_settings
 from AUVSIairborne.PixHawk import initPixHawkSimulation
+from AUVSIairborne.services.crop import CropImageController
 
 
 def pixhawk_data_retriever(image_name):
@@ -70,12 +71,23 @@ if __name__ == '__main__':
         ftp_user=global_settings.FTP_CREDENTIAL['user'],
         ftp_pass=global_settings.FTP_CREDENTIAL['pass']))
 
+    crop_sending_controller = ReflectionController(DirSyncClientFactory(
+        dir_to_sync=settings.CROPS_FOLDER,
+        dest_dir="crops",
+        sync_interval=1,
+        reactor_=reactor,
+        ftp_user=global_settings.FTP_CREDENTIAL['user'],
+        ftp_pass=global_settings.FTP_CREDENTIAL['pass']))
+
     acquirer_controller = ReflectionController(ImageAcquirer(
         dir_path=settings.IMAGES_FOLDER,
         poll_interval=1,
         image_handler_path=args.handler_path,
-        data_retriever=pixhawk_data_retriever)
-    )
+        data_retriever=pixhawk_data_retriever))
+
+    crop_controller = CropImageController(
+        images_folder=global_settings.IMAGES_RENAMED,
+        crops_folder=global_settings.CROPS_FOLDER)
 
     control_factory = SystemControlFactory()
     control_factory.subscribe_subsystem("camera", camera_controller)
@@ -85,6 +97,10 @@ if __name__ == '__main__':
                                         image_sending_controller)
     control_factory.subscribe_subsystem("data_download",
                                         data_sending_controller)
+    control_factory.subscribe_subsystem("crops_download",
+                                        crop_sending_controller)
+    control_factory.subscribe_subsystem("crop", crop_controller)
+
 
     log.startLogging(stdout)
 

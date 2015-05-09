@@ -6,7 +6,9 @@ import warnings
 #
 AUVSI_BASE_FOLDER = os.path.expanduser('~/.auvsi_airborne')
 IMAGES_FOLDER = os.path.join(AUVSI_BASE_FOLDER, 'images')
+IMAGES_RENAMED = os.path.join(AUVSI_BASE_FOLDER, 'renamed_images')
 IMAGES_DATA = os.path.join(AUVSI_BASE_FOLDER, 'images_data')
+CROPS_FOLDER = os.path.join(AUVSI_BASE_FOLDER, 'crops')
 # RENAMED_IMAGES_FOLDER = os.path.join(AUVSI_BASE_FOLDER, 'renamed_images')
 RESIZED_IMAGES_FOLDER = os.path.join(AUVSI_BASE_FOLDER, 'resized_images')
 FLIGHT_DATA_FOLDER = os.path.join(AUVSI_BASE_FOLDER, 'flight_data')

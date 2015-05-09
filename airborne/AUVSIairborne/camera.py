@@ -29,7 +29,7 @@ class BaseCamera(object):
         self.setParams(zoom=zoom, shutter=shutter, ISO=ISO, aperture=aperture)
 
     def _getName(self):
-        filename = '{formated_time}.jpg'.format(
+        filename = 'ZZ{formated_time}.jpg'.format(
             formated_time=datetime.now().strftime("%Y_%m_%d_%H_%M_%S_%f")
         )
         return os.path.join(self.base_path, filename)
