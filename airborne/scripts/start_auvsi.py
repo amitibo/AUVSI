@@ -7,7 +7,6 @@ from sys import stdout
 from twisted.internet import reactor
 from AUVSIairborne.services.directory_synchronization_ftp import \
     DirSyncClientFactory
-import AUVSIairborne.global_settings as settings
 from AUVSIairborne.image_acquisition import ImageAcquirer
 from AUVSIairborne.services.system_control import ReflectionController
 from AUVSIairborne import global_settings
@@ -56,7 +55,7 @@ if __name__ == '__main__':
     camera_controller = CameraController(camera)
 
     image_sending_controller = ReflectionController(DirSyncClientFactory(
-        dir_to_sync=settings.RESIZED_IMAGES_FOLDER,
+        dir_to_sync=global_settings.RESIZED_IMAGES_FOLDER,
         dest_dir="resized",
         sync_interval=1,
         reactor_=reactor,
@@ -64,7 +63,7 @@ if __name__ == '__main__':
         ftp_pass=global_settings.FTP_CREDENTIAL['pass']))
 
     data_sending_controller = ReflectionController(DirSyncClientFactory(
-        dir_to_sync=settings.IMAGES_DATA,
+        dir_to_sync=global_settings.IMAGES_DATA,
         dest_dir="images_data",
         sync_interval=1,
         reactor_=reactor,
@@ -72,7 +71,7 @@ if __name__ == '__main__':
         ftp_pass=global_settings.FTP_CREDENTIAL['pass']))
 
     crop_sending_controller = ReflectionController(DirSyncClientFactory(
-        dir_to_sync=settings.CROPS_FOLDER,
+        dir_to_sync=global_settings.CROPS_FOLDER,
         dest_dir="crops",
         sync_interval=1,
         reactor_=reactor,
@@ -80,7 +79,7 @@ if __name__ == '__main__':
         ftp_pass=global_settings.FTP_CREDENTIAL['pass']))
 
     acquirer_controller = ReflectionController(ImageAcquirer(
-        dir_path=settings.IMAGES_FOLDER,
+        dir_path= global_settings.IMAGES_FOLDER,
         poll_interval=1,
         image_handler_path=args.handler_path,
         data_retriever=pixhawk_data_retriever))
