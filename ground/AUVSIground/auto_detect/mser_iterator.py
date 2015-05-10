@@ -1,75 +1,73 @@
 __author__ = 'Ori'
 
 from AUVSIcv.Mser_Color_Scaled_Down import MSER_Primary
+from AUVSIairborne.file_scheduler import FileScheduler
 import os
 import cv2
 import json
 import bisect
+from time import sleep
+import socket
 
 
-class MserIterator(object):
+class MserRuner(object):
     def __init__(self, images_folder, data_folder, scale_down):
-        self.images_folder = images_folder
+        self.image_scheduler = FileScheduler(images_folder)
         self.data_folder = data_folder
         self.scale_down = scale_down
-        self.current_timestamp = None
 
-    def __iter__(self):
-        return self
-
-    def _get_timestamps_list(self):
-        """
-        :return: a list of timestamps for the currently accessible images
-        """
-        file_list = os.listdir(self.images_folder)
-        return sorted([f.split('.')[0] for f in file_list])
-
-    def next(self):
-        """
-        :return: (image_timestamp, mser_result)
-        """
-        timestamps = self._get_timestamps_list()
-        if not self.current_timestamp:
+    def run(self):
+        for f in self.image_scheduler:
             try:
-                self.current_timestamp = timestamps[0]
-                return self.current_timestamp, self._mser_current()
-            except IndexError:
-                raise StopIteration()
+                timestamp, _, extension = f.split('.')
+            except ValueError:
+                continue
 
-        current_index = timestamps.index(self.current_timestamp)
-        try:
-            self.current_timestamp = timestamps[current_index + 1]
-        except IndexError:
-            raise StopIteration()
+            if extension != "jpg":
+                continue
 
-        try:
-            mser_result = self._mser_current()
-        except cv2.error:
-            mser_result = -1
+            image_path = os.path.join(self.image_scheduler.dir_path, f)
+            image = cv2.imread(image_path)
 
-        return self.current_timestamp, mser_result
+            with open(self._data_path(timestamp)) as j:
+                image_info = json.load(j)
 
-    @property
-    def _current_image_path(self):
-        image_name = self.current_timestamp + '.resized.jpg'
-        return os.path.join(self.images_folder, image_name)
+            image_info['Focal_Length'] = 5
+            image_info['Flight_Altitude'] = image_info['relative_alt']
+            sleep(0.5)
+            return f, MSER_Primary(image, image_info, self.scale_down, None)
 
-    @property
-    def _current_data_path(self):
+    def _data_path(self, timestamp):
         data_list = sorted(os.listdir(self.data_folder))
-        data_index = bisect.bisect(data_list, self.current_timestamp)
+        data_index = bisect.bisect(data_list, timestamp)
         r_index = max(data_index-1, 0)
         data_name = data_list[r_index]
 
         return os.path.join(self.data_folder, data_name)
 
-    def _mser_current(self):
-        image = cv2.imread(self._current_image_path)
 
-        with open(self._current_data_path) as f:
-            image_info = json.load(f)
+class CropsRetriver(object):
+    """
+    This object manages the download of full resolution crops
+    from the aerial system.
+    """
+    def __init__(self, dest_dir, server):
+        self.dest_dir = dest_dir
+        self.server = server
 
-        image_info['Focal_Length'] = 5
-        image_info['Flight_Altitude'] = image_info['relative_alt']
-        return MSER_Primary(image, image_info, 0.25, None)
+    def get_crop(self, timestamp, area):
+        """
+        Sends request for crop
+        :param timestamp: the image timestamp
+        :param area: dictionary with keys "x_max", "x_min", "y_max", "y_min"
+        :return:
+        """
+        s = socket.socket()
+        s.connect((self.server, 8844))
 
+        cmd = "crop {timestamp} {x_max} {x_min} {y_max} {y_min}".format(
+            timestamp=timestamp, **area)
+
+        s.send(cmd)
+        s.recv(1)
+        s.close()
