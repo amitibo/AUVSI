@@ -9,14 +9,13 @@ except ImportError:
 import multiprocessing as mp
 import AUVSIcv
 import signal
-import shutil
 import shlex
 import json
 import time
 import glob
 import cv2
 import os
-
+import shutil
 
 class BaseCamera(object):
     """Abstract class for a camera, not to be used directly."""
@@ -30,8 +29,8 @@ class BaseCamera(object):
         self.setParams(zoom=zoom, shutter=shutter, ISO=ISO, aperture=aperture)
 
     def _getName(self):
-        filename = '{formated_time}.jpg'.format(
-            formated_time=datetime.now().strftime(gs.BASE_TIMESTAMP)
+        filename = 'ZZ{formated_time}.jpg'.format(
+            formated_time=datetime.now().strftime("%Y_%m_%d_%H_%M_%S_%f")
         )
         return os.path.join(self.base_path, filename)
 
@@ -51,21 +50,23 @@ class SimulationCamera(BaseCamera):
     def _shootingLoop(self, run):
         """Inifinite shooting loop. To run on separate process."""
 
-        base_path = os.environ['AUVSI_CV_DATA']
-        imgs_paths = sorted(glob.glob(os.path.join(base_path, 'renamed_images', '*.jpg')))
+        base_path = os.path.join(gs.SIMULATION_DATA, 'images')
+        imgs_paths = sorted(glob.glob(os.path.join(base_path, '*.jpg')))
         img_index = 0
         while run.value == 1:
-            time.sleep(1)
+            time.sleep(0.5)
             
             #
             # Pick up an image from disk
             #
-            new_name = os.path.join(self.base_path, os.path.split(imgs_paths[img_index])[-1])
+            #img = AUVSIcv.Image(imgs_paths[img_index])
+            new_name = self._getName()
             print 'Capturing new image: {img_path} to path: {new_path}'.format(img_path=imgs_paths[img_index], new_path=new_name)            
             shutil.copyfile(imgs_paths[img_index], new_name)
             
             img_index += 1
             img_index = img_index % len(imgs_paths)
+            
             
             #
             # TODO:
@@ -211,6 +212,8 @@ class CanonCamera(BaseCamera):
         self._shooting_proc = None
 
         self._blocking_cmds('killscript')
+
+
 class CameraController(object):
     def __init__(self, camera):
         self.camera = camera
