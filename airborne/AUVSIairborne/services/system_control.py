@@ -76,7 +76,7 @@ class SystemControlProtocol(LineReceiver):
 
 class SystemControlFactory(Factory):
     def __init__(self):
-        self.connectionsPool = 1
+        self.connectionsPool = 3
         self.subsystems = {}
 
     def buildProtocol(self, addr):

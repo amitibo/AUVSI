@@ -18,6 +18,7 @@ class CropImageController(object):
         :return: None
         """
 
+        log.msg("Croper got command: {}".format(cmd))
         area = {}
         try:
             timestamp, area['x_max'], area['x_min'],\

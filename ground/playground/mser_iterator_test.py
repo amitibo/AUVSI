@@ -23,17 +23,22 @@ runer = MserRuner(r"C:\Users\Ori\ftp_playground\resized",
 croper = CropsRetriver(None, 'localhost')
 
 while True:
-    timestamp, res = runer.run()
-    print(timestamp)
-    if res == -1:
-        continue
 
-    for row in res:
-        area = {"x_max": row[2],
-                "x_min": row[3],
-                "y_max": row[4],
-                "y_min": row[5]}
+    try:
+        timestamp, res = runer.run()
+        print(timestamp)
 
-        croper.get_crop(timestamp, area)
+        if res == -1:
+            continue
 
-    sleep(0.5)
+        for row in res:
+            area = {"x_max": row[2],
+                    "x_min": row[3],
+                    "y_max": row[4],
+                    "y_min": row[5]}
+
+            croper.get_crop(timestamp, area)
+    except TypeError:
+        pass
+    finally:
+        sleep(0.5)

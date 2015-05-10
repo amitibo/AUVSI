@@ -7,7 +7,47 @@ import cv2
 import json
 import bisect
 from time import sleep
-import socket
+import telnetlib
+
+
+class CvRuner(object):
+    def __init__(self, images_folder, data_folder,
+                 scale_down, server='localhost'):
+        self.mser = MserRuner(images_folder, data_folder, scale_down)
+        self.croper = CropsRetriver(None, server)
+
+    def _get_suspect_crops(self):
+        while True:
+            try:
+                self._get_crops_one_image()
+            except TypeError:
+                pass
+            finally:
+                sleep(0.5)
+
+    def _get_crops_one_image(self):
+        timestamp, res = self.mser.run()
+        area_list = CvRuner._mser_to_area(res)
+
+        for area in area_list:
+            self.croper.get_crop(timestamp, area)
+
+    @staticmethod
+    def _mser_to_area(mser_results):
+        """
+        converts the mser results matrix to an area dictionary
+        """
+        area_list = []
+        try:
+            for row in mser_results:
+                area_list.append({"x_max": row[2],
+                            "x_min": row[3],
+                            "y_max": row[4],
+                            "y_min": row[5]})
+        except TypeError:
+            return None
+
+        return area_list
 
 
 class MserRuner(object):
@@ -34,8 +74,8 @@ class MserRuner(object):
 
             image_info['Focal_Length'] = 5
             image_info['Flight_Altitude'] = image_info['relative_alt']
-            sleep(0.5)
-            return f, MSER_Primary(image, image_info, self.scale_down, None)
+            sleep(1)
+            return timestamp, MSER_Primary(image, image_info, self.scale_down, None)
 
     def _data_path(self, timestamp):
         data_list = sorted(os.listdir(self.data_folder))
@@ -62,12 +102,17 @@ class CropsRetriver(object):
         :param area: dictionary with keys "x_max", "x_min", "y_max", "y_min"
         :return:
         """
-        s = socket.socket()
-        s.connect((self.server, 8844))
+        delimiter = b'\r\n'
+
+        tl = telnetlib.Telnet(host=self.server, port=8844)
+
+        area = {key: int(area[key]) for key in area}
 
         cmd = "crop {timestamp} {x_max} {x_min} {y_max} {y_min}".format(
             timestamp=timestamp, **area)
 
-        s.send(cmd)
-        s.recv(1)
-        s.close()
+
+        print(cmd)
+        tl.write(cmd + delimiter)
+        tl.read_until("More")
+        tl.close()

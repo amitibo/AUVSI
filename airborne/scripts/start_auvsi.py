@@ -102,6 +102,10 @@ if __name__ == '__main__':
 
     log.startLogging(stdout)
 
+    image_sending_controller.controlled_obj.connect(ip='localhost')
+    data_sending_controller.controlled_obj.connect(ip='localhost')
+    crop_sending_controller.controlled_obj.connect(ip='localhost')
+
     acquirer.start()
     initPixHawkSimulation()
 
