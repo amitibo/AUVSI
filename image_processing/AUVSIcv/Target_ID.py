@@ -348,13 +348,15 @@ def Letter_Extractor(Image,Contours,Letter_Name_DB_Path,Letter_DB_Path,Letter_Co
     #qr.decode(Image)
     #Code = qr.data
     #return Code
+
+
 def Target_Flow (Image,Shape_Name_DB_Path,Shape_DB_Path,Letter_Name_DB_Path,Letter_DB_Path):
     #This function is for the main target ID flow!
     
     #Extract primary contour from image
     Contours,Error_Code = Contour_Extractor_2(Image)
     if (Error_Code == -1):
-        return 'Not a target\\Crop too noisy','NAN',-1,'NAN',-1,-1
+        return None
     
     #Extract target shape
     Possible_Target_Shape,Shape_Corr_Value = Target_Shape_Extractor(Image,Contours,Shape_Name_DB_Path,Shape_DB_Path)
@@ -365,8 +367,12 @@ def Target_Flow (Image,Shape_Name_DB_Path,Shape_DB_Path,Letter_Name_DB_Path,Lett
     #Extract letter shape & angle
     Possible_Target_Letter,Letter_Corr_Value,Letter_Angle = Letter_Extractor(Image,Contours,Letter_Name_DB_Path,Letter_DB_Path,Letter_Color)
 
-    return 'Is Target',Possible_Target_Shape,Target_Color_Name,Possible_Target_Letter,Letter_Color_Name,Letter_Angle
-    
+    return {'is target': True,
+            'shape': Possible_Target_Shape,
+            'shape color': Target_Color_Name,
+            'letter': Possible_Target_Letter,
+            'letter color': Letter_Color_Name,
+            'letter angle': Letter_Angle}
 
 
 #BUGS:
