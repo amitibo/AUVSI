@@ -1,6 +1,6 @@
 __author__ = 'Ori'
 
-from AUVSIground.auto_detect.mser_iterator import MserRuner, CropsRetriver
+from AUVSIground.auto_detect.classification_runners import MserRunner, CropsRetriver
 from time import sleep
 
 #
@@ -17,7 +17,7 @@ from time import sleep
 #
 #     sleep(2)
 
-runer = MserRuner(r"C:\Users\Ori\ftp_playground\resized",
+runer = MserRunner(r"C:\Users\Ori\ftp_playground\resized",
                   r"C:\Users\Ori\ftp_playground\images_data",
                   0.25)
 croper = CropsRetriver(None, 'localhost')
@@ -25,7 +25,7 @@ croper = CropsRetriver(None, 'localhost')
 while True:
 
     try:
-        timestamp, res = runer.run()
+        timestamp, res = runer.mser_one_image()
         print(timestamp)
 
         if res == -1:

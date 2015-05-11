@@ -4,8 +4,9 @@ from scipy import stats
 from scipy import misc
 import cv2
 import math
+import cmath
 from numpy import unravel_index
-import  matplotlib.pyplot as plt
+import matplotlib.pyplot as plt
 from pytesseract import image_to_string
 from PIL import Image as Im
 from scipy import ndimage
@@ -372,7 +373,7 @@ def Target_Flow (Image,Shape_Name_DB_Path,Shape_DB_Path,Letter_Name_DB_Path,Lett
             'shape color': Target_Color_Name,
             'letter': Possible_Target_Letter,
             'letter color': Letter_Color_Name,
-            'letter angle': Letter_Angle}
+            'letter angle': cmath.phase(Letter_Angle)}
 
 
 #BUGS:

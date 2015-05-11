@@ -8,13 +8,44 @@ import json
 import bisect
 from time import sleep
 import telnetlib
+from AUVSIcv import global_settings
+import multiprocessing
+from AUVSIcv.Target_ID import Target_Flow
 
 
-class CvRuner(object):
-    def __init__(self, images_folder, data_folder,
-                 scale_down, server='localhost'):
-        self.mser = MserRuner(images_folder, data_folder, scale_down)
-        self.croper = CropsRetriver(None, server)
+class CvRunner(object):
+    def __init__(self, images_folder, data_folder, crops_folder,
+                 results_dir, scale_down, server='localhost'):
+        self.mser = MserRunner(images_folder, data_folder, scale_down)
+        self.croper = CropsRetriver(crops_folder, server)
+        self.classifier = TargetFlowRunner(crops_folder)
+        self.targets_found = 0
+
+        try:
+            os.makedirs(results_dir)
+        except WindowsError:
+            pass
+        finally:
+            self.results_dir = results_dir
+
+    def _dump_target_data(self, data):
+        self.targets_found += 1
+        data_file_name = str(self.targets_found) + ".json"
+        data_file_path = os.path.join(self.results_dir, data_file_name)
+
+        with open(data_file_path, 'wb') as f:
+            json.dump(data, f)
+
+    def _classify_crops(self):
+        while True:
+            try:
+                res = self.classifier.classify_one_crop()
+
+                self._dump_target_data(res)
+            except:
+                pass
+            finally:
+                sleep(0.5)
 
     def _get_suspect_crops(self):
         while True:
@@ -26,8 +57,8 @@ class CvRuner(object):
                 sleep(0.5)
 
     def _get_crops_one_image(self):
-        timestamp, res = self.mser.run()
-        area_list = CvRuner._mser_to_area(res)
+        timestamp, res = self.mser.mser_one_image()
+        area_list = CvRunner._mser_to_area(res)
 
         for area in area_list:
             self.croper.get_crop(timestamp, area)
@@ -50,13 +81,46 @@ class CvRuner(object):
         return area_list
 
 
-class MserRuner(object):
+class TargetFlowRunner(object):
+    def __init__(self, crop_folder):
+        self.crop_scheduler = FileScheduler(crop_folder)
+
+    def classify_one_crop(self):
+        for f in self.crop_scheduler:
+            try:
+                timestamp, crop_id, extension = f.split('.')
+            except ValueError:
+                continue
+
+            if extension != "jpg":
+                continue
+
+            crop_path = os.path.join(self.crop_scheduler.dir_path, f)
+            crop_image = cv2.imread(crop_path)
+
+            flow_res = Target_Flow(crop_image,
+                                   global_settings.Shape_Name_DB_Path,
+                                   global_settings.SHAPE_DB_PATH,
+                                   global_settings.Letter_Name_DB_Path,
+                                   global_settings.Letter_DB_Path)
+
+            if not flow_res:
+                continue
+
+            flow_res['timestamp'] = timestamp
+            flow_res['crop_id'] = crop_id
+            flow_res['crop_path'] = crop_path
+
+            return flow_res
+
+
+class MserRunner(object):
     def __init__(self, images_folder, data_folder, scale_down):
         self.image_scheduler = FileScheduler(images_folder)
         self.data_folder = data_folder
         self.scale_down = scale_down
 
-    def run(self):
+    def mser_one_image(self):
         for f in self.image_scheduler:
             try:
                 timestamp, _, extension = f.split('.')
@@ -75,7 +139,8 @@ class MserRuner(object):
             image_info['Focal_Length'] = 5
             image_info['Flight_Altitude'] = image_info['relative_alt']
             sleep(1)
-            return timestamp, MSER_Primary(image, image_info, self.scale_down, None)
+            return timestamp, MSER_Primary(image, image_info,
+                                           self.scale_down, None)
 
     def _data_path(self, timestamp):
         data_list = sorted(os.listdir(self.data_folder))
