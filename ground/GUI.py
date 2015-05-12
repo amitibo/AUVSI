@@ -49,6 +49,57 @@ from math import sqrt
 class MyScreenManager(ScreenManager):
     pass
 
+class CoordsAction(object):
+    def __init__(self, widget, touch, coords_text):
+
+        self._coords_text = coords_text
+        self._widget = widget
+        win = widget.get_parent_window()
+
+        self._group = str(touch.uid)
+
+        with self._widget.canvas:
+            Color(1, 1, 1, mode='hsv', group=self._group)
+            self._lines = [
+                Rectangle(pos=(touch.x, 0), size=(1, win.height), group=self._group),
+                Rectangle(pos=(0, touch.y), size=(win.width, 1), group=self._group),
+            ]
+
+        self._label = Label(size_hint=(None, None))
+        self.update_touch_label(touch)
+        self._widget.add_widget(self._label)
+
+    def on_touch_move(self, touch):
+
+        self._lines[0].pos = touch.x, 0
+        self._lines[1].pos = 0, touch.y
+
+        self._label.pos = touch.pos
+        self.update_touch_label(touch)
+
+    def on_touch_up(self, touch):
+
+        self._widget.canvas.remove_group(self._group)
+        self._widget.remove_widget(self._label)
+
+    def update_touch_label(self, touch):
+
+        offset_x = self._widget.center[0]-self._widget.norm_image_size[0]/2
+        offset_y = self._widget.center[1]-self._widget.norm_image_size[1]/2
+
+        scale_ratio = self._widget.texture_size[0]/self._widget.norm_image_size[0]
+        texture_x = (touch.x - offset_x)*scale_ratio
+        texture_y = (touch.y - offset_y)*scale_ratio
+
+        self._label.text = 'X: {x}, Y: {y}'.format(
+            x=texture_x,
+            y=texture_y
+        )
+        self._label.texture_update()
+        self._label.pos = touch.pos
+        self._label.size = self._label.texture_size[0] + 20, self._label.texture_size[1] + 20
+        self._coords_text.text = self._label.text
+
 
 
 class ManualDetectionScreen(Screen):
@@ -108,44 +159,33 @@ class TouchAsyncImage(AsyncImage):
     def on_touch_down(self, touch):
 
         #
-        # Check if wheel event
+        # Check if mouse event
         #
-        # if touch.button == 'scrolldown' and self.parent.scale > 0.6:
-        #     self.parent.scale -= 0.1
-        #     return
-        # if touch.button == 'scrollup':
-        #     self.parent.scale += 0.1
-        #     return
 
-        win = self.get_parent_window()
-        ud = touch.ud
-        ud['group'] = g = str(touch.uid)
-        ud['color'] = random()
 
-        with self.canvas:
-            Color(ud['color'], 1, 1, mode='hsv', group=g)
-            ud['lines'] = [
-                Rectangle(pos=(touch.x, 0), size=(1, win.height), group=g),
-                Rectangle(pos=(0, touch.y), size=(win.width, 1), group=g),
-            ]
+        # if touch.device == 'mouse' and touch.button in ('scrolldown', 'scrollup'):
+        #
+        #     #
+        #     # Check if the scroll wheel is used
+        #     #
+        #     if touch.button == 'scrolldown' and self.parent.scale > 0.6:
+        #         self.parent.scale -= 0.1
+        #     elif touch.button == 'scrollup':
+        #         self.parent.scale += 0.1
+        #
+        #     return super(TouchAsyncImage, self).on_touch_down(touch)
 
-        ud['label'] = Label(size_hint=(None, None))
-        self.update_touch_label(ud['label'], touch)
-        self.add_widget(ud['label'])
         touch.grab(self)
+        touch.ud['action'] = CoordsAction(self, touch, self.coords_display)
+
         return super(TouchAsyncImage, self).on_touch_down(touch)
 
     def on_touch_move(self, touch):
+
         if touch.grab_current is not self:
             return super(TouchAsyncImage, self).on_touch_move(touch)
 
-        ud = touch.ud
-
-        ud['lines'][0].pos = touch.x, 0
-        ud['lines'][1].pos = 0, touch.y
-
-        ud['label'].pos = touch.pos
-        self.update_touch_label(ud['label'], touch)
+        touch.ud['action'].on_touch_move(touch)
 
         return super(TouchAsyncImage, self).on_touch_move(touch)
 
@@ -153,30 +193,12 @@ class TouchAsyncImage(AsyncImage):
         if touch.grab_current is not self:
             return super(TouchAsyncImage, self).on_touch_up(touch)
 
+        touch.ud['action'].on_touch_up(touch)
+        touch.ud['action'] = None
+
         touch.ungrab(self)
-        ud = touch.ud
-        self.canvas.remove_group(ud['group'])
-        self.remove_widget(ud['label'])
 
         return super(TouchAsyncImage, self).on_touch_up(touch)
-
-    def update_touch_label(self, label, touch):
-
-        offset_x = self.center[0]-self.norm_image_size[0]/2
-        offset_y = self.center[1]-self.norm_image_size[1]/2
-
-        scale_ratio = self.texture_size[0]/self.norm_image_size[0]
-
-        texture_x = (touch.x - offset_x)*scale_ratio
-        texture_y = (touch.y - offset_y)*scale_ratio
-
-        label.text = 'X: {x}, Y: {y}'.format(
-            x=texture_x,
-            y=texture_y
-        )
-        label.texture_update()
-        label.pos = touch.pos
-        label.size = label.texture_size[0] + 20, label.texture_size[1] + 20
 
 class FileSelector(object):
     '''
