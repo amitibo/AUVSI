@@ -59,14 +59,14 @@
 
         BoxLayout:
             NavigationButton:
-                text: 'Left'
+                text: 'Prev'
                 on_release: examination.previous_image()
 
             ExaminationWidget:
                 id: examination
 
             NavigationButton:
-                text: 'Right'
+                text: 'Next'
                 on_release: examination.next_image()
 
 
@@ -80,29 +80,38 @@
         size: self.parent.size
         orientation: 'vertical'
 
-        ImageData:
-            id: image_data
-            size_hint_y: None
+        BoxLayout:
+            size_hint_y: 0.5
+            orientation: 'horizontal'
+
+            ImageData:
+                id: image_data
+                size_hint_y: None
+
+            ImageData:
+                id: coords_data
+                size_hint_y: None
 
 
         BoxStencil:
+            size_hint_y: 2
             center: self.parent.center
-            size: self.parent.size
 
             RelativeLayout:
-                id: rl
+                id: relative_layout
                 center: self.parent.center
 
                 ScatterStencil:
                     id: scatter
                     size_hint: None, None
-                    size: rl.size
+                    size: relative_layout.size
                     do_rotation: False
                     auto_bring_to_front: False
 
 
                     TouchAsyncImage:
                         id: image_viewer
+                        coords_display: coords_data
                         size: scatter.size
 
 <ImageData@TextInput>:
