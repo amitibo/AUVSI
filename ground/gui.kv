@@ -1,0 +1,110 @@
+#Author: Ori
+#:import FadeTransition kivy.uix.screenmanager.FadeTransition
+#:import os os
+
+<MyScreenManager>:
+    transition: FadeTransition()
+
+    ManualDetectionScreen:
+    AutoDetectionScreen:
+<AutoDetectionScreen>:
+    StackLayout:
+        id: entry_container
+        orientation: 'tb-lr'
+        Button:
+            size_hint_y: None
+            size_y: 150
+            text: "Auto detect"
+            on_release: root.auto_detect()
+
+        DetectionEntry:
+        DetectionEntry:
+        DetectionEntry:
+
+
+<DetectionEntry@BoxLayout>:
+    orientation: 'horizontal'
+    size_hint_y: None
+    size_y: 200
+    detection_data_path: 'default'
+
+    canvas.before:
+        Color:
+            rgba: 1, 0, 0, 1
+        Rectangle:
+            pos: self.pos
+            size: self.size
+
+    AsyncImage:
+
+    Label:
+        text: root.detection_data_path
+    Label:
+        text: 'field 2'
+    Label:
+        text: 'field 3'
+
+
+
+<ManualDetectionScreen>:
+    BoxLayout:
+        orientation: 'vertical'
+
+        BoxLayout:
+            size_hint_y: 0.1
+            Button:
+                text: 'download'
+            Button:
+                text: 'shoot'
+
+        BoxLayout:
+            NavigationButton:
+                text: 'Left'
+                on_release: examination.previous_image()
+
+            ExaminationWidget:
+                id: examination
+
+            NavigationButton:
+                text: 'Right'
+                on_release: examination.next_image()
+
+
+<NavigationButton@Button>:
+    size_hint_x: 0.1
+    background_color: 0.5, 0.5, 0.5, 0.4
+
+<ExaminationWidget@BoxStencil>:
+    BoxLayout:
+        center: self.parent.center
+        size: self.parent.size
+        orientation: 'vertical'
+
+        ImageData:
+            id: image_data
+            size_hint_y: None
+
+
+        BoxStencil:
+            center: self.parent.center
+            size: self.parent.size
+
+            RelativeLayout:
+                id: rl
+                center: self.parent.center
+
+                ScatterStencil:
+                    id: scatter
+                    size_hint: None, None
+                    size: rl.size
+                    do_rotation: False
+                    auto_bring_to_front: False
+
+
+                    TouchAsyncImage:
+                        id: image_viewer
+                        size: scatter.size
+
+<ImageData@TextInput>:
+    center: self.parent.center
+    text: "text"
