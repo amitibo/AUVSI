@@ -9,17 +9,19 @@ import bisect
 from time import sleep
 import telnetlib
 from AUVSIcv import global_settings
-import multiprocessing
+from multiprocessing import Process
 from AUVSIcv.Target_ID import Target_Flow
 
 
 class CvRunner(object):
     def __init__(self, images_folder, data_folder, crops_folder,
-                 results_dir, scale_down, server='localhost'):
+                 results_dir, scale_down, server='localhost', port=8844):
         self.mser = MserRunner(images_folder, data_folder, scale_down)
-        self.croper = CropsRetriver(crops_folder, server)
+        self.croper = CropsRetriver(crops_folder, server, port)
         self.classifier = TargetFlowRunner(crops_folder)
         self.targets_found = 0
+        self._proc_mser = Process(target=self._get_suspect_crops)
+        self._proc_classification = Process(target=self._classify_crops)
 
         try:
             os.makedirs(results_dir)
@@ -28,7 +30,17 @@ class CvRunner(object):
         finally:
             self.results_dir = results_dir
 
+    def run(self):
+        self._proc_mser.start()
+        self._proc_classification.start()
+
+        self._proc_mser.join()
+        self._proc_classification.join()
+
     def _dump_target_data(self, data):
+        if not data:
+            return
+
         self.targets_found += 1
         data_file_name = str(self.targets_found) + ".json"
         data_file_path = os.path.join(self.results_dir, data_file_name)
@@ -38,6 +50,7 @@ class CvRunner(object):
 
     def _classify_crops(self):
         while True:
+            print("Classifying!")
             try:
                 res = self.classifier.classify_one_crop()
 
@@ -49,6 +62,7 @@ class CvRunner(object):
 
     def _get_suspect_crops(self):
         while True:
+            print("Mser!")
             try:
                 self._get_crops_one_image()
             except TypeError:
@@ -156,9 +170,10 @@ class CropsRetriver(object):
     This object manages the download of full resolution crops
     from the aerial system.
     """
-    def __init__(self, dest_dir, server):
+    def __init__(self, dest_dir, server, port=8844):
         self.dest_dir = dest_dir
         self.server = server
+        self.port = port
 
     def get_crop(self, timestamp, area):
         """
@@ -169,7 +184,7 @@ class CropsRetriver(object):
         """
         delimiter = b'\r\n'
 
-        tl = telnetlib.Telnet(host=self.server, port=8844)
+        tl = telnetlib.Telnet(host=self.server, port=self.port)
 
         area = {key: int(area[key]) for key in area}
 

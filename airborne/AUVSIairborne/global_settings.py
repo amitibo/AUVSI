@@ -23,7 +23,7 @@ FLIGHT_DATA_FOLDER = os.path.join(AUVSI_BASE_FOLDER, 'flight_data')
 #           <pics>
 #     flight_data:
 #           <flight_data>
-SIMULATION_DATA = os.path.expanduser('~/airborne_simulation_database')
+SIMULATION_DATA = os.path.expanduser('~/airborne_simulation_database/decent')
 
 
 #

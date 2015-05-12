@@ -48,11 +48,11 @@ def get_colour_name(requested_colour):
 def Contour_Extractor(Image):
     #Filtered_Image = np.uint8(signal.wiener(np.float32(Image),7))
     Filtered_Image = Image
-    cv2.namedWindow('Original',flags=cv2.WINDOW_NORMAL)
-    cv2.imshow('Original',Image)
-    cv2.namedWindow('Filtered',flags=cv2.WINDOW_NORMAL)
-    cv2.imshow('Filtered',Filtered_Image)
-    cv2.waitKey(0)    
+    # cv2.namedWindow('Original',flags=cv2.WINDOW_NORMAL)
+    # cv2.imshow('Original',Image)
+    # cv2.namedWindow('Filtered',flags=cv2.WINDOW_NORMAL)
+    # cv2.imshow('Filtered',Filtered_Image)
+    # cv2.waitKey(0)
 
     #Outer contours
     
@@ -81,17 +81,18 @@ def Contour_Extractor(Image):
         Contours = Contours[0]
     Color = [128,128,128]
     cv2.drawContours(Contour_Image,[Contours], -1, Color,-1)
-    cv2.namedWindow('Target Contours',flags=cv2.WINDOW_NORMAL)
-    cv2.imshow('Target Contours',Contour_Image)
-    cv2.waitKey(0)  
+    # cv2.namedWindow('Target Contours',flags=cv2.WINDOW_NORMAL)
+    # cv2.imshow('Target Contours',Contour_Image)
+    # cv2.waitKey(0)
     return Contours,0
+
 def Contour_Extractor_2(Image):
     
     Tolerance = 40
     Image_2 = Image.copy()
-    cv2.namedWindow('Original',flags=cv2.WINDOW_NORMAL)
-    cv2.imshow('Original',Image)
-    cv2.waitKey(0)    
+    # cv2.namedWindow('Original',flags=cv2.WINDOW_NORMAL)
+    # cv2.imshow('Original',Image)
+    # cv2.waitKey(0)
 
     NUM_CLUSTERS = 2
     shape = Image_2.shape
@@ -147,15 +148,15 @@ def Contour_Extractor_2(Image):
         Contours = Contours[0]
     Color = [128,128,128]
     cv2.drawContours(Contour_Image,[Contours], -1, Color,-1)
-    cv2.namedWindow('Target Contours',flags=cv2.WINDOW_NORMAL)
-    cv2.imshow('Target Contours',Contour_Image)
-    cv2.waitKey(0)  
+    # cv2.namedWindow('Target Contours',flags=cv2.WINDOW_NORMAL)
+    # cv2.imshow('Target Contours',Contour_Image)
+    # cv2.waitKey(0)
     return Contours,0
 
 def Letter_Contour_Extractor(Image):
-    cv2.namedWindow('Original',flags=cv2.WINDOW_NORMAL)
-    cv2.imshow('Original',Image)
-    cv2.waitKey(0)       
+    # cv2.namedWindow('Original',flags=cv2.WINDOW_NORMAL)
+    # cv2.imshow('Original',Image)
+    # cv2.waitKey(0)
     Contour_Image = np.uint8(np.zeros(Image.shape))
     Image_1D = Image[:,:,0]
     Contours,Unused_2 = cv2.findContours(Image_1D.copy(), cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
@@ -175,9 +176,9 @@ def Letter_Contour_Extractor(Image):
         Contours = Contours[0]
     Color = [128,128,128]
     cv2.drawContours(Contour_Image,[Contours], -1, Color,-1)
-    cv2.namedWindow('Letter Contours',flags=cv2.WINDOW_NORMAL)
-    cv2.imshow('Letter Contours',Contour_Image)
-    cv2.waitKey(0)  
+    # cv2.namedWindow('Letter Contours',flags=cv2.WINDOW_NORMAL)
+    # cv2.imshow('Letter Contours',Contour_Image)
+    # cv2.waitKey(0)
     return Contours,0    
     
 def Target_Shape_Extractor(Image,Contours,Shape_Name_DB_Path,Shape_DB_Path):  
@@ -233,9 +234,9 @@ def Color_Extractor(Image,Contours):
     Color = [1,1,1]
     cv2.drawContours(Contour_Image, [Contours], -1, Color,-1)    
     Cropped_Target = np.multiply(Contour_Image,Image)
-    cv2.namedWindow('Cropped target for color',flags=cv2.WINDOW_NORMAL)
-    cv2.imshow('Cropped target for color',Cropped_Target)
-    cv2.waitKey(0)      
+    # cv2.namedWindow('Cropped target for color',flags=cv2.WINDOW_NORMAL)
+    # cv2.imshow('Cropped target for color',Cropped_Target)
+    # cv2.waitKey(0)
     
     NUM_CLUSTERS = 3
     shape = Cropped_Target.shape
@@ -272,9 +273,9 @@ def Letter_Extractor(Image,Contours,Letter_Name_DB_Path,Letter_DB_Path,Letter_Co
     Color = [1,1,1]
     cv2.drawContours(Contour_Image, [Contours], -1, Color,-1)    
     Cropped_Target = np.multiply(Contour_Image,Image)
-    cv2.namedWindow('Cropped target for letter',flags=cv2.WINDOW_NORMAL)
-    cv2.imshow('Cropped target for letter',Cropped_Target)
-    cv2.waitKey(0)        
+    # cv2.namedWindow('Cropped target for letter',flags=cv2.WINDOW_NORMAL)
+    # cv2.imshow('Cropped target for letter',Cropped_Target)
+    # cv2.waitKey(0)
 
     Letter_R = Letter_Color[0]
     Letter_G = Letter_Color[1]
@@ -294,9 +295,9 @@ def Letter_Extractor(Image,Contours,Letter_Name_DB_Path,Letter_DB_Path,Letter_Co
     
     Color = [128,128,128]
     cv2.drawContours(Contour_Image, [Contours_Letter], -1, Color,-1)
-    cv2.namedWindow('Letter Contours',flags=cv2.WINDOW_NORMAL)
-    cv2.imshow('Letter Contours',Contour_Image)
-    cv2.waitKey(0)    
+    # cv2.namedWindow('Letter Contours',flags=cv2.WINDOW_NORMAL)
+    # cv2.imshow('Letter Contours',Contour_Image)
+    # cv2.waitKey(0)
     
     Cont_X = np.zeros([len(Contours_Letter)],np.uint8)
     Cont_Y = np.zeros([len(Contours_Letter)],np.uint8)
