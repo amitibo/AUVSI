@@ -1,0 +1,276 @@
+__author__ = 'Ori'
+from kivy.app import App
+from kivy.base import runTouchApp
+from kivy.lang import Builder
+from kivy.properties import ListProperty, ObjectProperty
+from kivy.uix.boxlayout import BoxLayout
+from kivy.uix.scatter import Scatter
+from kivy.uix.widget import Widget
+from kivy.uix.screenmanager import ScreenManager, Screen, FadeTransition
+from kivy.properties import StringProperty
+import os
+import time
+import random
+
+
+
+#install_twisted_rector must be called before importing the reactor
+from kivy.support import install_twisted_reactor
+install_twisted_reactor()
+
+#import server
+
+from twisted.python import log
+from twisted.python.logfile import DailyLogFile
+
+from kivy.app import App
+from kivy.uix.label import Label
+from kivy.uix.boxlayout import BoxLayout
+from kivy.uix.settings import SettingsWithSidebar
+from kivy.properties import ObjectProperty
+from kivy.uix.stencilview import StencilView
+from kivy.uix.button import Button
+from kivy.uix.relativelayout import RelativeLayout
+from kivy.uix.floatlayout import FloatLayout
+from kivy.graphics import Color, Rectangle, Point, GraphicException
+from kivy.uix.image import AsyncImage
+
+import pkg_resources
+#import global_settings as gs
+from configobj import ConfigObj
+import os
+from random import random
+from math import sqrt
+
+#rom settingsjson import network_json, camera_json, admin_json
+
+
+
+class MyScreenManager(ScreenManager):
+    pass
+
+
+
+class ManualDetectionScreen(Screen):
+    pass
+
+
+class ExaminationWidget(Widget):
+    images_folder = StringProperty(r"C:\Users\Ori\Desktop\Yossi_Elbaz")
+
+    def __init__(self, **kwargs):
+        """
+        should get parameter images_folder
+        """
+        super(self.__class__, self).__init__(**kwargs)
+        self.file_selector = FileSelector(self.images_folder, "jpg")
+        # first_image = os.path.join(self.file_selector.dir_path,
+        #                            self.file_selector.current_file)
+        # self.ids.image_viewer.source = first_image
+
+
+
+    def _update_image_name(self):
+        print "HIIII"
+
+
+    def _reset_image_view(self):
+        self.ids["scatter"].scale = 1
+        self.ids["scatter"].center = self.ids["scatter"].parent.center
+
+    def next_image(self):
+        try:
+            next_image_name = self.file_selector.next_file()
+            self._reset_image_view()
+            self.ids["image_data"].text = next_image_name
+        except NoFiles:
+            return
+
+        next_image = os.path.join(self.file_selector.dir_path, next_image_name)
+        self.ids.image_viewer.source = next_image
+        self._update_image_name()
+
+
+    def previous_image(self):
+        try:
+            prev_image_name = self.file_selector.prev_file()
+            self._reset_image_view()
+            self.ids["image_data"].text = prev_image_name
+        except NoFiles:
+            return
+
+        next_image = os.path.join(self.file_selector.dir_path, prev_image_name)
+        self.ids.image_viewer.source = next_image
+        self._update_image_name()
+
+class TouchAsyncImage(AsyncImage):
+
+    def on_touch_down(self, touch):
+
+        #
+        # Check if wheel event
+        #
+        # if touch.button == 'scrolldown' and self.parent.scale > 0.6:
+        #     self.parent.scale -= 0.1
+        #     return
+        # if touch.button == 'scrollup':
+        #     self.parent.scale += 0.1
+        #     return
+
+        win = self.get_parent_window()
+        ud = touch.ud
+        ud['group'] = g = str(touch.uid)
+        ud['color'] = random()
+
+        with self.canvas:
+            Color(ud['color'], 1, 1, mode='hsv', group=g)
+            ud['lines'] = [
+                Rectangle(pos=(touch.x, 0), size=(1, win.height), group=g),
+                Rectangle(pos=(0, touch.y), size=(win.width, 1), group=g),
+            ]
+
+        ud['label'] = Label(size_hint=(None, None))
+        self.update_touch_label(ud['label'], touch)
+        self.add_widget(ud['label'])
+        touch.grab(self)
+        return super(TouchAsyncImage, self).on_touch_down(touch)
+
+    def on_touch_move(self, touch):
+        if touch.grab_current is not self:
+            return super(TouchAsyncImage, self).on_touch_move(touch)
+
+        ud = touch.ud
+
+        ud['lines'][0].pos = touch.x, 0
+        ud['lines'][1].pos = 0, touch.y
+
+        ud['label'].pos = touch.pos
+        self.update_touch_label(ud['label'], touch)
+
+        return super(TouchAsyncImage, self).on_touch_move(touch)
+
+    def on_touch_up(self, touch):
+        if touch.grab_current is not self:
+            return super(TouchAsyncImage, self).on_touch_up(touch)
+
+        touch.ungrab(self)
+        ud = touch.ud
+        self.canvas.remove_group(ud['group'])
+        self.remove_widget(ud['label'])
+
+        return super(TouchAsyncImage, self).on_touch_up(touch)
+
+    def update_touch_label(self, label, touch):
+
+        offset_x = self.center[0]-self.norm_image_size[0]/2
+        offset_y = self.center[1]-self.norm_image_size[1]/2
+
+        scale_ratio = self.texture_size[0]/self.norm_image_size[0]
+
+        texture_x = (touch.x - offset_x)*scale_ratio
+        texture_y = (touch.y - offset_y)*scale_ratio
+
+        label.text = 'X: {x}, Y: {y}'.format(
+            x=texture_x,
+            y=texture_y
+        )
+        label.texture_update()
+        label.pos = touch.pos
+        label.size = label.texture_size[0] + 20, label.texture_size[1] + 20
+
+class FileSelector(object):
+    '''
+    A class that creates a list of the files in a given path.
+    returns the next file or previous file in the list
+    and update the given file to be set as the current file for future calls
+    '''
+    def __init__(self, dir_path, extension):
+        self.dir_path = dir_path
+        self.extension = extension
+        self.current_file = None
+
+    def _get_file_list(self):
+        files = os.listdir(self.dir_path)
+        return sorted([f for f in files if f.endswith('.' + self.extension)])
+
+    def next_file(self):
+        file_list = self._get_file_list()
+
+        if not self.current_file:
+            try:
+                self.current_file = file_list[0]
+            except IndexError:
+                raise NoFiles()
+
+            return self.current_file
+
+        current_file_index = file_list.index(self.current_file)
+        try:
+            self.current_file = file_list[current_file_index + 1]
+        except IndexError:
+            pass
+        return self.current_file
+
+    def prev_file(self):
+        file_list = self._get_file_list()
+
+        if not self.current_file:
+            try:
+                self.current_file = file_list[0]
+            except IndexError:
+                raise NoFiles()
+
+            return self.current_file
+
+        current_file_index = file_list.index(self.current_file)
+
+        self.current_file = file_list[max(current_file_index - 1, 0)]
+        return self.current_file
+
+class NoFiles(Exception):
+    pass
+
+
+class BoxStencil(BoxLayout, StencilView):
+    pass
+
+
+class ScatterStencil(Scatter):
+    """
+    a class written by amit.
+    allows to use scatter with the character of 'cropping'
+    the touch down if touched isn't in the wanted place
+    """
+    def on_touch_down(self, touch):
+
+        stencil = self.parent.parent
+
+        #
+        # Check if inside the encapsulating stencil.
+        #
+        if not stencil.collide_point(*self.to_window(*touch.pos)):
+            return False
+
+        return super(ScatterStencil, self).on_touch_down(touch)
+
+
+class DetectionEntry(BoxLayout):
+    # detection_data_path = StringProperty('default')
+    pass
+
+class AutoDetectionScreen(Screen):
+    def auto_detect(self):
+        entry = DetectionEntry()
+        entry.detection_data_path = 'Hi'
+        self.ids.entry_container.add_widget(entry)
+        print(self.ids.entry_container)
+
+
+class GuiApp(App):
+    def build(self):
+        print "debug"
+        return MyScreenManager()
+
+if __name__ == "__main__":
+    GuiApp().run()
+
