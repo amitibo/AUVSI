@@ -75,26 +75,26 @@
     background_color: 0.5, 0.5, 0.5, 0.4
 
 <ExaminationWidget@BoxStencil>:
-    BoxLayout:
+    BoxStencil:
         center: self.parent.center
         size: self.parent.size
         orientation: 'vertical'
 
         BoxLayout:
-            size_hint_y: 0.5
+            size_hint_y: None
+            size_y: 20
             orientation: 'horizontal'
 
+            #ImageData are text inputs
             ImageData:
                 id: image_data
-                size_hint_y: None
 
             ImageData:
                 id: coords_data
-                size_hint_y: None
 
 
         BoxStencil:
-            size_hint_y: 2
+            size_hint_y: 3
             center: self.parent.center
 
             RelativeLayout:
@@ -117,3 +117,8 @@
 <ImageData@TextInput>:
     center: self.parent.center
     text: "text"
+    multiline: False
+    readonly: True
+    size_hint_y: None
+    size_y: 10
+    font_size: 20
