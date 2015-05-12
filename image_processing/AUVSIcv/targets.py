@@ -346,8 +346,8 @@ TARGET_CLASSES = (
     (QRTarget, 1.),
 )
 
-with open(os.path.join(os.environ['AUVSI_CV_DATA'], 'colors.pkl'), 'r') as f:
-    RGB_COLORS = pickle.load(f)
+# with open(os.path.join(os.environ['AUVSI_CV_DATA'], 'colors.pkl'), 'r') as f:
+#     RGB_COLORS = pickle.load(f)
 
 WRG = WeightedRandomGenerator(weights=zip(*TARGET_CLASSES)[1])
 

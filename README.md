@@ -102,9 +102,10 @@ Shape_DB_Path - The path to the Shape Database
 Letter_Name_DB_Path - The path to the Letter Name Database
 Letter_DB_Path - The path to the Letter Database
 
-Output:
-Is_Target - String. Specifies if crop contains a target
-Possible_Target_Shape - String. Specifies the shape of the target
+### Output:
+
+ * Is_Target - String. Specifies if crop contains a target
+ * Possible_Target_Shape - String. Specifies the shape of the target
 Target_Color - String. Specifies the color of the target
 Possible_Target_Letter - String. Specifies the letter in the target
 Letter_Color - String. Specifies the color of the letter

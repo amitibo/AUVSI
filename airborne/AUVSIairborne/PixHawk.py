@@ -10,6 +10,7 @@ except:
     pass
 import json
 import os
+import glob
 
 
 TIMESTAMP_SIGNATURE = gs.BASE_TIMESTAMP
@@ -137,8 +138,9 @@ def initPixHawkSimulation():
     
     flight_data_log = SortedDict()
 
-    base_path = os.environ['AUVSI_CV_DATA']
-    log_paths = glob.glob(os.path.join(base_path, 'flight_data', '*.json'))
+    data_paths = os.path.join(gs.SIMULATION_DATA,
+                              'flight_data', '*.json')
+    log_paths = glob.glob(data_paths)
 
     for path in sorted(log_paths):
         with open(path, 'rb') as f:
@@ -152,7 +154,9 @@ def stopPixHawk():
     continue_message = False
 
 
+
 if __name__ == '__main__':
+
 
     #try:
         #initPixHawk()
@@ -165,7 +169,7 @@ if __name__ == '__main__':
     
     initPixHawkSimulation()
     
-    base_path = os.environ['AUVSI_CV_DATA']
+    base_path = os.path.join(gs.SIMULATION_DATA, 'images')
     imgs_paths = glob.glob(os.path.join(base_path, '*.jpg'))
 
     
