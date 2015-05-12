@@ -7,18 +7,34 @@ BASE_TIMESTAMP = '%Y_%m_%d_%H_%M_%S_%f'
 #
 # Paths and Folders
 #
-AUVSI_BASE_FOLDER = os.path.join(os.path.expanduser('~/.auvsi_airborne'), datetime.now().strftime(BASE_TIMESTAMP))
+AUVSI_BASE_FOLDER = os.path.expanduser('~/.auvsi_airborne')
 IMAGES_FOLDER = os.path.join(AUVSI_BASE_FOLDER, 'images')
-RENAMED_IMAGES_FOLDER = os.path.join(AUVSI_BASE_FOLDER, 'renamed_images')
+IMAGES_RENAMED = os.path.join(AUVSI_BASE_FOLDER, 'renamed_images')
+IMAGES_DATA = os.path.join(AUVSI_BASE_FOLDER, 'images_data')
+CROPS_FOLDER = os.path.join(AUVSI_BASE_FOLDER, 'crops')
+# RENAMED_IMAGES_FOLDER = os.path.join(AUVSI_BASE_FOLDER, 'renamed_images')
 RESIZED_IMAGES_FOLDER = os.path.join(AUVSI_BASE_FOLDER, 'resized_images')
 FLIGHT_DATA_FOLDER = os.path.join(AUVSI_BASE_FOLDER, 'flight_data')
-DB_FOLDER = os.path.join(AUVSI_BASE_FOLDER, 'db')
-DB_PATH = os.path.join(DB_FOLDER, 'auvsi.db')
+
+# This folder holds data for the simulation mechanisms
+# The folder structure:
+# airborne_simulation_database:
+#     images:
+#           <pics>
+#     flight_data:
+#           <flight_data>
+SIMULATION_DATA = os.path.expanduser('~/airborne_simulation_database/decent')
+
 
 #
-# Database data
+# Ftp connection details
 #
-IMAGES_TABLE = 'images_table'
+FTP_CREDENTIAL = {'user': 'auvsi', 'pass': '1234'}
+
+#
+# Performance
+#
+LOW_RES_SYNC_TIME = 1
 
 #
 # Camera data

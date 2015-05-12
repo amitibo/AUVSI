@@ -1,4 +1,7 @@
 import numpy as np
+import AUVSIcv
+import os
+
 
 IMAGE_RESIZE_RATIO = 0.25
 IMAGE_RESIZE_MATRIX = np.array(((IMAGE_RESIZE_RATIO, 0, 0), (0, IMAGE_RESIZE_RATIO, 0), (0, 0, 1)))
@@ -8,6 +11,20 @@ IMAGE_RESIZE_MATRIX = np.array(((IMAGE_RESIZE_RATIO, 0, 0), (0, IMAGE_RESIZE_RAT
 #
 NORMAL_TARGET_SIZE_RANGE = (0.6, 2.4)
 QR_TARGET_SIZE_RANGE = (0.9, 1.2)
+
+#
+# Cv data base
+#
+AUVSI_CV_FOLDER = os.path.dirname(AUVSIcv.__file__)
+SHAPE_DB_PATH = os.path.join(AUVSI_CV_FOLDER,
+                             r'Contours\Shapes\Contour_DB.npy')
+Shape_Name_DB_Path = os.path.join(AUVSI_CV_FOLDER,
+                                  r'Contours\Shapes\Contour_Name_DB.npy')
+Letter_DB_Path = os.path.join(AUVSI_CV_FOLDER,
+                              r'Contours\Letters\Contour_DB.npy')
+Letter_Name_DB_Path = os.path.join(AUVSI_CV_FOLDER,
+                                   r'Contours\Letters\Contour_Name_DB.npy')
+
 
 #
 # These values are used for blending targets into images.
