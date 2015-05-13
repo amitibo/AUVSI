@@ -44,9 +44,9 @@ from math import sqrt
 from bisect import bisect
 
 #rom settingsjson import network_json, camera_json, admin_json
-
-DATA_FOLDER = r"D:\ftp_playground\images_data"
-RESIZE_FOLDER = r"D:\ftp_playground\resized"
+DB_MAIN_FOLDER = r"C:\Users\User\Documents\AUVSI\Ori's playground\GS Database"
+DATA_FOLDER = os.path.join(DB_MAIN_FOLDER, r"images_data")
+RESIZE_FOLDER = os.path.join(DB_MAIN_FOLDER, r"resized")
 
 def data_path(timestamp):
     data_list = sorted(os.listdir(DATA_FOLDER))
@@ -103,7 +103,7 @@ class CoordsAction(object):
         texture_y = (touch.y - offset_y)*scale_ratio
 
         lat, lon = self._image.coords2LatLon(texture_x, texture_y)
-        self._label.text = 'Lat: {lat}, Lon:{lon}'.format(
+        self._label.text = 'Lat: {lat}, Lon: {lon}'.format(
             lat=lat,
             lon=lon
         )
@@ -175,17 +175,17 @@ class TouchAsyncImage(AsyncImage):
         #
 
 
-        # if touch.device == 'mouse' and touch.button in ('scrolldown', 'scrollup'):
-        #
-        #     #
-        #     # Check if the scroll wheel is used
-        #     #
-        #     if touch.button == 'scrolldown' and self.parent.scale > 0.6:
-        #         self.parent.scale -= 0.1
-        #     elif touch.button == 'scrollup':
-        #         self.parent.scale += 0.1
-        #
-        #     return super(TouchAsyncImage, self).on_touch_down(touch)
+        if touch.device == 'mouse' and touch.button in ('scrolldown', 'scrollup'):
+       
+            #
+            # Check if the scroll wheel is used
+            #
+            if touch.button == 'scrolldown' and self.parent.scale > 0.6:
+                self.parent.scale -= 0.1
+            elif touch.button == 'scrollup':
+                self.parent.scale += 0.1
+       
+            return super(TouchAsyncImage, self).on_touch_down(touch)
 
         touch.grab(self)
         timestamp = os.path.basename(self.source).split('.')[0]
