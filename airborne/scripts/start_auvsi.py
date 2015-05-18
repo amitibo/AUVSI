@@ -10,7 +10,7 @@ from AUVSIairborne.services.directory_synchronization_ftp import \
 from AUVSIairborne.image_acquisition import ImageAcquirer
 from AUVSIairborne.services.system_control import ReflectionController
 from AUVSIairborne import global_settings
-from AUVSIairborne.PixHawk import initPixHawkSimulation
+from AUVSIairborne.PixHawk import initPixHawk
 from AUVSIairborne.services.crop import CropImageController
 
 
@@ -101,12 +101,12 @@ if __name__ == '__main__':
 
     log.startLogging(stdout)
 
-    image_sending_controller.controlled_obj.connect(ip='localhost')
-    data_sending_controller.controlled_obj.connect(ip='localhost')
-    crop_sending_controller.controlled_obj.connect(ip='localhost')
+#    image_sending_controller.controlled_obj.connect(ip='localhost')
+#    data_sending_controller.controlled_obj.connect(ip='localhost')
+#    crop_sending_controller.controlled_obj.connect(ip='localhost')
 
     acquirer.start()
-    initPixHawkSimulation()
+    initPixHawk()
 
     reactor.listenTCP(args.port, control_factory)
     reactor.run()

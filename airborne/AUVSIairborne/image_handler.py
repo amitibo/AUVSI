@@ -16,7 +16,9 @@ import os
 import cv2
 from datetime import datetime
 import global_settings as gs
-
+import AUVSIairborne.global_settings as gs
+from bisect import bisect
+import shutil
 
 image_path = argv[1]
 log.msg("Started handling image: '{}'".format(image_path))
@@ -35,5 +37,14 @@ resized_img_path = os.path.join(gs.RESIZED_IMAGES_FOLDER, filename)
 cv2.imwrite(resized_img_path, resized_img)
 
 os.rename(image_path, os.path.join(gs.IMAGES_RENAMED, formated_time + ".jpg"))
+
+data_list = sorted(os.listdir(gs.FLIGHT_DATA_FOLDER))
+index = bisect(data_list, formated_time)
+r_index = max(index - 1, 0)
+
+data_name = data_list[r_index]
+
+shutil.copy(os.path.join(gs.FLIGHT_DATA_FOLDER, data_name),
+            os.path.join(gs.IMAGES_DATA, formated_time+'.json'))
 
 log.msg("Finished handling image: '{}'".format(image_path))

@@ -70,7 +70,7 @@ class ImageAcquirer(object):
         #STUB
         #TODO implement
 
-        meta_data = self.data_retriever(image_name)
+#        meta_data = self.data_retriever(image_name)
 
         log.msg("Acquired data for image '{}'".format(image_name))
 
