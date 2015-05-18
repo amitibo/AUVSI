@@ -20,8 +20,8 @@ class CvRunner(object):
         self.croper = CropsRetriver(crops_folder, server, port)
         self.classifier = TargetFlowRunner(crops_folder)
         self.targets_found = 0
-        self._proc_mser = Process(target=self._get_suspect_crops)
-        self._proc_classification = Process(target=self._classify_crops)
+        self._proc_mser = None
+        self._proc_classification = None
 
         try:
             os.makedirs(results_dir)
@@ -30,12 +30,16 @@ class CvRunner(object):
         finally:
             self.results_dir = results_dir
 
-    def run(self):
-        self._proc_mser.start()
-        self._proc_classification.start()
+    @staticmethod
+    def run(cv_runner):
+        cv_runner._proc_mser = Process(target=cv_runner._get_suspect_crops)
+        cv_runner._proc_classification = Process(target=cv_runner._classify_crops)
 
-        self._proc_mser.join()
-        self._proc_classification.join()
+        cv_runner._proc_mser.start()
+        cv_runner._proc_classification.start()
+
+        # self._proc_mser.join()
+        # self._proc_classification.join()
 
     def _dump_target_data(self, data):
         if not data:

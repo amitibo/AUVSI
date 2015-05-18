@@ -6,6 +6,7 @@ from AUVSIairborne.services.system_control import ReflectionController
 from AUVSIairborne.services.\
     directory_synchronization_ftp import FileScheduler
 from AUVSIairborne import UnknownCommand
+from AUVSIairborne.camera import SimulationCamera, CameraController
 
 
 class ReflectionControllerCase(unittest.TestCase):
@@ -89,6 +90,20 @@ class FileSchedulerCase(unittest.TestCase):
         self.assertItemsEqual(self.scheduler, self.file_names)
 
 
+class CameraControllerCase(unittest.TestCase):
+    def setUp(self):
+        self.camera = SimulationCamera()
+        self.controller = CameraController(self.camera)
+
+    def test_set_one_param(self):
+        for iso in range(100, 1600, 100):
+            self.controller("set ISO " + str(iso))
+            self.assertEqual(self.camera.ISO, iso)
+
+        for aperture in range(1, 10):
+            self.controller("set aperture " + str(aperture))
+            self.assertEqual(self.camera.aperture, aperture)
+
 if __name__ == '__main__':
-    suite = unittest.TestLoader().loadTestsFromTestCase(ReflectionControllerCase)
+    suite = unittest.TestLoader().loadTestsFromTestCase(CameraControllerCase)
     unittest.TextTestRunner(verbosity=2).run(suite)

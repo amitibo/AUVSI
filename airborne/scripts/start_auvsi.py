@@ -32,7 +32,7 @@ def pixhawk_data_retriever(image_name):
 def parse_commandline_args():
     parser = argparse.ArgumentParser(description="Start the airborne server"
                                                  " - Oris' version.")
-    parser.add_argument('--port', type=int, default=8855,
+    parser.add_argument('--port', type=int, default=8844,
                         help='Control port(default=8844).')
     parser.add_argument('--camera', type=str, default="cannon",
                         help="The camera to use: cannon(default), simulation")
