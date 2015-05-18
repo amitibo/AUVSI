@@ -34,11 +34,11 @@ class BaseCamera(object):
         )
         return os.path.join(self.base_path, filename)
 
-    def setParams(self, zoom, shutter, ISO, aperture, **kwds):
-        self.zoom = zoom
-        self.shutter = shutter
-        self.ISO = ISO
-        self.aperture = aperture
+    def setParams(self, zoom=None, shutter=None, ISO=None, aperture=None, **kwds):
+        self.zoom = self.zoom if not zoom else zoom
+        self.shutter = self.shutter if not shutter else shutter
+        self.ISO = self.ISO if not ISO else ISO
+        self.aperture = self.aperture if not aperture else aperture
 
 
 class SimulationCamera(BaseCamera):
@@ -234,12 +234,12 @@ class CameraController(object):
             # check the camera class
             words = cmd.split()
             try:
-               params = {words[i]: words[i+1] for i in range(1, len(words), 2)}
+               params = {words[i]: int(words[i+1]) for i in range(1, len(words), 2)}
             except IndexError as e:
                 log.msg("Parameters need to be in pairs <param> <data>: "
                         "'{}'".format(cmd))
                 log.err(e)
                 return
 
-            camera.setParams(params)
+            camera.setParams(**params)
             log.msg("Sets {}".format(str(params)))
