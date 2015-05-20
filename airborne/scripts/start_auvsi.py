@@ -10,23 +10,8 @@ from AUVSIairborne.services.directory_synchronization_ftp import \
 from AUVSIairborne.image_acquisition import ImageAcquirer
 from AUVSIairborne.services.system_control import ReflectionController
 from AUVSIairborne import global_settings
-from AUVSIairborne.PixHawk import initPixHawk
+from AUVSIairborne.PixHawk import initPixHawk, initPixHawkSimulation
 from AUVSIairborne.services.crop import CropImageController
-
-
-def pixhawk_data_retriever(image_name):
-    import re
-    import json
-    import os
-    from AUVSIairborne.global_settings import FLIGHT_DATA_FOLDER
-    from AUVSIairborne.PixHawk import queryPHdata
-
-    date_regex = "[0-9]+_[0-9]+_[0-9]+_[0-9]+_[0-9]+_[0-9]+_[0-9]+"
-    time = re.search(date_regex, image_name).group()
-
-    with open(os.path.join(FLIGHT_DATA_FOLDER, time + ".json"), 'wb') as data_file:
-        json.dump(queryPHdata(time), data_file)
-        log.msg("New data file: " + data_file.name)
 
 
 def parse_commandline_args():
@@ -81,7 +66,7 @@ if __name__ == '__main__':
         dir_path= global_settings.IMAGES_FOLDER,
         poll_interval=1,
         image_handler_path=args.handler_path,
-        data_retriever=pixhawk_data_retriever)
+        data_retriever=None)
 
     crop_controller = CropImageController(
         images_folder=global_settings.IMAGES_RENAMED,
@@ -98,15 +83,14 @@ if __name__ == '__main__':
                                         crop_sending_controller)
     control_factory.subscribe_subsystem("crop", crop_controller)
 
-
     log.startLogging(stdout)
-
-#    image_sending_controller.controlled_obj.connect(ip='localhost')
-#    data_sending_controller.controlled_obj.connect(ip='localhost')
-#    crop_sending_controller.controlled_obj.connect(ip='localhost')
+    # def
+    # image_sending_controller.controlled_obj.connect(ip='localhost')
+    # data_sending_controller.controlled_obj.connect(ip='localhost')
+    # crop_sending_controller.controlled_obj.connect(ip='localhost')
 
     acquirer.start()
-    initPixHawk()
+    initPixHawkSimulation()
 
     reactor.listenTCP(args.port, control_factory)
     reactor.run()

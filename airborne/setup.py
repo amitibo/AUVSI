@@ -16,7 +16,7 @@ import os
 
 NAME = 'AUVSIairborne'
 PACKAGE_NAME = 'AUVSIairborne'
-PACKAGES = [PACKAGE_NAME]
+PACKAGES = [PACKAGE_NAME, PACKAGE_NAME + ".services"]
 VERSION = '0.1'
 DESCRIPTION = 'Code for airborne computer of the AUVSI drone.'
 LONG_DESCRIPTION = """

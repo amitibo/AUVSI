@@ -29,9 +29,8 @@ class ImageAcquirer(object):
         """
 
         if not os.path.isfile(image_handler_path):
-            raise ValueError("Image handler is not a file")
-        if not callable(data_retriever):
-            raise ValueError("Data retriever is not callable")
+            raise ValueError("Image handler is not a file: '{}'"
+                             .format(image_handler_path))
 
         self.file_scheduler = FileScheduler(dir_path)
         self.poll_interval = poll_interval
