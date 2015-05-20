@@ -11,6 +11,7 @@ except:
 import json
 import os
 import glob
+from bisect import bisect
 
 
 TIMESTAMP_SIGNATURE = gs.BASE_TIMESTAMP
@@ -47,34 +48,37 @@ def monitorMessages(m):
             flight_data['relative_alt'] = msg.relative_alt
           
             if 'yaw' in flight_data:
-                path = os.path.join(gs.FLIGHT_DATA_FOLDER, "{timestamp}.json".format(timestamp=flight_data['timestamp']))
-                with open(path, 'wb') as f:
-                    json.dump(flight_data, f)
+                addPHdata(flight_data)
 
-                reactor.callFromThread(addPHdata, flight_data)
                 flight_data = {}
 
 
 def addPHdata(flight_data):
-    """Add new flight data message to the records"""
-    
-    global flight_data_log
-    
-    flight_data_log[flight_data['timestamp']] = flight_data
+    path = os.path.join(gs.FLIGHT_DATA_FOLDER, "{timestamp}.json"
+                        .format(timestamp=flight_data['timestamp']))
+    with open(path, 'wb') as f:
+        json.dump(flight_data, f)
+
 
 
 def queryPHdata(timestamp):
     """Query the closest flight data records to some timestamp"""
-    
-    index = flight_data_log.bisect(timestamp)
+
+    flight_data_list = sorted(os.listdir(gs.FLIGHT_DATA_FOLDER))
+    index = bisect(flight_data_list, timestamp)
     
     r_index = max(index-1, 0)
-    l_index = min(index, len(flight_data_log))
-    
+    l_index = min(index, len(flight_data_list))
+
+    data_path = os.path.join(gs.FLIGHT_DATA_FOLDER, flight_data_list[r_index])
+
     #
     # TODO interpolate the sorrounding flight data records.
     #
-    return flight_data_log.values()[r_index]#, flight_data_log.values()[l_index]
+    with open(data_path, 'rb') as f:
+        data = json.load(f)
+
+    return data
 
 
 def initPixHawk(device='/dev/ttyUSB0', baudrate=57600, rate=4):
@@ -89,19 +93,9 @@ def initPixHawk(device='/dev/ttyUSB0', baudrate=57600, rate=4):
     rate: int
         Requested rate of messages.
     """
-    
-    global flight_data_log
-    
-    flight_data_log = SortedDict()
 
-    #
-    # Create the auvsi data folder.
-    #
-    if not os.path.exists(gs.AUVSI_BASE_FOLDER):
-        os.makedirs(gs.AUVSI_BASE_FOLDER)
-    if not os.path.exists(gs.FLIGHT_DATA_FOLDER):
-        os.makedirs(gs.FLIGHT_DATA_FOLDER)
-        
+    _create_database()
+
     #
     # create a mavlink serial instance
     #    
@@ -131,12 +125,20 @@ def initPixHawk(device='/dev/ttyUSB0', baudrate=57600, rate=4):
     d = threads.deferToThread(monitorMessages, master)
 
 
+def _create_database():
+    #
+    # Create the auvsi data folder.
+    #
+    if not os.path.exists(gs.AUVSI_BASE_FOLDER):
+        os.makedirs(gs.AUVSI_BASE_FOLDER)
+    if not os.path.exists(gs.FLIGHT_DATA_FOLDER):
+        os.makedirs(gs.FLIGHT_DATA_FOLDER)
+
+
 def initPixHawkSimulation():
     import glob
-    
-    global flight_data_log
-    
-    flight_data_log = SortedDict()
+
+    _create_database()
 
     data_paths = os.path.join(gs.SIMULATION_DATA,
                               'flight_data', '*.json')
@@ -169,9 +171,9 @@ if __name__ == '__main__':
     
     initPixHawkSimulation()
     
-    base_path = os.path.join(gs.SIMULATION_DATA, 'images')
+    base_path = os.path.join(gs.SIMULATION_DATA, 'renamed_images')
     imgs_paths = glob.glob(os.path.join(base_path, '*.jpg'))
 
-    
+    print imgs_paths[0]
     img = AUVSIcv.Image(imgs_paths[0])
     print queryPHdata(img.datetime)
