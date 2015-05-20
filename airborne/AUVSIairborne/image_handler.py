@@ -70,17 +70,14 @@ r_index = max(index - 1, 0)
 data_name = data_list[r_index]
 
 image_data_path = os.path.join(gs.IMAGES_DATA, formatted_time + '.json')
-shutil.copy(os.path.join(gs.FLIGHT_DATA_FOLDER, data_name),
-            image_data_path)
-log.msg("Acquired data {orig_data_name} for image {resized_name}"
-        .format(orig_data_name=data_name, resized_name=resized_filename))
+flight_data_path = os.path.join(gs.FLIGHT_DATA_FOLDER, data_name)
 
 #
 # Add the resized K matrix to the image data
 #
 resized_k = np.dot(IMAGE_RESIZE_MATRIX, img.K)
 
-with open(image_data_path, 'rb') as data_file:
+with open(flight_data_path, 'rb') as data_file:
     image_data = json.load(data_file)
 
 image_data['K'] = resized_k.tolist()
@@ -88,5 +85,8 @@ image_data['resized_K'] = True
 
 with open(image_data_path, 'wb') as data_file:
     json.dump(image_data, data_file)
+
+log.msg("Acquired data {orig_data_name} for image {resized_name}"
+        .format(orig_data_name=data_name, resized_name=resized_filename))
 
 log.msg("Finished handling image with timestamp: '{}'".format(formatted_time))
