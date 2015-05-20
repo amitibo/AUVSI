@@ -44,7 +44,7 @@ from math import sqrt
 from bisect import bisect
 
 #rom settingsjson import network_json, camera_json, admin_json
-DB_MAIN_FOLDER = r"C:\Users\User\Documents\AUVSI\Ori's playground\GS Database"
+DB_MAIN_FOLDER = r"C:\Users\User\Documents\auvsi_ftp"
 DATA_FOLDER = os.path.join(DB_MAIN_FOLDER, r"images_data")
 RESIZE_FOLDER = os.path.join(DB_MAIN_FOLDER, r"resized")
 

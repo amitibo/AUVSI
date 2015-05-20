@@ -50,7 +50,7 @@ class SimulationCamera(BaseCamera):
     def _shootingLoop(self, run):
         """Inifinite shooting loop. To run on separate process."""
 
-        base_path = os.path.join(gs.SIMULATION_DATA, 'images')
+        base_path = os.path.join(gs.SIMULATION_DATA, 'renamed_images')
         imgs_paths = sorted(glob.glob(os.path.join(base_path, '*.jpg')))
         img_index = 0
         while run.value == 1:

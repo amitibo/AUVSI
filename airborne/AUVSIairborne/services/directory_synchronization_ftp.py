@@ -23,7 +23,7 @@ def send_file(consumer, path):
 
 
 def sync_files(ftp_client, scheduler):
-    log.msg("Syncing Files")
+    # log.msg("Syncing Files")
 
     #TODO this loop couses the reset_sending to be ineffective
     # starts to send all the files before going back to main loop

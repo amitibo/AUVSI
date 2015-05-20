@@ -8,13 +8,6 @@ airborne services and operations (ftp data sending,
 teleoperated system control,image acquiring
 """
 __author__ = 'Ori'
-
-IMAGE_RESIZE_RATIO = 0.25
-IMAGE_RESIZE_MATRIX = np.array(((IMAGE_RESIZE_RATIO, 0, 0),
-                                (0, IMAGE_RESIZE_RATIO, 0),
-                                (0, 0, 1)))
-
-
 import numpy as np
 from twisted.python import log
 from sys import argv
@@ -28,7 +21,13 @@ from bisect import bisect
 import shutil
 import json
 
+IMAGE_RESIZE_RATIO = 0.25
+
 image_path = argv[1]
+
+IMAGE_RESIZE_MATRIX = np.array(((IMAGE_RESIZE_RATIO, 0, 0),
+                                (0, IMAGE_RESIZE_RATIO, 0),
+                                (0, 0, 1)))
 
 # Wait for image to fully be on disk
 sleep(0.5)
