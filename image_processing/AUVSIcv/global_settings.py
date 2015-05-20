@@ -3,8 +3,6 @@ import AUVSIcv
 import os
 
 
-IMAGE_RESIZE_RATIO = 0.25
-IMAGE_RESIZE_MATRIX = np.array(((IMAGE_RESIZE_RATIO, 0, 0), (0, IMAGE_RESIZE_RATIO, 0), (0, 0, 1)))
 
 #
 # TARGET SIZE RANGES
