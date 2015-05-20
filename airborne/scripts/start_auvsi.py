@@ -18,13 +18,13 @@ def pixhawk_data_retriever(image_name):
     import re
     import json
     import os
-    from AUVSIairborne.global_settings import IMAGES_DATA
+    from AUVSIairborne.global_settings import FLIGHT_DATA_FOLDER
     from AUVSIairborne.PixHawk import queryPHdata
 
     date_regex = "[0-9]+_[0-9]+_[0-9]+_[0-9]+_[0-9]+_[0-9]+_[0-9]+"
     time = re.search(date_regex, image_name).group()
 
-    with open(os.path.join(IMAGES_DATA, time + ".json"), 'wb') as data_file:
+    with open(os.path.join(FLIGHT_DATA_FOLDER, time + ".json"), 'wb') as data_file:
         json.dump(queryPHdata(time), data_file)
         log.msg("New data file: " + data_file.name)
 
