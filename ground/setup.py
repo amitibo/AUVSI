@@ -37,7 +37,7 @@ URL = "http://bitbucket.org/amitibo/auvsi"
 def choose_scripts():
     
     scripts = [
-        'scripts/start_ground.py',
+        'GUI.py', 'cv_runner_test.py'
     ]
 
     return scripts
@@ -58,7 +58,6 @@ def main():
         classifiers=CLASSIFIERS,
         license=LICENSE,
         packages=PACKAGES,
-        package_data={PACKAGE_NAME: ['resources/*.kv']},
         scripts=choose_scripts(),
     )
 
