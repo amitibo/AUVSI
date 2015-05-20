@@ -7,7 +7,6 @@ import math
 import cmath
 from numpy import unravel_index
 import matplotlib.pyplot as plt
-from pytesseract import image_to_string
 from PIL import Image as Im
 from scipy import ndimage
 from scipy import signal

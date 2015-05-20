@@ -151,7 +151,7 @@ class MserRunner(object):
                 image_info = json.load(j)
 
             image_info['Focal_Length'] = 5
-            image_info['Flight_Altitude'] = image_info['relative_alt']
+            image_info['Flight_Altitude'] = image_info['relative_alt']*3.28/(1e3)
             sleep(1)
             return timestamp, MSER_Primary(image, image_info,
                                            self.scale_down, None)
