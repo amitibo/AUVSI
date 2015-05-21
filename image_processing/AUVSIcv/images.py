@@ -149,8 +149,17 @@ class Image(object):
             with open(data_path, 'rb') as f:
                 self._flight_data = json.load(f)
 
-            self.calculateIntrinsicMatrix()
-
+            self._K = np.array(self._flight_data['K'])
+        
+            #
+            # This is a hack to handle data_flight saved in older
+            # versions.
+            #
+            if not self._flight_data.has_key('resized_K'):
+                self._K = np.dot(gs.IMAGE_RESIZE_MATRIX, self._K)
+            
+            self._datetime = self._flight_data['timestamp']
+            
             #
             # Calculate extrinsic Matrix. The pitch and roll are ignored
             # as their not relevant (the camera is set on a gimbal).
@@ -163,7 +172,23 @@ class Image(object):
                 pitch=0,
                 roll=0
             )
-
+        else:
+            #
+            # Calculate the intrinsic data based on exif data if available.
+            #
+            self.calculateIntrinsicMatrix()            
+            
+            #
+            # Get the time stamp.
+            #
+            if timestamp is not None:
+                self._datetime = timestamp
+            elif 'Image DateTime' in self._tags:            
+                self._datetime = self._tags['Image DateTime'].values.replace(':', '_').replace(' ', '_') + datetime.now().strftime("_%f")
+            else:
+                log.msg('No Image DateTime tag using computer time.')
+                self._datetime = datetime.now().strftime("%Y_%m_%d_%H_%M_%S_%f")
+    
         #
         # Some 'preprocessing'
         #
@@ -177,7 +202,7 @@ class Image(object):
         self._Kinv = np.linalg.inv(self._K)
         
         self._intensity = np.mean(cv2.cvtColor(self._img, cv2.COLOR_BGR2GRAY))
-
+        
     def calculateIntrinsicMatrix(self):
         """Calculate camera intrinsic matrix
         
@@ -185,7 +210,7 @@ class Image(object):
         """
 
         if not 'EXIF FocalPlaneYResolution' in self._tags:
-            print("'EXIF FocalPlaneYResolution' missing, assuming default shape.")
+            log.msg("'EXIF FocalPlaneYResolution' missing, assuming default shape.")
             ImageLength, ImageWidth = self._img.shape[:2]
             self._K = np.array(((1, 0, ImageWidth/2), (0, 1, ImageLength/2), (0, 0, 1))) 
             return
@@ -328,8 +353,8 @@ class Image(object):
         return projections
 
     def coords2LatLon(self, x, y):
-
-
+        
+        
         Kinv = np.linalg.inv(self._K)
           
         point = np.array(
