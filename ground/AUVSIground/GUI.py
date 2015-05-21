@@ -42,6 +42,7 @@ import os
 from random import random
 from math import sqrt
 from bisect import bisect
+from AUVSIground.utils import decimal_to_minsec
 
 #rom settingsjson import network_json, camera_json, admin_json
 DB_MAIN_FOLDER = r"C:\Users\User\Documents\auvsi_ftp"
@@ -103,14 +104,15 @@ class CoordsAction(object):
         texture_y = (touch.y - offset_y)*scale_ratio
 
         lat, lon = self._image.coords2LatLon(texture_x, texture_y)
-        self._label.text = 'Lat: {lat}, Lon: {lon}'.format(
-            lat=lat,
-            lon=lon
-        )
+        lat_lon_formater = 'Lat: {}, Lon: {}'.format
+        self._label.text = lat_lon_formater(lat, lon)
+
         self._label.texture_update()
         self._label.pos = touch.pos
         self._label.size = self._label.texture_size[0] + 20, self._label.texture_size[1] + 20
-        self._coords_text.text = self._label.text
+
+        minsec_lat, minsec_lon = decimal_to_minsec(lat, lon)
+        self._coords_text.text = lat_lon_formater(minsec_lat, minsec_lon)
 
 
 

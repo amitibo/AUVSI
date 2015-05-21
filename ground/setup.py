@@ -36,9 +36,7 @@ URL = "http://bitbucket.org/amitibo/auvsi"
 
 def choose_scripts():
     
-    scripts = [
-        'GUI.py', 'cv_runner_test.py'
-    ]
+    scripts = []
 
     return scripts
 
