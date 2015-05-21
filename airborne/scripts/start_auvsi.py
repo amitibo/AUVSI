@@ -91,7 +91,7 @@ if __name__ == '__main__':
     # crop_sending_controller.controlled_obj.connect(ip='localhost')
 
     acquirer.start()
-    initPixHawkSimulation()
+    initPixHawk()
 
     reactor.listenTCP(args.port, control_factory)
     reactor.run()
