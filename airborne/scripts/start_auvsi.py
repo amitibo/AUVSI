@@ -31,6 +31,7 @@ if __name__ == '__main__':
     args = parse_commandline_args()
 
     camera = None
+
     if args.camera == "cannon":
         camera = CanonCamera()
     elif args.camera == "simulation":
