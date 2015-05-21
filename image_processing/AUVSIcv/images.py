@@ -328,8 +328,8 @@ class Image(object):
         return projections
 
     def coords2LatLon(self, x, y):
-        
-        
+
+
         Kinv = np.linalg.inv(self._K)
           
         point = np.array(

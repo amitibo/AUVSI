@@ -19,8 +19,8 @@ def decimal_to_minsec(*decimal):
 
         seconds = round(residue*60, 3)
 
-        deg_symbol = '\xB0'
-        degmin = '''{deg}{deg_sym}{minutes}'{sec}"'''.format(deg=deg,
+        deg_symbol = 'd'
+        degmin = '''{deg}{deg_sym} {minutes}' {sec}"'''.format(deg=deg,
                                                        deg_sym=deg_symbol,
                                                        minutes=minutes,
                                                        sec=seconds)
