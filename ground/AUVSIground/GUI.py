@@ -6,7 +6,6 @@ from screens import MyScreenManager
 
 class GuiApp(App):
     def build(self):
-        print "debug"
         return MyScreenManager()
 
 if __name__ == "__main__":

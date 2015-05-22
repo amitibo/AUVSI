@@ -2,7 +2,7 @@ __author__ = 'Ori'
 from kivy.properties import ListProperty, ObjectProperty
 from kivy.uix.scatter import Scatter
 from kivy.uix.widget import Widget
-
+from kivy.logger import Logger
 from kivy.properties import StringProperty
 
 from AUVSIcv.images import Image
@@ -105,7 +105,7 @@ class ExaminationWidget(Widget):
         # self.ids.image_viewer.source = first_image
 
     def _update_image_name(self):
-        print "Image was updated"
+       Logger.info('Image was updated.')
 
     def _reset_image_view(self):
         self.ids["scatter"].scale = 1
@@ -122,7 +122,6 @@ class ExaminationWidget(Widget):
         next_image = os.path.join(self.file_selector.dir_path, next_image_name)
         self.ids.image_viewer.source = next_image
         self._update_image_name()
-
 
     def previous_image(self):
         try:
@@ -164,9 +163,10 @@ class TouchAsyncImage(AsyncImage):
             touch.ud['action'] = CoordsAction(self, touch, self.coords_display,
                                               image_and_data)
         except TypeError:
-            print "No file was loaded"
+            Logger.debug("No file was loaded")
         except KeyError:
-            print "Data file doesn't contain K matrix"
+            Logger.debug("Data file doesn't contain K matrix "
+                         "touch.ud['action] will be assigned with None")
             touch.ud['action'] = None
 
         return super(TouchAsyncImage, self).on_touch_down(touch)
@@ -179,10 +179,10 @@ class TouchAsyncImage(AsyncImage):
         try:
             touch.ud['action'].on_touch_move(touch)
         except KeyError:
-            print "No file was loaded, so touch.ud['action'] wasn't assigned"
+            Logger.debug("No file was loaded, so touch.ud['action'] wasn't assigned")
         except AttributeError:
-            print "touch.ud['action'] was defined as None, because coords weren't available," \
-                  " thus doesn't have on_touch_move attribute"
+            Logger.debug("touch.ud['action'] was defined as None, because coords weren't available,"
+                         " thus doesn't have on_touch_move attribute")
 
 
 
@@ -196,9 +196,9 @@ class TouchAsyncImage(AsyncImage):
             touch.ud['action'].on_touch_up(touch)
             touch.ud['action'] = None
         except AttributeError:
-            print "Coordinates are not available, thus touch.ud['action'] is None"
+            Logger.debug("Coordinates are not available, thus touch.ud['action'] is None")
         except KeyError:
-            print "No file was loaded, so touch.ud['action'] wasn't assigned"
+            Logger.debug("No file was loaded, so touch.ud['action'] wasn't assigned")
 
         touch.ungrab(self)
 
