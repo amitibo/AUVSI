@@ -1,3 +1,6 @@
 syntax: glob
 image_processing/DATA/*
 .idea/*
+airborne/AUVSIairborne.egg-info/*
+*.pyc
+image_processing/AUVSIcv.egg-info/*
