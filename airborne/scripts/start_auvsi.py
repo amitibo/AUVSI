@@ -23,6 +23,9 @@ def parse_commandline_args():
                         help="The camera to use: cannon(default), simulation")
     parser.add_argument('--handler_path', type=str,
                         help='path to the image handler file')
+    parser.add_argument('--simulate_pixhawk', action='store_true',
+                        default=False,
+                        help='run the system with pixhawk simulation')
     return parser.parse_args()
 
 
@@ -91,7 +94,13 @@ if __name__ == '__main__':
     # crop_sending_controller.controlled_obj.connect(ip='localhost')
 
     acquirer.start()
-    initPixHawk()
+
+    if args.simulate_pixhawk:
+        log.msg("PixHawkSimulation")
+        initPixHawkSimulation()
+    else:
+        log.msg("Using real PixHawk")
+        initPixHawk()
 
     reactor.listenTCP(args.port, control_factory)
     reactor.run()
