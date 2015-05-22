@@ -1,4 +1,5 @@
 __author__ = 'Ori'
+import os
 
 def decimal_to_minsec(*decimal):
     """
@@ -28,3 +29,54 @@ def decimal_to_minsec(*decimal):
         res.append(degmin)
 
     return res
+
+
+class FileSelector(object):
+    '''
+    A class that creates a list of the files in a given path.
+    returns the next file or previous file in the list
+    and update the given file to be set as the current file for future calls
+    '''
+    def __init__(self, dir_path, extension):
+        self.dir_path = dir_path
+        self.extension = extension
+        self.current_file = None
+
+    def _get_file_list(self):
+        files = os.listdir(self.dir_path)
+        return sorted([f for f in files if f.endswith('.' + self.extension)])
+
+    def next_file(self):
+        file_list = self._get_file_list()
+
+        if not self.current_file:
+            try:
+                self.current_file = file_list[0]
+            except IndexError:
+                raise NoFiles()
+
+            return self.current_file
+
+        current_file_index = file_list.index(self.current_file)
+        try:
+            self.current_file = file_list[current_file_index + 1]
+        except IndexError:
+            pass
+        return self.current_file
+
+    def prev_file(self):
+        file_list = self._get_file_list()
+
+        if not self.current_file:
+            try:
+                self.current_file = file_list[0]
+            except IndexError:
+                raise NoFiles()
+
+            return self.current_file
+
+        current_file_index = file_list.index(self.current_file)
+
+        self.current_file = file_list[max(current_file_index - 1, 0)]
+        return self.current_file
+

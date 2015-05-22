@@ -94,6 +94,7 @@
 
 
         BoxStencil:
+            id: box_stencil
             size_hint_y: 3
             center: self.parent.center
 
@@ -103,6 +104,7 @@
 
                 ScatterStencil:
                     id: scatter
+                    stencil: box_stencil
                     size_hint: None, None
                     size: relative_layout.size
                     do_rotation: False
