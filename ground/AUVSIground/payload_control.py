@@ -104,14 +104,24 @@ class Payload(object):
         params_tuple = ("{k} {v}".format(k=k, v=kwargs[k]) for k in kwargs)
         params_str = " ".join(params_tuple)
 
-        cmd = "camera set {params}".format(params_str)
+        cmd = "camera set {params}".format(params=params_str)
         self._send_cmd(cmd)
 
+    def download_start(self, dest_ip):
+        cmds_template = ("resize_download connect ip {}",
+                         "data_download connect ip {}",
+                         "crops_download connect ip {}")
+        cmds = (cmd.format(dest_ip) for cmd in cmds_template)
+
+        for cmd in cmds:
+            self._send_cmd(cmd)
+
 if __name__ == "__main__":
-    Logger.setLevel(1)
+    # Logger.setLevel(1)
     payload = Payload('localhost')
     payload.connect()
-    payload._send_cmd_blocking("camera set ISO 100")
+    cam_param = {'ISO': 100, 'shutter': 2500}
+    payload.camera_set(**cam_param)
 
     try:
         payload._send_cmd_blocking("diealone w ISO 100")
