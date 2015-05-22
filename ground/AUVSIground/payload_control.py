@@ -124,6 +124,6 @@ if __name__ == "__main__":
     payload.camera_set(**cam_param)
 
     try:
-        payload._send_cmd_blocking("diealone w ISO 100")
+        payload._send_cmd_blocking("camera w ISO 100")
     except AirborneError as e:
         print str(e)
