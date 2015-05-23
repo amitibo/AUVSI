@@ -1,6 +1,6 @@
 from __future__ import division
 from twisted.internet import reactor, protocol, task, threads
-from sortedcontainers import SortedDict
+
 from twisted.python import log
 from datetime import datetime
 import global_settings as gs
