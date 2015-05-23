@@ -10,7 +10,18 @@ from twisted.internet.error import ConnectionDone
 from twisted.internet.protocol import Factory, Protocol
 from twisted.protocols.basic import LineReceiver
 from twisted.python import log
-from AUVSIairborne import UnknownCommand
+
+
+class AirborneException(Exception):
+    pass
+
+
+class BadParameters(AirborneException):
+    pass
+
+
+class UnknownCommand(AirborneException):
+    pass
 
 
 class SystemControlProtocol(LineReceiver):
@@ -60,7 +71,7 @@ class SystemControlProtocol(LineReceiver):
             log.msg(err_msg)
             log.err(e)
             self.sendLine(err_msg)
-        except (TypeError, UnknownCommand) as e:
+        except (TypeError, AirborneException) as e:
             log.msg("Illegal use: '{}'".format(line))
             log.err(e)
             self.sendLine(e.message)
@@ -138,9 +149,9 @@ class ReflectionController(object):
             params_dic = {params_words[i]: params_words[i + 1] for i
                           in range(0, len(params_words), 2)}
         except IndexError:
-            raise UnknownCommand("Can't extract parameters from '{params}', "
-                                 "Parameters should come in pairs e.g."
-                                 " 'a 3 b 7...'".format(params=params_str))
+            raise BadParameters("Can't extract parameters from '{params}', "
+                                "Parameters should come in pairs e.g."
+                                " 'a 3 b 7...'".format(params=params_str))
 
         return params_dic
 
@@ -167,3 +178,4 @@ if __name__ == "__main__":
     log.startLogging(stdout)
     reactor.listenTCP(8844, control_factory)
     reactor.run()
+
