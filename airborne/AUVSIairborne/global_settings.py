@@ -19,11 +19,11 @@ FLIGHT_DATA_FOLDER = os.path.join(AUVSI_BASE_FOLDER, 'flight_data')
 # This folder holds data for the simulation mechanisms
 # The folder structure:
 # airborne_simulation_database:
-#     images:
+#     renamed_images:
 #           <pics>
 #     flight_data:
 #           <flight_data>
-SIMULATION_DATA = os.path.expanduser(r'~/Documents/AUVSI_EXPERIMENTS/2015_05_18/airborne/.auvsi_airborne_2015_05_18')
+SIMULATION_DATA = os.path.expanduser(r'~/airborne_simulation_database/decent')
 
 
 #

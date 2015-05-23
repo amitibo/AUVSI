@@ -53,9 +53,14 @@
         BoxLayout:
             size_hint_y: 0.1
             Button:
+                text: 'connect'
+                on_release: app.payload_controller.connect()
+            Button:
                 text: 'download'
+                on_release: app.payload_controller.download_start('localhost')
             Button:
                 text: 'shoot'
+                on_release: app.payload_controller.camera_toggle()
             Button:
                 text: 'open settings'
                 on_release: app.open_settings()

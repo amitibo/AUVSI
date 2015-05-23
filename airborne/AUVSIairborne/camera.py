@@ -7,15 +7,13 @@ try:
 except ImportError:
     import subprocess as sbp
 import multiprocessing as mp
-import AUVSIcv
-import signal
 import shlex
-import json
 import time
 import glob
-import cv2
 import os
 import shutil
+from services.system_control import UnknownCommand, BadParameters
+
 
 class BaseCamera(object):
     """Abstract class for a camera, not to be used directly."""
@@ -236,10 +234,16 @@ class CameraController(object):
             try:
                params = {words[i]: int(words[i+1]) for i in range(1, len(words), 2)}
             except IndexError as e:
-                log.msg("Parameters need to be in pairs <param> <data>: "
-                        "'{}'".format(cmd))
+                err_msg = "Parameters need to be in pairs <param> <data>: " \
+                               "'{}'".format(cmd)
+                log.msg(err_msg)
                 log.err(e)
-                return
+                raise BadParameters(err_msg)
 
             camera.setParams(**params)
             log.msg("Sets {}".format(str(params)))
+
+        else:
+            err_msg = "Unknown command: '{cmd}'".format(cmd=cmd)
+            log.msg(err_msg)
+            raise UnknownCommand(err_msg)

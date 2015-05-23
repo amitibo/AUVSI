@@ -2,10 +2,10 @@ __author__ = 'Ori'
 
 import unittest
 import os
-from AUVSIairborne.services.system_control import ReflectionController
+from AUVSIairborne.services.system_control import ReflectionController, \
+    UnknownCommand
 from AUVSIairborne.services.\
     directory_synchronization_ftp import FileScheduler
-from AUVSIairborne import UnknownCommand
 
 
 class ReflectionControllerCase(unittest.TestCase):

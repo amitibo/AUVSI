@@ -20,9 +20,11 @@ from bisect import bisect
 from AUVSIground.utils import decimal_to_minsec, FileSelector
 
 
-DB_MAIN_FOLDER = r"C:\Users\Ori\Desktop\Database_Auvsi\decent"
+DB_MAIN_FOLDER = r"C:\Users\Ori\ftp_playground"
 DATA_FOLDER = os.path.join(DB_MAIN_FOLDER, r"images_data")
 RESIZE_FOLDER = os.path.join(DB_MAIN_FOLDER, r"resized")
+
+
 def data_path(timestamp):
     data_list = sorted(os.listdir(DATA_FOLDER))
     data_index = bisect(data_list, timestamp)
