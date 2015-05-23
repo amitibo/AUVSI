@@ -125,12 +125,34 @@ class Payload(object):
         for cmd in cmds:
             self._send_cmd(cmd)
 
+    def crop(self, timestamp, x_range, y_range):
+        """
+        download a crop of the image.
+        The rectangle described by x_range and y_range should be given in the
+        full regulation picture coordinate (pixels).
+
+        :param timestamp: the timestamp of the desired crop
+        :param x_range: a tuple of (x1, x2)
+        :param y_range: a tuple of (y1, y2)
+        :return:
+        """
+        cmd = "crop {timestamp} {x_max} {x_min} {y_max} {y_min}".format(
+            timestamp=timestamp,
+            x_max=max(x_range), x_min=min(x_range),
+            y_max=max(y_range), y_min=min(y_range)
+        )
+        self._send_cmd(cmd)
+
+
 if __name__ == "__main__":
     # Logger.setLevel(1)
     payload = Payload('localhost')
     payload.connect()
+    # payload.download_start('localhost')
     cam_param = {'ISO': 100, 'shutter': 2500}
     payload.camera_set(**cam_param)
+
+    payload.crop('2015_05_22_18_14_43_351000', (500, 0), (500, 0))
 
     try:
         payload._send_cmd_blocking("camera w ISO 100")
