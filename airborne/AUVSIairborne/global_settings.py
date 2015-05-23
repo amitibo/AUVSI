@@ -23,7 +23,7 @@ FLIGHT_DATA_FOLDER = os.path.join(AUVSI_BASE_FOLDER, 'flight_data')
 #           <pics>
 #     flight_data:
 #           <flight_data>
-SIMULATION_DATA = os.path.expanduser(r'~/airborne_simulation_database/decent')
+SIMULATION_DATA = os.path.expanduser(r'C:\Users\Ori\Desktop\Database_Auvsi\.auvsi_airborne')
 
 
 #

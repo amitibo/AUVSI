@@ -158,3 +158,9 @@ if __name__ == "__main__":
         payload._send_cmd_blocking("camera w ISO 100")
     except AirborneError as e:
         print str(e)
+
+
+class PayloadDebug(object):
+    def __init__(self, coords):
+        self._coords = coords
+        print("payload debug was called: ", self._coords)

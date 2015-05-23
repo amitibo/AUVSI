@@ -3,14 +3,14 @@ from kivy.app import App
 from screens import MyScreenManager
 from kivy.uix.settings import SettingsWithTabbedPanel
 from settingsjson import *
-from payload_control import Payload
+from payload_control import Payload, PayloadDebug
 
 
 class GuiApp(App):
     def __init__(self, **kwargs):
         super(GuiApp, self).__init__(**kwargs)
         self.payload_controller = Payload('localhost')
-
+        self.payload_debug = PayloadDebug
     def build(self):
         self.settings_cls = SettingsWithTabbedPanel
         # We don't want the common user to change the kivy settings
