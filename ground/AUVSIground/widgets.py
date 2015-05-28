@@ -37,7 +37,7 @@ from bisect import bisect
 from AUVSIground.utils import decimal_to_minsec, FileSelector
 
 
-DB_MAIN_FOLDER = r"C:\Users\Ori\Desktop\Database_Auvsi\1"
+DB_MAIN_FOLDER = r"C:\Users\User\Documents\auvsi_ftp"
 DATA_FOLDER = os.path.join(DB_MAIN_FOLDER, r"images_data")
 RESIZE_FOLDER = os.path.join(DB_MAIN_FOLDER, r"resized")
 

@@ -1,6 +1,6 @@
 __author__ = 'Ori'
 
-from AUVSIcv.Mser_Color_Scaled_Down import MSER_Primary
+from AUVSIcv.Ground_Station_MSER import MSER_Primary
 from AUVSIairborne.file_scheduler import FileScheduler
 import os
 import cv2

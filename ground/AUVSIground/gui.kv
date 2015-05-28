@@ -57,7 +57,7 @@
                 on_release: app.payload_controller.connect()
             Button:
                 text: 'download'
-                on_release: app.payload_controller.download_start('localhost')
+                on_release: app.payload_controller.download_start('192.168.1.100')
             Button:
                 text: 'shoot'
                 on_release: app.payload_controller.camera_toggle()
