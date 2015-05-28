@@ -1,24 +1,28 @@
 from __future__ import division
 import global_settings as gs
 from datetime import datetime
+from twisted.internet import threads
 from twisted.python import log
 try:
     import subprocess32 as sbp
 except ImportError:
     import subprocess as sbp
 import multiprocessing as mp
+import threading
+import AUVSIcv
+import signal
 import shlex
+import json
 import time
 import glob
+import cv2
 import os
-import shutil
-from services.system_control import UnknownCommand, BadParameters
 
 
 class BaseCamera(object):
     """Abstract class for a camera, not to be used directly."""
 
-    def __init__(self, zoom=45, shutter=4000, ISO=100, aperture=4):
+    def __init__(self, zoom=45, shutter=2000, ISO=100, aperture=4):
 
         self.base_path = gs.IMAGES_FOLDER
         if not os.path.exists(self.base_path):
@@ -27,16 +31,16 @@ class BaseCamera(object):
         self.setParams(zoom=zoom, shutter=shutter, ISO=ISO, aperture=aperture)
 
     def _getName(self):
-        filename = 'ZZ{formated_time}.jpg'.format(
+        filename = '{formated_time}.jpg'.format(
             formated_time=datetime.now().strftime("%Y_%m_%d_%H_%M_%S_%f")
         )
         return os.path.join(self.base_path, filename)
 
-    def setParams(self, zoom=None, shutter=None, ISO=None, aperture=None, **kwds):
-        self.zoom = self.zoom if not zoom else zoom
-        self.shutter = self.shutter if not shutter else shutter
-        self.ISO = self.ISO if not ISO else ISO
-        self.aperture = self.aperture if not aperture else aperture
+    def setParams(self, zoom, shutter, ISO, aperture, **kwds):
+        self.zoom = zoom
+        self.shutter = shutter
+        self.ISO = ISO
+        self.aperture = aperture
 
 
 class SimulationCamera(BaseCamera):
@@ -48,7 +52,7 @@ class SimulationCamera(BaseCamera):
     def _shootingLoop(self, run):
         """Inifinite shooting loop. To run on separate process."""
 
-        base_path = os.path.join(gs.SIMULATION_DATA, 'renamed_images')
+        base_path = os.environ['AUVSI_CV_DATA']
         imgs_paths = sorted(glob.glob(os.path.join(base_path, '*.jpg')))
         img_index = 0
         while run.value == 1:
@@ -60,7 +64,7 @@ class SimulationCamera(BaseCamera):
             #img = AUVSIcv.Image(imgs_paths[img_index])
             new_name = self._getName()
             print 'Capturing new image: {img_path} to path: {new_path}'.format(img_path=imgs_paths[img_index], new_path=new_name)            
-            shutil.copyfile(imgs_paths[img_index], new_name)
+            os.rename(imgs_paths[img_index], new_name)
             
             img_index += 1
             img_index = img_index % len(imgs_paths)
@@ -143,7 +147,7 @@ def kill(proc_pid):
 
 class CanonCamera(BaseCamera):
     def __init__(self, *params, **kwds):
-
+         
         rec_cmd = 'rec'
         init_cmd = """\"luar enter_alt();
             call_event_proc('SS.Create');
@@ -152,24 +156,16 @@ class CanonCamera(BaseCamera):
             set_focus(65000);
             set_prop(272,0);
             set_prop(105,3);
+            
             set_zoom_speed(1);
             set_lcd_display(0);\""""
-
+# set_prop(8,0);
         self._blocking_cmds(rec_cmd, init_cmd)
         self._shooting_proc = None
         self._set_zoom = True
-
+        self._stop_shooting_event = None
+        
         super(CanonCamera, self).__init__(*params, **kwds)
-
-    def _nonblocking_cmds(self, *cmds):
-
-        full_cmd = " ".join([gs.CHDKPTP_PATH, '-c'] + ['-e'+cmd for cmd in cmds] + ['-e"q"'])
-        log.msg('Executing cmd: {cmd}'.format(cmd=full_cmd))
-
-        p = sbp.Popen(
-            shlex.split(full_cmd)
-        )
-        return p
 
     def _blocking_cmds(self, *cmds):
 
@@ -192,26 +188,31 @@ class CanonCamera(BaseCamera):
             self._set_zoom = False
 
     def startShooting(self):
-        shoot_cmd = """\"remoteshoot {local_folder} -sv={ISO} -av={aperture}  -tv=1/{shutter} -cont=9000\"""".format(
+        self._stop_shooting_event = threading.Event()
+        threads.deferToThread(self._shooting_thread)
+
+    def _shooting_thread(self):
+        shoot_cmd = """\"remoteshoot {local_folder} -tv=1/{shutter} -sv={ISO} -cont=10\"""".format(
             local_folder=gs.IMAGES_FOLDER,
             shutter=self.shutter,
             ISO=self.ISO,
             aperture=self.aperture
         )
- 
-        self._shooting_proc = self._nonblocking_cmds(shoot_cmd)
+        
+        while not self._stop_shooting_event.is_set():
+            self._blocking_cmds(shoot_cmd)
+
+        self._stop_shooting_event = None
 
     def stopShooting(self):
 
-        if self._shooting_proc is None:
+        if self._stop_shooting_event is None:
             return
 
-        kill(self._shooting_proc.pid)
-        self._shooting_proc = None
+        self._stop_shooting_event.set()
+		
 
-        self._blocking_cmds('killscript')
-
-
+		
 class CameraController(object):
     def __init__(self, camera):
         self.camera = camera
