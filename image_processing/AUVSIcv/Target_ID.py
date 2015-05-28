@@ -4,9 +4,9 @@ from scipy import stats
 from scipy import misc
 import cv2
 import math
-import cmath
 from numpy import unravel_index
-import matplotlib.pyplot as plt
+import  matplotlib.pyplot as plt
+from pytesseract import image_to_string
 from PIL import Image as Im
 from scipy import ndimage
 from scipy import signal
@@ -44,15 +44,9 @@ def get_colour_name(requested_colour):
         closest_name = closest_colour(requested_colour)
         actual_name = None
     return actual_name, closest_name
-def Contour_Extractor(Image):
+def Contour_Extractor(Image,Debug):
     #Filtered_Image = np.uint8(signal.wiener(np.float32(Image),7))
     Filtered_Image = Image
-    # cv2.namedWindow('Original',flags=cv2.WINDOW_NORMAL)
-    # cv2.imshow('Original',Image)
-    # cv2.namedWindow('Filtered',flags=cv2.WINDOW_NORMAL)
-    # cv2.imshow('Filtered',Filtered_Image)
-    # cv2.waitKey(0)
-
     #Outer contours
     
     HSV_Image = cv2.cvtColor(Filtered_Image,cv2.COLOR_RGB2HSV)
@@ -79,19 +73,21 @@ def Contour_Extractor(Image):
     else:
         Contours = Contours[0]
     Color = [128,128,128]
-    cv2.drawContours(Contour_Image,[Contours], -1, Color,-1)
-    # cv2.namedWindow('Target Contours',flags=cv2.WINDOW_NORMAL)
-    # cv2.imshow('Target Contours',Contour_Image)
-    # cv2.waitKey(0)
+    
+    if Debug:
+        cv2.namedWindow('Original',flags=cv2.WINDOW_NORMAL)
+        cv2.imshow('Original',Image)
+        cv2.drawContours(Contour_Image,[Contours], -1, Color,-1)
+        cv2.namedWindow('Target Contours',flags=cv2.WINDOW_NORMAL)
+        cv2.imshow('Target Contours',Contour_Image)
+        cv2.waitKey(0)    
+        
     return Contours,0
-
-def Contour_Extractor_2(Image):
+def Contour_Extractor_2(Image,Debug):
     
     Tolerance = 40
     Image_2 = Image.copy()
-    # cv2.namedWindow('Original',flags=cv2.WINDOW_NORMAL)
-    # cv2.imshow('Original',Image)
-    # cv2.waitKey(0)
+
 
     NUM_CLUSTERS = 2
     shape = Image_2.shape
@@ -146,16 +142,18 @@ def Contour_Extractor_2(Image):
     else:
         Contours = Contours[0]
     Color = [128,128,128]
-    cv2.drawContours(Contour_Image,[Contours], -1, Color,-1)
-    # cv2.namedWindow('Target Contours',flags=cv2.WINDOW_NORMAL)
-    # cv2.imshow('Target Contours',Contour_Image)
-    # cv2.waitKey(0)
+    
+    if Debug:
+        cv2.namedWindow('Original',flags=cv2.WINDOW_NORMAL)
+        cv2.imshow('Original',Image)           
+        cv2.drawContours(Contour_Image,[Contours], -1, Color,-1)
+        cv2.namedWindow('Target Contours',flags=cv2.WINDOW_NORMAL)
+        cv2.imshow('Target Contours',Contour_Image)
+        cv2.waitKey(0)  
     return Contours,0
 
-def Letter_Contour_Extractor(Image):
-    # cv2.namedWindow('Original',flags=cv2.WINDOW_NORMAL)
-    # cv2.imshow('Original',Image)
-    # cv2.waitKey(0)
+def Letter_Contour_Extractor(Image,Debug):
+  
     Contour_Image = np.uint8(np.zeros(Image.shape))
     Image_1D = Image[:,:,0]
     Contours,Unused_2 = cv2.findContours(Image_1D.copy(), cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
@@ -175,9 +173,11 @@ def Letter_Contour_Extractor(Image):
         Contours = Contours[0]
     Color = [128,128,128]
     cv2.drawContours(Contour_Image,[Contours], -1, Color,-1)
-    # cv2.namedWindow('Letter Contours',flags=cv2.WINDOW_NORMAL)
-    # cv2.imshow('Letter Contours',Contour_Image)
-    # cv2.waitKey(0)
+
+    if Debug:      
+        cv2.namedWindow('Letter Contours',flags=cv2.WINDOW_NORMAL)
+        cv2.imshow('Letter Contours',Contour_Image)
+        cv2.waitKey(0)          
     return Contours,0    
     
 def Target_Shape_Extractor(Image,Contours,Shape_Name_DB_Path,Shape_DB_Path):  
@@ -226,23 +226,26 @@ def Target_Shape_Extractor(Image,Contours,Shape_Name_DB_Path,Shape_DB_Path):
         
     Shape_Name = Shape_Name_DB[np.argmax(Corr_Vector)]
     Shape_Corr = np.max(Corr_Vector)
-    return Shape_Name,Shape_Corr
+    Shape_Dict = {}
+    Shape_Dict['Shape_Name'] = Shape_Name
+    Shape_Dict['Shape_Corr'] = Shape_Corr
+    return Shape_Dict
 
-def Color_Extractor(Image,Contours):
+def Color_Extractor(Image,Contours,Debug):
     Contour_Image = np.uint8(np.zeros(Image.shape))
     Color = [1,1,1]
     cv2.drawContours(Contour_Image, [Contours], -1, Color,-1)    
     Cropped_Target = np.multiply(Contour_Image,Image)
-    # cv2.namedWindow('Cropped target for color',flags=cv2.WINDOW_NORMAL)
-    # cv2.imshow('Cropped target for color',Cropped_Target)
-    # cv2.waitKey(0)
+    Cropped_Image = Cropped_Target
     
     NUM_CLUSTERS = 3
     shape = Cropped_Target.shape
     Cropped_Target = Cropped_Target.reshape(scipy.product(shape[:2]), shape[2])
     
     codes, dist = scipy.cluster.vq.kmeans(Cropped_Target, NUM_CLUSTERS)
-    
+    Color_Num,unused = codes.shape
+    if (Color_Num < 3):
+        return None
     vecs, dist = scipy.cluster.vq.vq(Cropped_Target, codes)         # assign codes
     counts, bins = scipy.histogram(vecs, len(codes))    # count occurrences
     index_max = scipy.argmax(counts)                    # find target color
@@ -261,20 +264,28 @@ def Color_Extractor(Image,Contours):
         Temp[Temp == index_min] = -1
         index_mid = np.max(Temp)
         peak_2 = codes[index_mid]
+
+    if Debug:
+        cv2.namedWindow('Cropped target for color',flags=cv2.WINDOW_NORMAL)
+        cv2.imshow('Cropped target for color',Cropped_Image)
+        cv2.waitKey(0)             
     
-    actual_name, Target_Color_Name = get_colour_name((peak_1[0],peak_1[1],peak_1[2]))  
-    actual_name, Letter_Color_Name = get_colour_name((peak_2[0],peak_2[1],peak_2[2])) 
-    return peak_1,peak_2,Target_Color_Name,Letter_Color_Name
+    actual_name, Target_Color_Name = get_colour_name((peak_1[2],peak_1[1],peak_1[0]))  
+    actual_name, Letter_Color_Name = get_colour_name((peak_2[2],peak_2[1],peak_2[0])) 
+    Color_Dict = {}
+    Color_Dict['peak_1'] = peak_1
+    Color_Dict['peak_2'] = peak_2
+    Color_Dict['Target_Color_Name'] = Target_Color_Name
+    Color_Dict['Letter_Color_Name'] = Letter_Color_Name
+    return Color_Dict
     
-def Letter_Extractor(Image,Contours,Letter_Name_DB_Path,Letter_DB_Path,Letter_Color):
+def Letter_Extractor(Image,Contours,Letter_Name_DB_Path,Letter_DB_Path,Letter_Color,Debug):
     Tolerance = 30
     Contour_Image = np.uint8(np.zeros(Image.shape))
     Color = [1,1,1]
     cv2.drawContours(Contour_Image, [Contours], -1, Color,-1)    
     Cropped_Target = np.multiply(Contour_Image,Image)
-    # cv2.namedWindow('Cropped target for letter',flags=cv2.WINDOW_NORMAL)
-    # cv2.imshow('Cropped target for letter',Cropped_Target)
-    # cv2.waitKey(0)
+     
 
     Letter_R = Letter_Color[0]
     Letter_G = Letter_Color[1]
@@ -289,14 +300,12 @@ def Letter_Extractor(Image,Contours,Letter_Name_DB_Path,Letter_DB_Path,Letter_Co
     Image_Value[Image_Value[:,:,:] != 0] = 255
     
     
-    Contours_Letter,Contour_Error = Letter_Contour_Extractor(Image_Value)
+    Contours_Letter,Contour_Error = Letter_Contour_Extractor(Image_Value,Debug)
     
     
     Color = [128,128,128]
     cv2.drawContours(Contour_Image, [Contours_Letter], -1, Color,-1)
-    # cv2.namedWindow('Letter Contours',flags=cv2.WINDOW_NORMAL)
-    # cv2.imshow('Letter Contours',Contour_Image)
-    # cv2.waitKey(0)
+
     
     Cont_X = np.zeros([len(Contours_Letter)],np.uint8)
     Cont_Y = np.zeros([len(Contours_Letter)],np.uint8)
@@ -340,7 +349,19 @@ def Letter_Extractor(Image,Contours,Letter_Name_DB_Path,Letter_DB_Path,Letter_Co
     Shape_Name = Shape_Name_DB[np.argmax(Corr_Vector)]
     Shape_Corr = np.max(Corr_Vector)
     Shape_Angle = Angle_Vector[np.argmax(Corr_Vector)]
-    return Shape_Name,Shape_Corr, Shape_Angle
+    
+    if Debug:
+        cv2.namedWindow('Cropped target for letter',flags=cv2.WINDOW_NORMAL)
+        cv2.imshow('Cropped target for letter',Cropped_Target)    
+        cv2.namedWindow('Letter Contours',flags=cv2.WINDOW_NORMAL)
+        cv2.imshow('Letter Contours',Contour_Image)
+        cv2.waitKey(0)       
+        
+    Letter_Result = {}
+    Letter_Result['Shape_Name'] = Shape_Name
+    Letter_Result['Shape_Corr'] = Shape_Corr
+    Letter_Result['Shape_Angle'] = Shape_Angle
+    return Letter_Result
     
 #def QR_Extractor(Image):
     #To be constructed
@@ -349,35 +370,50 @@ def Letter_Extractor(Image,Contours,Letter_Name_DB_Path,Letter_DB_Path,Letter_Co
     #qr.decode(Image)
     #Code = qr.data
     #return Code
-
-
-def Target_Flow (Image,Shape_Name_DB_Path,Shape_DB_Path,Letter_Name_DB_Path,Letter_DB_Path):
+def Target_Flow (Image,Shape_Name_DB_Path,Shape_DB_Path,Letter_Name_DB_Path,Letter_DB_Path,Debug):
     #This function is for the main target ID flow!
     
     #Extract primary contour from image
-    Contours,Error_Code = Contour_Extractor_2(Image)
+    Contours,Error_Code = Contour_Extractor_2(Image,Debug)
     if (Error_Code == -1):
         return None
     
     #Extract target shape
-    Possible_Target_Shape,Shape_Corr_Value = Target_Shape_Extractor(Image,Contours,Shape_Name_DB_Path,Shape_DB_Path)
+    Shape_Result =  Target_Shape_Extractor(Image,Contours,Shape_Name_DB_Path,Shape_DB_Path)
+    Possible_Target_Shape = Shape_Result['Shape_Name']
+    Shape_Corr_Value = Shape_Result['Shape_Corr']
     
     #Extract target & letter color
-    Target_Color,Letter_Color,Target_Color_Name,Letter_Color_Name = Color_Extractor(Image,Contours)
+    Color_Result = Color_Extractor(Image,Contours,Debug)    
+    if (Color_Result == None):
+        return None
+    
+    Target_Color = Color_Result['peak_1']
+    Letter_Color = Color_Result['peak_2']
+    Target_Color_Name = Color_Result['Target_Color_Name']
+    Letter_Color_Name = Color_Result['Letter_Color_Name']
     
     #Extract letter shape & angle
-    Possible_Target_Letter,Letter_Corr_Value,Letter_Angle = Letter_Extractor(Image,Contours,Letter_Name_DB_Path,Letter_DB_Path,Letter_Color)
+    Letter_Result = Letter_Extractor(Image,Contours,Letter_Name_DB_Path,Letter_DB_Path,Letter_Color,Debug)
+    Possible_Target_Letter = Letter_Result['Shape_Name']
+    Letter_Corr_Value = Letter_Result['Shape_Corr']
+    Letter_Angle = Letter_Result['Shape_Angle']
 
-    return {'is target': True,
-            'shape': Possible_Target_Shape,
-            'shape color': Target_Color_Name,
-            'letter': Possible_Target_Letter,
-            'letter color': Letter_Color_Name,
-            'letter angle': cmath.phase(Letter_Angle)}
+    Result = {}
+    Result['Is_Target'] = 'Is_Target'
+    Result['Possible_Target_Shape'] = Possible_Target_Shape
+    Result['Target_Color_Name'] = Target_Color_Name
+    Result['Possible_Target_Letter'] = Possible_Target_Letter
+    Result['Letter_Color_Name'] = Letter_Color_Name
+    Result['Letter_Angle'] = Letter_Angle
+    return Result
+    
 
 
 #BUGS:
-#4. Need to add failure criteria & filtering options in the code for the user.
-#5. Bug when no letter is detected, algorithm continues and gets an error.
-#7. Correct contour sizes to actual ones (smaller)
-#8. Add QR code recognition
+#1. Need to add failure criteria & filtering options in the code for the user.
+#2. Bug when no letter is detected, algorithm continues and gets an error.
+#3. Correct contour sizes to actual ones (smaller)
+#4. Add QR code recognition
+#5. Shape recognition errors, need to check manually because something is very weird!!!
+#6. Take Yaw angle and calculate target orientation!.
