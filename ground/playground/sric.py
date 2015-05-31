@@ -3,25 +3,25 @@ import ftplib
 import os
 from socket import timeout
 
-target_file = r'2015_05_27_15_20_12_752972.resized.jpg'
+target_file = r'2015_05_28_14_55_45_422834.resized.jpg'
 
 retry = True
 while retry:
     try:
-        client = ftplib.FTP(host='192.168.2.106',
-                            user='SRIC',
-                            passwd='SRIC',
+        print "Trying to connect..."
+        client = ftplib.FTP(host=r'192.168.2.100/auvsi/TAS',
+                            user='anonymous',
                             timeout=20)
         retry = False
     except timeout:
-        print "Trying to connect"
+        print "Retrying"
         retry = True
 
 
 files = client.nlst()
 print "Got file list: {}".format(files)
 
-ret_file = "sric.txt"
+ret_file = files[0]
 
 def write_file(data):
     print "Retried data: '{}'".format(data)
