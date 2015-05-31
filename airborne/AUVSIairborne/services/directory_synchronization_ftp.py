@@ -35,7 +35,6 @@ def sync_files(ftp_client, scheduler):
 
 class DirSyncClientFactory(ReconnectingClientFactory):
     protocol = FTPClient
-    protocol.passive = False
     maxDelay = 32
     factor = 1.15
     initialDelay = 2
@@ -67,7 +66,8 @@ class DirSyncClientFactory(ReconnectingClientFactory):
 
         self.resetDelay()
 
-        ftp_client = FTPClient(username=self.user, password=self.password)
+        ftp_client = FTPClient(username=self.user, password=self.password,
+                               passive=False)
         ftp_client.makeDirectory(self.dest_dir)
         ftp_client.cwd(self.dest_dir)
         self.sync_task = task.LoopingCall(sync_files,

@@ -22,7 +22,7 @@ import os
 class BaseCamera(object):
     """Abstract class for a camera, not to be used directly."""
 
-    def __init__(self, zoom=45, shutter=2000, ISO=100, aperture=4):
+    def __init__(self, zoom=45, shutter=4000, ISO=100, aperture=4):
 
         self.base_path = gs.IMAGES_FOLDER
         if not os.path.exists(self.base_path):
